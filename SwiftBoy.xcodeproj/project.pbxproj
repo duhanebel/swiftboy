@@ -14,7 +14,11 @@
 		B733CE83256EC3930013E8D1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B733CE82256EC3930013E8D1 /* Assets.xcassets */; };
 		B733CE86256EC3930013E8D1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B733CE84256EC3930013E8D1 /* Main.storyboard */; };
 		B733CE92256EC3930013E8D1 /* SwiftBoyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CE91256EC3930013E8D1 /* SwiftBoyTests.swift */; };
-		B733CE9D256EC3930013E8D1 /* SwiftBoyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CE9C256EC3930013E8D1 /* SwiftBoyUITests.swift */; };
+		B733CEB7256ECFCF0013E8D1 /* UInt16+Bytes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CEB6256ECFCF0013E8D1 /* UInt16+Bytes.swift */; };
+		B733CEBF256ECFFF0013E8D1 /* UInt16+BytesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CEBE256ECFFF0013E8D1 /* UInt16+BytesTests.swift */; };
+		B733CEC425704F370013E8D1 /* UInt+Bits.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CEC325704F370013E8D1 /* UInt+Bits.swift */; };
+		B733CEC9257050680013E8D1 /* UInt+BitsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CEC8257050680013E8D1 /* UInt+BitsTests.swift */; };
+		B733CEDC257141000013E8D1 /* CPU.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CEAE256EC45F0013E8D1 /* CPU.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -49,8 +53,11 @@
 		B733CE91256EC3930013E8D1 /* SwiftBoyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftBoyTests.swift; sourceTree = "<group>"; };
 		B733CE93256EC3930013E8D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B733CE98256EC3930013E8D1 /* SwiftBoyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SwiftBoyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		B733CE9C256EC3930013E8D1 /* SwiftBoyUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftBoyUITests.swift; sourceTree = "<group>"; };
-		B733CE9E256EC3930013E8D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B733CEAE256EC45F0013E8D1 /* CPU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPU.swift; sourceTree = "<group>"; };
+		B733CEB6256ECFCF0013E8D1 /* UInt16+Bytes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UInt16+Bytes.swift"; sourceTree = "<group>"; };
+		B733CEBE256ECFFF0013E8D1 /* UInt16+BytesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UInt16+BytesTests.swift"; sourceTree = "<group>"; };
+		B733CEC325704F370013E8D1 /* UInt+Bits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UInt+Bits.swift"; sourceTree = "<group>"; };
+		B733CEC8257050680013E8D1 /* UInt+BitsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UInt+BitsTests.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,7 +90,6 @@
 			children = (
 				B733CE78256EC3910013E8D1 /* SwiftBoy */,
 				B733CE90256EC3930013E8D1 /* SwiftBoyTests */,
-				B733CE9B256EC3930013E8D1 /* SwiftBoyUITests */,
 				B733CE77256EC3910013E8D1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -101,6 +107,7 @@
 		B733CE78256EC3910013E8D1 /* SwiftBoy */ = {
 			isa = PBXGroup;
 			children = (
+				B733CEAD256EC4540013E8D1 /* Engine */,
 				B733CE79256EC3910013E8D1 /* AppDelegate.swift */,
 				B733CE7B256EC3910013E8D1 /* GameViewController.swift */,
 				B733CE7D256EC3910013E8D1 /* Renderer.swift */,
@@ -119,17 +126,20 @@
 			children = (
 				B733CE91256EC3930013E8D1 /* SwiftBoyTests.swift */,
 				B733CE93256EC3930013E8D1 /* Info.plist */,
+				B733CEBE256ECFFF0013E8D1 /* UInt16+BytesTests.swift */,
+				B733CEC8257050680013E8D1 /* UInt+BitsTests.swift */,
 			);
 			path = SwiftBoyTests;
 			sourceTree = "<group>";
 		};
-		B733CE9B256EC3930013E8D1 /* SwiftBoyUITests */ = {
+		B733CEAD256EC4540013E8D1 /* Engine */ = {
 			isa = PBXGroup;
 			children = (
-				B733CE9C256EC3930013E8D1 /* SwiftBoyUITests.swift */,
-				B733CE9E256EC3930013E8D1 /* Info.plist */,
+				B733CEAE256EC45F0013E8D1 /* CPU.swift */,
+				B733CEB6256ECFCF0013E8D1 /* UInt16+Bytes.swift */,
+				B733CEC325704F370013E8D1 /* UInt+Bits.swift */,
 			);
-			path = SwiftBoyUITests;
+			path = Engine;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -261,7 +271,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B733CEB7256ECFCF0013E8D1 /* UInt16+Bytes.swift in Sources */,
 				B733CE80256EC3910013E8D1 /* Shaders.metal in Sources */,
+				B733CEDC257141000013E8D1 /* CPU.swift in Sources */,
+				B733CEC425704F370013E8D1 /* UInt+Bits.swift in Sources */,
 				B733CE7C256EC3910013E8D1 /* GameViewController.swift in Sources */,
 				B733CE7E256EC3910013E8D1 /* Renderer.swift in Sources */,
 				B733CE7A256EC3910013E8D1 /* AppDelegate.swift in Sources */,
@@ -272,6 +285,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B733CEC9257050680013E8D1 /* UInt+BitsTests.swift in Sources */,
+				B733CEBF256ECFFF0013E8D1 /* UInt16+BytesTests.swift in Sources */,
 				B733CE92256EC3930013E8D1 /* SwiftBoyTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -280,7 +295,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B733CE9D256EC3930013E8D1 /* SwiftBoyUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

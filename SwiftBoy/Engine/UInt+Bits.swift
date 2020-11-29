@@ -27,6 +27,14 @@ extension UInt8 {
             return result
         }
     }
+    
+    var lowerNibble: Self {
+        get { return self & 0x0F }
+    }
+    
+    var upperNibble: Self {
+        get { return (self >> 4) }
+    }
 }
 
 extension UInt16 {

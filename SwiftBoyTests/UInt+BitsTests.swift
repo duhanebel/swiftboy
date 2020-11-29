@@ -32,6 +32,17 @@ class UInt8_BitsTests: XCTestCase {
         XCTAssertEqual(num, 0b00010100)
     }
     
+    func testLowerNibble() throws {
+        let num: UInt8 = 0xFA
+        XCTAssertEqual(num.lowerNibble, 0x0A)
+    }
+    
+    func testUpperNibble() throws {
+        let num: UInt8 = 0xFA
+        XCTAssertEqual(num.upperNibble, 0x0F)
+
+    }
+    
     func testComplement() throws {
         let num: UInt8 = 0b00010010
         XCTAssertEqual(num.complement, 0b11101101)

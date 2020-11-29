@@ -9,8 +9,6 @@
 /* Begin PBXBuildFile section */
 		B733CE7A256EC3910013E8D1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CE79256EC3910013E8D1 /* AppDelegate.swift */; };
 		B733CE7C256EC3910013E8D1 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CE7B256EC3910013E8D1 /* GameViewController.swift */; };
-		B733CE7E256EC3910013E8D1 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CE7D256EC3910013E8D1 /* Renderer.swift */; };
-		B733CE80256EC3910013E8D1 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = B733CE7F256EC3910013E8D1 /* Shaders.metal */; };
 		B733CE83256EC3930013E8D1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B733CE82256EC3930013E8D1 /* Assets.xcassets */; };
 		B733CE86256EC3930013E8D1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B733CE84256EC3930013E8D1 /* Main.storyboard */; };
 		B733CE92256EC3930013E8D1 /* SwiftBoyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CE91256EC3930013E8D1 /* SwiftBoyTests.swift */; };
@@ -19,6 +17,14 @@
 		B733CEC425704F370013E8D1 /* UInt+Bits.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CEC325704F370013E8D1 /* UInt+Bits.swift */; };
 		B733CEC9257050680013E8D1 /* UInt+BitsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CEC8257050680013E8D1 /* UInt+BitsTests.swift */; };
 		B733CEDC257141000013E8D1 /* CPU.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CEAE256EC45F0013E8D1 /* CPU.swift */; };
+		B733CEE425726A350013E8D1 /* Instruction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CEE325726A350013E8D1 /* Instruction.swift */; };
+		B733CEE92572BC600013E8D1 /* Instruction+Extended.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CEE82572BC600013E8D1 /* Instruction+Extended.swift */; };
+		B733CEF62572C9350013E8D1 /* RAM.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CEF52572C9350013E8D1 /* RAM.swift */; };
+		B733CEFB2572C9D90013E8D1 /* Bool+Int.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CEFA2572C9D90013E8D1 /* Bool+Int.swift */; };
+		B733CF002572CCFA0013E8D1 /* CPU+ALU.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CEFF2572CCFA0013E8D1 /* CPU+ALU.swift */; };
+		B733CF082572CD360013E8D1 /* CPU+ALUTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CF072572CD360013E8D1 /* CPU+ALUTests.swift */; };
+		B733CF0D2572F4E90013E8D1 /* MMU.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CF0C2572F4E90013E8D1 /* MMU.swift */; };
+		B733CF202573A3E10013E8D1 /* ScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CF1F2573A3E10013E8D1 /* ScreenView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,9 +48,6 @@
 		B733CE76256EC3910013E8D1 /* SwiftBoy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SwiftBoy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B733CE79256EC3910013E8D1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		B733CE7B256EC3910013E8D1 /* GameViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewController.swift; sourceTree = "<group>"; };
-		B733CE7D256EC3910013E8D1 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
-		B733CE7F256EC3910013E8D1 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
-		B733CE81256EC3910013E8D1 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
 		B733CE82256EC3930013E8D1 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		B733CE85256EC3930013E8D1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		B733CE87256EC3930013E8D1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -58,6 +61,15 @@
 		B733CEBE256ECFFF0013E8D1 /* UInt16+BytesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UInt16+BytesTests.swift"; sourceTree = "<group>"; };
 		B733CEC325704F370013E8D1 /* UInt+Bits.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UInt+Bits.swift"; sourceTree = "<group>"; };
 		B733CEC8257050680013E8D1 /* UInt+BitsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UInt+BitsTests.swift"; sourceTree = "<group>"; };
+		B733CEE325726A350013E8D1 /* Instruction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Instruction.swift; sourceTree = "<group>"; };
+		B733CEE82572BC600013E8D1 /* Instruction+Extended.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Instruction+Extended.swift"; sourceTree = "<group>"; };
+		B733CEED2572C9000013E8D1 /* Scripts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Scripts; sourceTree = "<group>"; };
+		B733CEF52572C9350013E8D1 /* RAM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RAM.swift; sourceTree = "<group>"; };
+		B733CEFA2572C9D90013E8D1 /* Bool+Int.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bool+Int.swift"; sourceTree = "<group>"; };
+		B733CEFF2572CCFA0013E8D1 /* CPU+ALU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CPU+ALU.swift"; sourceTree = "<group>"; };
+		B733CF072572CD360013E8D1 /* CPU+ALUTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CPU+ALUTests.swift"; sourceTree = "<group>"; };
+		B733CF0C2572F4E90013E8D1 /* MMU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MMU.swift; sourceTree = "<group>"; };
+		B733CF1F2573A3E10013E8D1 /* ScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -90,6 +102,7 @@
 			children = (
 				B733CE78256EC3910013E8D1 /* SwiftBoy */,
 				B733CE90256EC3930013E8D1 /* SwiftBoyTests */,
+				B733CEED2572C9000013E8D1 /* Scripts */,
 				B733CE77256EC3910013E8D1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -110,13 +123,11 @@
 				B733CEAD256EC4540013E8D1 /* Engine */,
 				B733CE79256EC3910013E8D1 /* AppDelegate.swift */,
 				B733CE7B256EC3910013E8D1 /* GameViewController.swift */,
-				B733CE7D256EC3910013E8D1 /* Renderer.swift */,
-				B733CE7F256EC3910013E8D1 /* Shaders.metal */,
-				B733CE81256EC3910013E8D1 /* ShaderTypes.h */,
 				B733CE82256EC3930013E8D1 /* Assets.xcassets */,
 				B733CE84256EC3930013E8D1 /* Main.storyboard */,
 				B733CE87256EC3930013E8D1 /* Info.plist */,
 				B733CE88256EC3930013E8D1 /* SwiftBoy.entitlements */,
+				B733CF1F2573A3E10013E8D1 /* ScreenView.swift */,
 			);
 			path = SwiftBoy;
 			sourceTree = "<group>";
@@ -128,6 +139,7 @@
 				B733CE93256EC3930013E8D1 /* Info.plist */,
 				B733CEBE256ECFFF0013E8D1 /* UInt16+BytesTests.swift */,
 				B733CEC8257050680013E8D1 /* UInt+BitsTests.swift */,
+				B733CF072572CD360013E8D1 /* CPU+ALUTests.swift */,
 			);
 			path = SwiftBoyTests;
 			sourceTree = "<group>";
@@ -138,6 +150,12 @@
 				B733CEAE256EC45F0013E8D1 /* CPU.swift */,
 				B733CEB6256ECFCF0013E8D1 /* UInt16+Bytes.swift */,
 				B733CEC325704F370013E8D1 /* UInt+Bits.swift */,
+				B733CEE325726A350013E8D1 /* Instruction.swift */,
+				B733CEE82572BC600013E8D1 /* Instruction+Extended.swift */,
+				B733CEF52572C9350013E8D1 /* RAM.swift */,
+				B733CEFA2572C9D90013E8D1 /* Bool+Int.swift */,
+				B733CEFF2572CCFA0013E8D1 /* CPU+ALU.swift */,
+				B733CF0C2572F4E90013E8D1 /* MMU.swift */,
 			);
 			path = Engine;
 			sourceTree = "<group>";
@@ -271,12 +289,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B733CEF62572C9350013E8D1 /* RAM.swift in Sources */,
+				B733CF002572CCFA0013E8D1 /* CPU+ALU.swift in Sources */,
 				B733CEB7256ECFCF0013E8D1 /* UInt16+Bytes.swift in Sources */,
-				B733CE80256EC3910013E8D1 /* Shaders.metal in Sources */,
 				B733CEDC257141000013E8D1 /* CPU.swift in Sources */,
 				B733CEC425704F370013E8D1 /* UInt+Bits.swift in Sources */,
 				B733CE7C256EC3910013E8D1 /* GameViewController.swift in Sources */,
-				B733CE7E256EC3910013E8D1 /* Renderer.swift in Sources */,
+				B733CF202573A3E10013E8D1 /* ScreenView.swift in Sources */,
+				B733CEFB2572C9D90013E8D1 /* Bool+Int.swift in Sources */,
+				B733CF0D2572F4E90013E8D1 /* MMU.swift in Sources */,
+				B733CEE92572BC600013E8D1 /* Instruction+Extended.swift in Sources */,
+				B733CEE425726A350013E8D1 /* Instruction.swift in Sources */,
 				B733CE7A256EC3910013E8D1 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -286,6 +309,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B733CEC9257050680013E8D1 /* UInt+BitsTests.swift in Sources */,
+				B733CF082572CD360013E8D1 /* CPU+ALUTests.swift in Sources */,
 				B733CEBF256ECFFF0013E8D1 /* UInt16+BytesTests.swift in Sources */,
 				B733CE92256EC3930013E8D1 /* SwiftBoyTests.swift in Sources */,
 			);
@@ -455,7 +479,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.duhanebel.SwiftBoy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "$(TARGET_NAME)/ShaderTypes.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -475,7 +498,6 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.duhanebel.SwiftBoy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "$(TARGET_NAME)/ShaderTypes.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;

@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 extension Bool {
     var intValue: UInt8 {
         return self ? 1 : 0

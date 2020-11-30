@@ -13,7 +13,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet var window: NSWindow!
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        
+        let cpu = CPU()
+        let bootURL = Bundle.main.url(forResource: "boot", withExtension: "gb")!
+        try! cpu.mmu.rom.load(url: bootURL)
+        for _ in 1...1000 {
+            cpu.tic()
+        }
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {

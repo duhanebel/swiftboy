@@ -26,7 +26,7 @@ puts "     static var allExtInstructions: [Instruction] = ["
   if reg != "(HL)"
     puts "        Instruction(asm: \"#{op} #{reg}\", opcode: 0x#{sprintf("%02x",i).upcase}, cycles: 8, execute: { cpu in cpu.#{op.downcase}(&cpu.registers.#{reg}) }),"
   else
-    puts "        Instruction(asm: \"#{op} #{reg}\", opcode: 0x#{sprintf("%02x",i).upcase}, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.#{op.downcase}(&val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),"
+    puts "        Instruction(asm: \"#{op} #{reg}\", opcode: 0x#{sprintf("%02x",i).upcase}, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.#{op.downcase}(&val); cpu.write(byte: val, at: cpu.registers.HL) }),"
   end
   puts "" if i % regs.size == regs.size-1
 end
@@ -44,7 +44,7 @@ end
     else
       cost = 16
     end
-    puts "        Instruction(asm: \"#{op} #{bit}, #{reg}\", opcode: 0x#{sprintf("%02x",i).upcase}, cycles: #{cost}, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.#{op.downcase}(#{bit}, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),"
+    puts "        Instruction(asm: \"#{op} #{bit}, #{reg}\", opcode: 0x#{sprintf("%02x",i).upcase}, cycles: #{cost}, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.#{op.downcase}(#{bit}, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),"
   end
   puts "" if i % regs.size == regs.size-1
 

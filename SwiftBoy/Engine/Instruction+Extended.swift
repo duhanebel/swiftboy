@@ -6,7 +6,7 @@ extension Instruction {
         Instruction(asm: "RLC E", opcode: 0x03, cycles: 8, execute: { cpu in cpu.rlc(&cpu.registers.E) }),
         Instruction(asm: "RLC H", opcode: 0x04, cycles: 8, execute: { cpu in cpu.rlc(&cpu.registers.H) }),
         Instruction(asm: "RLC L", opcode: 0x05, cycles: 8, execute: { cpu in cpu.rlc(&cpu.registers.L) }),
-        Instruction(asm: "RLC (HL)", opcode: 0x06, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.rlc(&val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "RLC (HL)", opcode: 0x06, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.rlc(&val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "RLC A", opcode: 0x07, cycles: 8, execute: { cpu in cpu.rlc(&cpu.registers.A) }),
 
         Instruction(asm: "RRC B", opcode: 0x08, cycles: 8, execute: { cpu in cpu.rrc(&cpu.registers.B) }),
@@ -15,7 +15,7 @@ extension Instruction {
         Instruction(asm: "RRC E", opcode: 0x0B, cycles: 8, execute: { cpu in cpu.rrc(&cpu.registers.E) }),
         Instruction(asm: "RRC H", opcode: 0x0C, cycles: 8, execute: { cpu in cpu.rrc(&cpu.registers.H) }),
         Instruction(asm: "RRC L", opcode: 0x0D, cycles: 8, execute: { cpu in cpu.rrc(&cpu.registers.L) }),
-        Instruction(asm: "RRC (HL)", opcode: 0x0E, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.rrc(&val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "RRC (HL)", opcode: 0x0E, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.rrc(&val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "RRC A", opcode: 0x0F, cycles: 8, execute: { cpu in cpu.rrc(&cpu.registers.A) }),
 
         Instruction(asm: "RL B", opcode: 0x10, cycles: 8, execute: { cpu in cpu.rl(&cpu.registers.B) }),
@@ -24,7 +24,7 @@ extension Instruction {
         Instruction(asm: "RL E", opcode: 0x13, cycles: 8, execute: { cpu in cpu.rl(&cpu.registers.E) }),
         Instruction(asm: "RL H", opcode: 0x14, cycles: 8, execute: { cpu in cpu.rl(&cpu.registers.H) }),
         Instruction(asm: "RL L", opcode: 0x15, cycles: 8, execute: { cpu in cpu.rl(&cpu.registers.L) }),
-        Instruction(asm: "RL (HL)", opcode: 0x16, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.rl(&val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "RL (HL)", opcode: 0x16, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.rl(&val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "RL A", opcode: 0x17, cycles: 8, execute: { cpu in cpu.rl(&cpu.registers.A) }),
 
         Instruction(asm: "RR B", opcode: 0x18, cycles: 8, execute: { cpu in cpu.rr(&cpu.registers.B) }),
@@ -33,7 +33,7 @@ extension Instruction {
         Instruction(asm: "RR E", opcode: 0x1B, cycles: 8, execute: { cpu in cpu.rr(&cpu.registers.E) }),
         Instruction(asm: "RR H", opcode: 0x1C, cycles: 8, execute: { cpu in cpu.rr(&cpu.registers.H) }),
         Instruction(asm: "RR L", opcode: 0x1D, cycles: 8, execute: { cpu in cpu.rr(&cpu.registers.L) }),
-        Instruction(asm: "RR (HL)", opcode: 0x1E, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.rr(&val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "RR (HL)", opcode: 0x1E, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.rr(&val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "RR A", opcode: 0x1F, cycles: 8, execute: { cpu in cpu.rr(&cpu.registers.A) }),
 
         Instruction(asm: "SLA B", opcode: 0x20, cycles: 8, execute: { cpu in cpu.sla(&cpu.registers.B) }),
@@ -42,7 +42,7 @@ extension Instruction {
         Instruction(asm: "SLA E", opcode: 0x23, cycles: 8, execute: { cpu in cpu.sla(&cpu.registers.E) }),
         Instruction(asm: "SLA H", opcode: 0x24, cycles: 8, execute: { cpu in cpu.sla(&cpu.registers.H) }),
         Instruction(asm: "SLA L", opcode: 0x25, cycles: 8, execute: { cpu in cpu.sla(&cpu.registers.L) }),
-        Instruction(asm: "SLA (HL)", opcode: 0x26, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.sla(&val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "SLA (HL)", opcode: 0x26, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.sla(&val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "SLA A", opcode: 0x27, cycles: 8, execute: { cpu in cpu.sla(&cpu.registers.A) }),
 
         Instruction(asm: "SRA B", opcode: 0x28, cycles: 8, execute: { cpu in cpu.sra(&cpu.registers.B) }),
@@ -51,7 +51,7 @@ extension Instruction {
         Instruction(asm: "SRA E", opcode: 0x2B, cycles: 8, execute: { cpu in cpu.sra(&cpu.registers.E) }),
         Instruction(asm: "SRA H", opcode: 0x2C, cycles: 8, execute: { cpu in cpu.sra(&cpu.registers.H) }),
         Instruction(asm: "SRA L", opcode: 0x2D, cycles: 8, execute: { cpu in cpu.sra(&cpu.registers.L) }),
-        Instruction(asm: "SRA (HL)", opcode: 0x2E, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.sra(&val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "SRA (HL)", opcode: 0x2E, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.sra(&val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "SRA A", opcode: 0x2F, cycles: 8, execute: { cpu in cpu.sra(&cpu.registers.A) }),
 
         Instruction(asm: "SWAP B", opcode: 0x30, cycles: 8, execute: { cpu in cpu.swap(&cpu.registers.B) }),
@@ -60,7 +60,7 @@ extension Instruction {
         Instruction(asm: "SWAP E", opcode: 0x33, cycles: 8, execute: { cpu in cpu.swap(&cpu.registers.E) }),
         Instruction(asm: "SWAP H", opcode: 0x34, cycles: 8, execute: { cpu in cpu.swap(&cpu.registers.H) }),
         Instruction(asm: "SWAP L", opcode: 0x35, cycles: 8, execute: { cpu in cpu.swap(&cpu.registers.L) }),
-        Instruction(asm: "SWAP (HL)", opcode: 0x36, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.swap(&val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "SWAP (HL)", opcode: 0x36, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.swap(&val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "SWAP A", opcode: 0x37, cycles: 8, execute: { cpu in cpu.swap(&cpu.registers.A) }),
 
         Instruction(asm: "SRL B", opcode: 0x38, cycles: 8, execute: { cpu in cpu.srl(&cpu.registers.B) }),
@@ -69,14 +69,14 @@ extension Instruction {
         Instruction(asm: "SRL E", opcode: 0x3B, cycles: 8, execute: { cpu in cpu.srl(&cpu.registers.E) }),
         Instruction(asm: "SRL H", opcode: 0x3C, cycles: 8, execute: { cpu in cpu.srl(&cpu.registers.H) }),
         Instruction(asm: "SRL L", opcode: 0x3D, cycles: 8, execute: { cpu in cpu.srl(&cpu.registers.L) }),
-        Instruction(asm: "SRL (HL)", opcode: 0x3E, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.srl(&val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "SRL (HL)", opcode: 0x3E, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.srl(&val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "BIT 0, B", opcode: 0x40, cycles: 8, execute: { cpu in cpu.bit(0, of: &cpu.registers.B) }),
         Instruction(asm: "BIT 0, C", opcode: 0x41, cycles: 8, execute: { cpu in cpu.bit(0, of: &cpu.registers.C) }),
         Instruction(asm: "BIT 0, D", opcode: 0x42, cycles: 8, execute: { cpu in cpu.bit(0, of: &cpu.registers.D) }),
         Instruction(asm: "BIT 0, E", opcode: 0x43, cycles: 8, execute: { cpu in cpu.bit(0, of: &cpu.registers.E) }),
         Instruction(asm: "BIT 0, H", opcode: 0x44, cycles: 8, execute: { cpu in cpu.bit(0, of: &cpu.registers.H) }),
         Instruction(asm: "BIT 0, L", opcode: 0x45, cycles: 8, execute: { cpu in cpu.bit(0, of: &cpu.registers.L) }),
-        Instruction(asm: "BIT 0, (HL)", opcode: 0x46, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.bit(0, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "BIT 0, (HL)", opcode: 0x46, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.bit(0, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "BIT 0, A", opcode: 0x47, cycles: 8, execute: { cpu in cpu.bit(0, of: &cpu.registers.A) }),
 
         Instruction(asm: "BIT 1, B", opcode: 0x48, cycles: 8, execute: { cpu in cpu.bit(1, of: &cpu.registers.B) }),
@@ -85,7 +85,7 @@ extension Instruction {
         Instruction(asm: "BIT 1, E", opcode: 0x4B, cycles: 8, execute: { cpu in cpu.bit(1, of: &cpu.registers.E) }),
         Instruction(asm: "BIT 1, H", opcode: 0x4C, cycles: 8, execute: { cpu in cpu.bit(1, of: &cpu.registers.H) }),
         Instruction(asm: "BIT 1, L", opcode: 0x4D, cycles: 8, execute: { cpu in cpu.bit(1, of: &cpu.registers.L) }),
-        Instruction(asm: "BIT 1, (HL)", opcode: 0x4E, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.bit(1, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "BIT 1, (HL)", opcode: 0x4E, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.bit(1, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "BIT 1, A", opcode: 0x4F, cycles: 8, execute: { cpu in cpu.bit(1, of: &cpu.registers.A) }),
 
         Instruction(asm: "BIT 2, B", opcode: 0x50, cycles: 8, execute: { cpu in cpu.bit(2, of: &cpu.registers.B) }),
@@ -94,7 +94,7 @@ extension Instruction {
         Instruction(asm: "BIT 2, E", opcode: 0x53, cycles: 8, execute: { cpu in cpu.bit(2, of: &cpu.registers.E) }),
         Instruction(asm: "BIT 2, H", opcode: 0x54, cycles: 8, execute: { cpu in cpu.bit(2, of: &cpu.registers.H) }),
         Instruction(asm: "BIT 2, L", opcode: 0x55, cycles: 8, execute: { cpu in cpu.bit(2, of: &cpu.registers.L) }),
-        Instruction(asm: "BIT 2, (HL)", opcode: 0x56, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.bit(2, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "BIT 2, (HL)", opcode: 0x56, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.bit(2, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "BIT 2, A", opcode: 0x57, cycles: 8, execute: { cpu in cpu.bit(2, of: &cpu.registers.A) }),
 
         Instruction(asm: "BIT 3, B", opcode: 0x58, cycles: 8, execute: { cpu in cpu.bit(3, of: &cpu.registers.B) }),
@@ -103,7 +103,7 @@ extension Instruction {
         Instruction(asm: "BIT 3, E", opcode: 0x5B, cycles: 8, execute: { cpu in cpu.bit(3, of: &cpu.registers.E) }),
         Instruction(asm: "BIT 3, H", opcode: 0x5C, cycles: 8, execute: { cpu in cpu.bit(3, of: &cpu.registers.H) }),
         Instruction(asm: "BIT 3, L", opcode: 0x5D, cycles: 8, execute: { cpu in cpu.bit(3, of: &cpu.registers.L) }),
-        Instruction(asm: "BIT 3, (HL)", opcode: 0x5E, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.bit(3, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "BIT 3, (HL)", opcode: 0x5E, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.bit(3, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "BIT 3, A", opcode: 0x5F, cycles: 8, execute: { cpu in cpu.bit(3, of: &cpu.registers.A) }),
 
         Instruction(asm: "BIT 4, B", opcode: 0x60, cycles: 8, execute: { cpu in cpu.bit(4, of: &cpu.registers.B) }),
@@ -112,7 +112,7 @@ extension Instruction {
         Instruction(asm: "BIT 4, E", opcode: 0x63, cycles: 8, execute: { cpu in cpu.bit(4, of: &cpu.registers.E) }),
         Instruction(asm: "BIT 4, H", opcode: 0x64, cycles: 8, execute: { cpu in cpu.bit(4, of: &cpu.registers.H) }),
         Instruction(asm: "BIT 4, L", opcode: 0x65, cycles: 8, execute: { cpu in cpu.bit(4, of: &cpu.registers.L) }),
-        Instruction(asm: "BIT 4, (HL)", opcode: 0x66, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.bit(4, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "BIT 4, (HL)", opcode: 0x66, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.bit(4, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "BIT 4, A", opcode: 0x67, cycles: 8, execute: { cpu in cpu.bit(4, of: &cpu.registers.A) }),
 
         Instruction(asm: "BIT 5, B", opcode: 0x68, cycles: 8, execute: { cpu in cpu.bit(5, of: &cpu.registers.B) }),
@@ -121,7 +121,7 @@ extension Instruction {
         Instruction(asm: "BIT 5, E", opcode: 0x6B, cycles: 8, execute: { cpu in cpu.bit(5, of: &cpu.registers.E) }),
         Instruction(asm: "BIT 5, H", opcode: 0x6C, cycles: 8, execute: { cpu in cpu.bit(5, of: &cpu.registers.H) }),
         Instruction(asm: "BIT 5, L", opcode: 0x6D, cycles: 8, execute: { cpu in cpu.bit(5, of: &cpu.registers.L) }),
-        Instruction(asm: "BIT 5, (HL)", opcode: 0x6E, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.bit(5, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "BIT 5, (HL)", opcode: 0x6E, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.bit(5, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "BIT 5, A", opcode: 0x6F, cycles: 8, execute: { cpu in cpu.bit(5, of: &cpu.registers.A) }),
 
         Instruction(asm: "BIT 6, B", opcode: 0x70, cycles: 8, execute: { cpu in cpu.bit(6, of: &cpu.registers.B) }),
@@ -130,7 +130,7 @@ extension Instruction {
         Instruction(asm: "BIT 6, E", opcode: 0x73, cycles: 8, execute: { cpu in cpu.bit(6, of: &cpu.registers.E) }),
         Instruction(asm: "BIT 6, H", opcode: 0x74, cycles: 8, execute: { cpu in cpu.bit(6, of: &cpu.registers.H) }),
         Instruction(asm: "BIT 6, L", opcode: 0x75, cycles: 8, execute: { cpu in cpu.bit(6, of: &cpu.registers.L) }),
-        Instruction(asm: "BIT 6, (HL)", opcode: 0x76, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.bit(6, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "BIT 6, (HL)", opcode: 0x76, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.bit(6, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "BIT 6, A", opcode: 0x77, cycles: 8, execute: { cpu in cpu.bit(6, of: &cpu.registers.A) }),
 
         Instruction(asm: "BIT 7, B", opcode: 0x78, cycles: 8, execute: { cpu in cpu.bit(7, of: &cpu.registers.B) }),
@@ -139,7 +139,7 @@ extension Instruction {
         Instruction(asm: "BIT 7, E", opcode: 0x7B, cycles: 8, execute: { cpu in cpu.bit(7, of: &cpu.registers.E) }),
         Instruction(asm: "BIT 7, H", opcode: 0x7C, cycles: 8, execute: { cpu in cpu.bit(7, of: &cpu.registers.H) }),
         Instruction(asm: "BIT 7, L", opcode: 0x7D, cycles: 8, execute: { cpu in cpu.bit(7, of: &cpu.registers.L) }),
-        Instruction(asm: "BIT 7, (HL)", opcode: 0x7E, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.bit(7, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "BIT 7, (HL)", opcode: 0x7E, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.bit(7, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "BIT 7, A", opcode: 0x7F, cycles: 8, execute: { cpu in cpu.bit(7, of: &cpu.registers.A) }),
 
         Instruction(asm: "RES 0, B", opcode: 0x80, cycles: 8, execute: { cpu in cpu.res(0, of: &cpu.registers.B) }),
@@ -148,7 +148,7 @@ extension Instruction {
         Instruction(asm: "RES 0, E", opcode: 0x83, cycles: 8, execute: { cpu in cpu.res(0, of: &cpu.registers.E) }),
         Instruction(asm: "RES 0, H", opcode: 0x84, cycles: 8, execute: { cpu in cpu.res(0, of: &cpu.registers.H) }),
         Instruction(asm: "RES 0, L", opcode: 0x85, cycles: 8, execute: { cpu in cpu.res(0, of: &cpu.registers.L) }),
-        Instruction(asm: "RES 0, (HL)", opcode: 0x86, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.res(0, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "RES 0, (HL)", opcode: 0x86, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.res(0, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "RES 0, A", opcode: 0x87, cycles: 8, execute: { cpu in cpu.res(0, of: &cpu.registers.A) }),
 
         Instruction(asm: "RES 1, B", opcode: 0x88, cycles: 8, execute: { cpu in cpu.res(1, of: &cpu.registers.B) }),
@@ -157,7 +157,7 @@ extension Instruction {
         Instruction(asm: "RES 1, E", opcode: 0x8B, cycles: 8, execute: { cpu in cpu.res(1, of: &cpu.registers.E) }),
         Instruction(asm: "RES 1, H", opcode: 0x8C, cycles: 8, execute: { cpu in cpu.res(1, of: &cpu.registers.H) }),
         Instruction(asm: "RES 1, L", opcode: 0x8D, cycles: 8, execute: { cpu in cpu.res(1, of: &cpu.registers.L) }),
-        Instruction(asm: "RES 1, (HL)", opcode: 0x8E, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.res(1, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "RES 1, (HL)", opcode: 0x8E, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.res(1, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "RES 1, A", opcode: 0x8F, cycles: 8, execute: { cpu in cpu.res(1, of: &cpu.registers.A) }),
 
         Instruction(asm: "RES 2, B", opcode: 0x90, cycles: 8, execute: { cpu in cpu.res(2, of: &cpu.registers.B) }),
@@ -166,7 +166,7 @@ extension Instruction {
         Instruction(asm: "RES 2, E", opcode: 0x93, cycles: 8, execute: { cpu in cpu.res(2, of: &cpu.registers.E) }),
         Instruction(asm: "RES 2, H", opcode: 0x94, cycles: 8, execute: { cpu in cpu.res(2, of: &cpu.registers.H) }),
         Instruction(asm: "RES 2, L", opcode: 0x95, cycles: 8, execute: { cpu in cpu.res(2, of: &cpu.registers.L) }),
-        Instruction(asm: "RES 2, (HL)", opcode: 0x96, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.res(2, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "RES 2, (HL)", opcode: 0x96, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.res(2, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "RES 2, A", opcode: 0x97, cycles: 8, execute: { cpu in cpu.res(2, of: &cpu.registers.A) }),
 
         Instruction(asm: "RES 3, B", opcode: 0x98, cycles: 8, execute: { cpu in cpu.res(3, of: &cpu.registers.B) }),
@@ -175,7 +175,7 @@ extension Instruction {
         Instruction(asm: "RES 3, E", opcode: 0x9B, cycles: 8, execute: { cpu in cpu.res(3, of: &cpu.registers.E) }),
         Instruction(asm: "RES 3, H", opcode: 0x9C, cycles: 8, execute: { cpu in cpu.res(3, of: &cpu.registers.H) }),
         Instruction(asm: "RES 3, L", opcode: 0x9D, cycles: 8, execute: { cpu in cpu.res(3, of: &cpu.registers.L) }),
-        Instruction(asm: "RES 3, (HL)", opcode: 0x9E, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.res(3, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "RES 3, (HL)", opcode: 0x9E, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.res(3, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "RES 3, A", opcode: 0x9F, cycles: 8, execute: { cpu in cpu.res(3, of: &cpu.registers.A) }),
 
         Instruction(asm: "RES 4, B", opcode: 0xA0, cycles: 8, execute: { cpu in cpu.res(4, of: &cpu.registers.B) }),
@@ -184,7 +184,7 @@ extension Instruction {
         Instruction(asm: "RES 4, E", opcode: 0xA3, cycles: 8, execute: { cpu in cpu.res(4, of: &cpu.registers.E) }),
         Instruction(asm: "RES 4, H", opcode: 0xA4, cycles: 8, execute: { cpu in cpu.res(4, of: &cpu.registers.H) }),
         Instruction(asm: "RES 4, L", opcode: 0xA5, cycles: 8, execute: { cpu in cpu.res(4, of: &cpu.registers.L) }),
-        Instruction(asm: "RES 4, (HL)", opcode: 0xA6, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.res(4, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "RES 4, (HL)", opcode: 0xA6, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.res(4, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "RES 4, A", opcode: 0xA7, cycles: 8, execute: { cpu in cpu.res(4, of: &cpu.registers.A) }),
 
         Instruction(asm: "RES 5, B", opcode: 0xA8, cycles: 8, execute: { cpu in cpu.res(5, of: &cpu.registers.B) }),
@@ -193,7 +193,7 @@ extension Instruction {
         Instruction(asm: "RES 5, E", opcode: 0xAB, cycles: 8, execute: { cpu in cpu.res(5, of: &cpu.registers.E) }),
         Instruction(asm: "RES 5, H", opcode: 0xAC, cycles: 8, execute: { cpu in cpu.res(5, of: &cpu.registers.H) }),
         Instruction(asm: "RES 5, L", opcode: 0xAD, cycles: 8, execute: { cpu in cpu.res(5, of: &cpu.registers.L) }),
-        Instruction(asm: "RES 5, (HL)", opcode: 0xAE, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.res(5, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "RES 5, (HL)", opcode: 0xAE, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.res(5, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "RES 5, A", opcode: 0xAF, cycles: 8, execute: { cpu in cpu.res(5, of: &cpu.registers.A) }),
 
         Instruction(asm: "RES 6, B", opcode: 0xB0, cycles: 8, execute: { cpu in cpu.res(6, of: &cpu.registers.B) }),
@@ -202,7 +202,7 @@ extension Instruction {
         Instruction(asm: "RES 6, E", opcode: 0xB3, cycles: 8, execute: { cpu in cpu.res(6, of: &cpu.registers.E) }),
         Instruction(asm: "RES 6, H", opcode: 0xB4, cycles: 8, execute: { cpu in cpu.res(6, of: &cpu.registers.H) }),
         Instruction(asm: "RES 6, L", opcode: 0xB5, cycles: 8, execute: { cpu in cpu.res(6, of: &cpu.registers.L) }),
-        Instruction(asm: "RES 6, (HL)", opcode: 0xB6, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.res(6, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "RES 6, (HL)", opcode: 0xB6, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.res(6, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "RES 6, A", opcode: 0xB7, cycles: 8, execute: { cpu in cpu.res(6, of: &cpu.registers.A) }),
 
         Instruction(asm: "RES 7, B", opcode: 0xB8, cycles: 8, execute: { cpu in cpu.res(7, of: &cpu.registers.B) }),
@@ -211,7 +211,7 @@ extension Instruction {
         Instruction(asm: "RES 7, E", opcode: 0xBB, cycles: 8, execute: { cpu in cpu.res(7, of: &cpu.registers.E) }),
         Instruction(asm: "RES 7, H", opcode: 0xBC, cycles: 8, execute: { cpu in cpu.res(7, of: &cpu.registers.H) }),
         Instruction(asm: "RES 7, L", opcode: 0xBD, cycles: 8, execute: { cpu in cpu.res(7, of: &cpu.registers.L) }),
-        Instruction(asm: "RES 7, (HL)", opcode: 0xBE, cycles: 16, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.res(7, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "RES 7, (HL)", opcode: 0xBE, cycles: 16, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.res(7, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "RES 7, A", opcode: 0xBF, cycles: 8, execute: { cpu in cpu.res(7, of: &cpu.registers.A) }),
 
         Instruction(asm: "SET 0, B", opcode: 0xC0, cycles: 8, execute: { cpu in cpu.set(0, of: &cpu.registers.B) }),
@@ -220,7 +220,7 @@ extension Instruction {
         Instruction(asm: "SET 0, E", opcode: 0xC3, cycles: 8, execute: { cpu in cpu.set(0, of: &cpu.registers.E) }),
         Instruction(asm: "SET 0, H", opcode: 0xC4, cycles: 8, execute: { cpu in cpu.set(0, of: &cpu.registers.H) }),
         Instruction(asm: "SET 0, L", opcode: 0xC5, cycles: 8, execute: { cpu in cpu.set(0, of: &cpu.registers.L) }),
-        Instruction(asm: "SET 0, (HL)", opcode: 0xC6, cycles: 12, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.set(0, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "SET 0, (HL)", opcode: 0xC6, cycles: 12, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.set(0, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "SET 0, A", opcode: 0xC7, cycles: 8, execute: { cpu in cpu.set(0, of: &cpu.registers.A) }),
 
         Instruction(asm: "SET 1, B", opcode: 0xC8, cycles: 8, execute: { cpu in cpu.set(1, of: &cpu.registers.B) }),
@@ -229,7 +229,7 @@ extension Instruction {
         Instruction(asm: "SET 1, E", opcode: 0xCB, cycles: 8, execute: { cpu in cpu.set(1, of: &cpu.registers.E) }),
         Instruction(asm: "SET 1, H", opcode: 0xCC, cycles: 8, execute: { cpu in cpu.set(1, of: &cpu.registers.H) }),
         Instruction(asm: "SET 1, L", opcode: 0xCD, cycles: 8, execute: { cpu in cpu.set(1, of: &cpu.registers.L) }),
-        Instruction(asm: "SET 1, (HL)", opcode: 0xCE, cycles: 12, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.set(1, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "SET 1, (HL)", opcode: 0xCE, cycles: 12, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.set(1, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "SET 1, A", opcode: 0xCF, cycles: 8, execute: { cpu in cpu.set(1, of: &cpu.registers.A) }),
 
         Instruction(asm: "SET 2, B", opcode: 0xD0, cycles: 8, execute: { cpu in cpu.set(2, of: &cpu.registers.B) }),
@@ -238,7 +238,7 @@ extension Instruction {
         Instruction(asm: "SET 2, E", opcode: 0xD3, cycles: 8, execute: { cpu in cpu.set(2, of: &cpu.registers.E) }),
         Instruction(asm: "SET 2, H", opcode: 0xD4, cycles: 8, execute: { cpu in cpu.set(2, of: &cpu.registers.H) }),
         Instruction(asm: "SET 2, L", opcode: 0xD5, cycles: 8, execute: { cpu in cpu.set(2, of: &cpu.registers.L) }),
-        Instruction(asm: "SET 2, (HL)", opcode: 0xD6, cycles: 12, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.set(2, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "SET 2, (HL)", opcode: 0xD6, cycles: 12, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.set(2, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "SET 2, A", opcode: 0xD7, cycles: 8, execute: { cpu in cpu.set(2, of: &cpu.registers.A) }),
 
         Instruction(asm: "SET 3, B", opcode: 0xD8, cycles: 8, execute: { cpu in cpu.set(3, of: &cpu.registers.B) }),
@@ -247,7 +247,7 @@ extension Instruction {
         Instruction(asm: "SET 3, E", opcode: 0xDB, cycles: 8, execute: { cpu in cpu.set(3, of: &cpu.registers.E) }),
         Instruction(asm: "SET 3, H", opcode: 0xDC, cycles: 8, execute: { cpu in cpu.set(3, of: &cpu.registers.H) }),
         Instruction(asm: "SET 3, L", opcode: 0xDD, cycles: 8, execute: { cpu in cpu.set(3, of: &cpu.registers.L) }),
-        Instruction(asm: "SET 3, (HL)", opcode: 0xDE, cycles: 12, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.set(3, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "SET 3, (HL)", opcode: 0xDE, cycles: 12, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.set(3, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "SET 3, A", opcode: 0xDF, cycles: 8, execute: { cpu in cpu.set(3, of: &cpu.registers.A) }),
 
         Instruction(asm: "SET 4, B", opcode: 0xE0, cycles: 8, execute: { cpu in cpu.set(4, of: &cpu.registers.B) }),
@@ -256,7 +256,7 @@ extension Instruction {
         Instruction(asm: "SET 4, E", opcode: 0xE3, cycles: 8, execute: { cpu in cpu.set(4, of: &cpu.registers.E) }),
         Instruction(asm: "SET 4, H", opcode: 0xE4, cycles: 8, execute: { cpu in cpu.set(4, of: &cpu.registers.H) }),
         Instruction(asm: "SET 4, L", opcode: 0xE5, cycles: 8, execute: { cpu in cpu.set(4, of: &cpu.registers.L) }),
-        Instruction(asm: "SET 4, (HL)", opcode: 0xE6, cycles: 12, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.set(4, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "SET 4, (HL)", opcode: 0xE6, cycles: 12, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.set(4, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "SET 4, A", opcode: 0xE7, cycles: 8, execute: { cpu in cpu.set(4, of: &cpu.registers.A) }),
 
         Instruction(asm: "SET 5, B", opcode: 0xE8, cycles: 8, execute: { cpu in cpu.set(5, of: &cpu.registers.B) }),
@@ -265,7 +265,7 @@ extension Instruction {
         Instruction(asm: "SET 5, E", opcode: 0xEB, cycles: 8, execute: { cpu in cpu.set(5, of: &cpu.registers.E) }),
         Instruction(asm: "SET 5, H", opcode: 0xEC, cycles: 8, execute: { cpu in cpu.set(5, of: &cpu.registers.H) }),
         Instruction(asm: "SET 5, L", opcode: 0xED, cycles: 8, execute: { cpu in cpu.set(5, of: &cpu.registers.L) }),
-        Instruction(asm: "SET 5, (HL)", opcode: 0xEE, cycles: 12, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.set(5, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "SET 5, (HL)", opcode: 0xEE, cycles: 12, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.set(5, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "SET 5, A", opcode: 0xEF, cycles: 8, execute: { cpu in cpu.set(5, of: &cpu.registers.A) }),
 
         Instruction(asm: "SET 6, B", opcode: 0xF0, cycles: 8, execute: { cpu in cpu.set(6, of: &cpu.registers.B) }),
@@ -274,7 +274,7 @@ extension Instruction {
         Instruction(asm: "SET 6, E", opcode: 0xF3, cycles: 8, execute: { cpu in cpu.set(6, of: &cpu.registers.E) }),
         Instruction(asm: "SET 6, H", opcode: 0xF4, cycles: 8, execute: { cpu in cpu.set(6, of: &cpu.registers.H) }),
         Instruction(asm: "SET 6, L", opcode: 0xF5, cycles: 8, execute: { cpu in cpu.set(6, of: &cpu.registers.L) }),
-        Instruction(asm: "SET 6, (HL)", opcode: 0xF6, cycles: 12, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.set(6, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "SET 6, (HL)", opcode: 0xF6, cycles: 12, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.set(6, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
         Instruction(asm: "SET 6, A", opcode: 0xF7, cycles: 8, execute: { cpu in cpu.set(6, of: &cpu.registers.A) }),
 
         Instruction(asm: "SET 7, B", opcode: 0xF8, cycles: 8, execute: { cpu in cpu.set(7, of: &cpu.registers.B) }),
@@ -283,6 +283,6 @@ extension Instruction {
         Instruction(asm: "SET 7, E", opcode: 0xFB, cycles: 8, execute: { cpu in cpu.set(7, of: &cpu.registers.E) }),
         Instruction(asm: "SET 7, H", opcode: 0xFC, cycles: 8, execute: { cpu in cpu.set(7, of: &cpu.registers.H) }),
         Instruction(asm: "SET 7, L", opcode: 0xFD, cycles: 8, execute: { cpu in cpu.set(7, of: &cpu.registers.L) }),
-        Instruction(asm: "SET 7, (HL)", opcode: 0xFE, cycles: 12, execute: { cpu in var val = cpu.ram.read(at: cpu.registers.HL); cpu.set(7, of: &val); cpu.ram.write(byte: val, at: cpu.registers.HL) }),
+        Instruction(asm: "SET 7, (HL)", opcode: 0xFE, cycles: 12, execute: { cpu in var val = cpu.read(at: cpu.registers.HL); cpu.set(7, of: &val); cpu.write(byte: val, at: cpu.registers.HL) }),
     ]
 }

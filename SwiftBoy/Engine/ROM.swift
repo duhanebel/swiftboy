@@ -1,20 +1,18 @@
 //
-//  RAM.swift
+//  ROM.swift
 //  SwiftBoy
 //
-//  Created by Fabio Gallonetto on 28/11/2020.
+//  Created by Fabio Gallonetto on 29/11/2020.
 //
 
 import Foundation
 
-class RAM: MemoryMappable {
-    private var rawmem: [UInt8]
-    
-    let size: Int
-    
-    init(size: Int) {
-        self.size = size
-        self.rawmem = Array<UInt8>(repeating: 0x0, count: size)
+
+class ROM: MemoryMappable {
+    var rawmem: [UInt8] = []
+     
+    func load(url: URL) throws {
+        rawmem = try Array<UInt8>(Data(contentsOf: url))
     }
     
     func read(at address: UInt16) -> UInt8 {
@@ -29,11 +27,11 @@ class RAM: MemoryMappable {
     }
     
     func write(byte: UInt8, at address: UInt16) {
-        rawmem[Int(address)] = byte
+        
     }
     
     func write(word: UInt16, at address: UInt16) {
-        rawmem[Int(address)] = word.lowerByte
-        rawmem[Int(address)+1] = word.upperByte
+        
     }
+    
 }

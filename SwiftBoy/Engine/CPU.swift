@@ -21,7 +21,7 @@ struct Registers {
     var HL: UInt16 = 0x0
     
     var SP: UInt16 = 0xFFFE
-    var PC: UInt16 = 0x100
+    var PC: UInt16 = 0x0 // 0x100
     
     var flag: UInt8 = 0x0
 
@@ -84,17 +84,17 @@ class CPU {
     var state: State = .running
     var interruptState: IntState = .enabled
     
-    let ram = RAM()
+    let mmu = MMU()
     var registers = Registers()
     var flags = Flags()
     var cycles = 0
     
     let instructionLookup: [UInt8:Instruction] = {
-        Instruction.allInstructions.reduce(into: [UInt8:Instruction]()) { table, item in table[item.opcode] = item }
+        return Instruction.allInstructions.reduce(into: [UInt8:Instruction]()) { table, item in table[item.opcode] = item }
     }()
     
     let instructionLookupExtended: [UInt8:Instruction] = {
-        Instruction.allExtInstructions.reduce(into: [UInt8:Instruction]()) { table, item in table[item.opcode] = item }
+        return Instruction.allExtInstructions.reduce(into: [UInt8:Instruction]()) { table, item in table[item.opcode] = item }
     }()
     
     func tic() {
@@ -110,13 +110,13 @@ class CPU {
     }
     
     func readPCAdvance() -> UInt8 {
-        let byte = ram.read(at: registers.PC)
+        let byte = mmu.read(at: registers.PC)
         registers.incrementPC()
         return byte
     }
     
     func readPCAdvanceWord() -> UInt16 {
-        let word = ram.readWord(at: registers.PC)
+        let word = mmu.readWord(at: registers.PC)
         registers.incrementPC(bytes: 2)
         return word
     }
@@ -141,25 +141,28 @@ class CPU {
         
         switch(ins.length) {
         case .single:
+            print(ins.asm)
             return { return ins.run(on: self) }
         case .double:
             let arg = readPCAdvance()
+            print("\(ins.asm) - \(String(format:"%02X", arg))")
             return { return ins.run(on: self, with: arg) }
         case .multi:
             let arg = readPCAdvanceWord()
+            print("\(ins.asm) - \(String(format:"%04X", arg))")
             return { return ins.run(on: self, with: arg) }
         }
     }
 
     func pop() -> UInt16 {
-        let value = ram.readWord(at: registers.SP)
+        let value = mmu.readWord(at: registers.SP)
         registers.SP += 2
         return value
     }
     
     func push(_ value: UInt16) {
         registers.SP -= 2
-        ram.write(word: value, at: registers.SP)
+        mmu.write(word: value, at: registers.SP)
     }
 }
 
@@ -215,4 +218,22 @@ extension CPU {
     }
 }
 
+// MARK: Address space
+extension CPU {
+    func read(at address: UInt16) -> UInt8 {
+        return mmu.read(at: address)
+    }
+    
+    func readWord(at address: UInt16) -> UInt16 {
+        return mmu.readWord(at: address)
+    }
+    
+    func write(byte: UInt8, at address: UInt16) {
+        mmu.write(byte: byte, at: address)
+    }
+    
+    func write(word: UInt16, at address: UInt16) {
+        mmu.write(word: word, at: address)
+    }
+}
 

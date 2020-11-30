@@ -7,58 +7,147 @@
 
 import Foundation
 
-//struct ROM: MemoryMappableR {}
-//
-//protocol MemoryMappableR {
-//    func read(at address: UInt16) -> UInt8
-//    func readWord(at address: UInt16) -> UInt16
-//}
-//protocol MemoryMappableW {
-//    func write(byte: UInt8, at address: UInt16)
-//    func write(word: UInt16, at address: UInt16)
-//}
-//protocol MemoryMappable: MemoryMappableR, MemoryMappableW {}
 
-//class MMU {
-//    let rom: MemoryMappable
-//    let ram: MemoryMappable
-//    let vram: MemoryMappable
-//    let sram: MemoryMappable
-//
-//    let io: MemoryMappable
-//    let ir: MemoryMappable
-//    
-//    func read(at address: UInt16) -> UInt8 {}
-//    func readWord(at address: UInt16) -> UInt16 {}
-//    func write(byte: UInt8, at address: UInt16) {}
-//    func write(word: UInt16, at address: UInt16) {}
-//    
-//    
-//    private func map(address: UInt16) -> MemoryMappable {
-//        switch(address) {
-//        case 0x0000..<0x4000:
-//            return rom
-//        case 0x4000..<0x8000:
-//            return rom
-//        case 0x8000..<0xA000:
-//            return vram
-////        case 0xA000..<0xC000:
-////            return ?
-//        case 0xC000..<0xE000:
-//            return ram
-//        case 0xE000..<0xFE00:
-//            return ram
-//        case 0xFE00..<0xFEA0:
-//            return sram
-////        case 0xFEA0..<0xFF00:
-////            return ?
-//        case 0xFF00..<0xFF4C:
-//            return io
-//        case 0xFF4C..<0xFFFF:
-//            return ram
-//        case 0xFFFF:
-//            return ir
-//            
-//        }
-//    }
-//}
+protocol MemoryMappableR {
+    func read(at address: UInt16) -> UInt8
+    func readWord(at address: UInt16) -> UInt16
+}
+protocol MemoryMappableW {
+    func write(byte: UInt8, at address: UInt16)
+    func write(word: UInt16, at address: UInt16)
+}
+protocol MemoryMappable: MemoryMappableR, MemoryMappableW {}
+
+struct InterruptRegister: MemoryMappableR {
+    func read(at address: UInt16) -> UInt8 {
+        return reg
+    }
+    
+    func readWord(at address: UInt16) -> UInt16 {
+        return UInt16(reg)
+    }
+    
+    private var reg: Byte
+    
+    var vBlankEnabled: Bool {
+        get { return reg[0].boolValue }
+        set { reg[0] = newValue.intValue }
+    }
+        
+    var LCDCEnabled: Bool {
+        get { return reg[1].boolValue }
+        set { reg[1] = newValue.intValue }
+    }
+    
+    var TimerOverflowEnabled: Bool {
+        get { return reg[2].boolValue }
+        set { reg[2] = newValue.intValue }
+    }
+    
+    var SerialIOTransferComplete: Bool {
+        get { return reg[3].boolValue }
+        set { reg[3] = newValue.intValue }
+    }
+    
+    var HiToLowJoypadTransition: Bool {
+        get { return reg[4].boolValue }
+        set { reg[4] = newValue.intValue }
+    }
+}
+
+/*
+ Memory layout:
+   Start | End  | Description                     | Notes
+   ------+------+---------------------------------+---------------------------------------------------------------
+    0000 | 3FFF | 16KB ROM bank 00                | From cartridge, usually a fixed bank
+    4000 | 7FFF | 16KB ROM Bank 01~NN             | From cartridge, switchable bank via MBC (if any)
+    8000 | 9FFF | 8KB Video RAM (VRAM)            | Only bank 0 in Non-CGB mode, switchable bank 0/1 in CGB mode
+    A000 | BFFF | 8KB External RAM                | In cartridge, switchable bank if any
+    C000 | CFFF | 4KB Work RAM (WRAM) bank 0      |
+    D000 | DFFF | 4KB Work RAM (WRAM) bank 1~N    | Only bank 1 in Non-CGB mode, switchable bank 1~7 in CGB mode
+    E000 | FDFF | Mirror of C000~DDFF (ECHO RAM)  | Typically not used
+    FE00 | FE9F | Sprite attribute table (OAM)    |
+    FEA0 | FEFF | Not Usable                      |
+    FF00 | FF7F | I/O Registers                   |
+    FF80 | FFFE | High RAM (HRAM)                 |
+    FFFF | FFFF | Interrupts Enable Register (IE) |
+ */
+
+class MMU {
+    struct MemoryRanges {
+        static let rom = UInt16(0x0000)..<UInt16(0x4000)
+        static let switchableRom = UInt16(0x4000)..<UInt16(0x8000)
+        static let vram = UInt16(0x8000)..<UInt16(0xA000)
+        static let extRam = UInt16(0xA000)..<UInt16(0xC000)
+        static let workRam = UInt16(0xC000)..<UInt16(0xE000)
+        static let workRamEcho = UInt16(0xE000)..<UInt16(0xFE00)
+        static let sram = UInt16(0xFE00)..<UInt16(0xFEA0)
+        static let unusable = UInt16(0xFEA0)..<UInt16(0xFF00)
+        static let io = UInt16(0xFF00)..<UInt16(0xFF80)
+        static let hram = UInt16(0xFF80)..<UInt16(0xFFFF)
+        static let InterruptRegister = UInt16(0xFFFF)...UInt16(0xFFFF)
+    }
+    
+    let rom: ROM = ROM()
+    let switchableRom: ROM
+    let ram: MemoryMappable = RAM(size: 0x2000)
+    let extRam: MemoryMappable = RAM(size: 0x2000)
+    let workRam: MemoryMappable = RAM(size: 0x2000)
+
+    let vram: MemoryMappable = RAM(size: 0x2000)
+    let sram: MemoryMappable = RAM(size: 0x2000)
+
+    let io: MemoryMappable = ROM()
+    let ir: MemoryMappable = ROM()
+    
+    init() {
+        self.switchableRom = rom
+    }
+    func read(at address: UInt16) -> UInt8 {
+        let (dest, localAddress) = map(address: address)
+        return dest.read(at: localAddress)
+    }
+    
+    func readWord(at address: UInt16) -> UInt16 {
+        let (dest, localAddress) = map(address: address)
+        return dest.readWord(at: localAddress)
+    }
+    
+    func write(byte: UInt8, at address: UInt16) {
+        let (dest, localAddress) = map(address: address)
+        dest.write(byte: byte, at: localAddress)
+    }
+    func write(word: UInt16, at address: UInt16) {
+        let (dest, localAddress) = map(address: address)
+        dest.write(word: word, at: localAddress)
+    }
+    
+    private func map(address: UInt16) -> (MemoryMappable, Word) {
+        switch(address) {
+        case MemoryRanges.rom:
+            return (rom, address)
+        case MemoryRanges.switchableRom:
+            return (switchableRom, address - MemoryRanges.switchableRom.upperBound)
+        case MemoryRanges.vram:
+            return (vram, address - MemoryRanges.vram.upperBound)
+        case MemoryRanges.extRam:
+            return (extRam, address - MemoryRanges.extRam.lowerBound)
+        case MemoryRanges.workRam:
+            return (workRam, address - MemoryRanges.workRam.lowerBound)
+        case MemoryRanges.workRamEcho: // wram mirror
+            return (workRam, address - MemoryRanges.workRamEcho.lowerBound)
+        case MemoryRanges.sram:
+            return (sram, address - MemoryRanges.sram.lowerBound)
+        case MemoryRanges.unusable:
+            return (rom, 0xffff)  // <------------------ fix as it's unusable
+        case MemoryRanges.io:
+            return (io, address - MemoryRanges.io.lowerBound)
+        case MemoryRanges.hram:
+            return (ram, address - MemoryRanges.hram.lowerBound)
+        case MemoryRanges.InterruptRegister:
+            return (ir, 0x0000)
+        default:
+            return (rom, 0x0000)
+        }
+    }
+}

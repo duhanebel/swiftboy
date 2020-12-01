@@ -30,6 +30,8 @@
 		B7FE88192574E48300695D33 /* UInt8+Bool.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7FE88182574E48300695D33 /* UInt8+Bool.swift */; };
 		B7FE881E2574EF2F00695D33 /* Joypad.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7FE881D2574EF2F00695D33 /* Joypad.swift */; };
 		B7FE88232574EF4A00695D33 /* MemoryTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7FE88222574EF4A00695D33 /* MemoryTypes.swift */; };
+		B7FE882F25752DAE00695D33 /* IO.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7FE882E25752DAE00695D33 /* IO.swift */; };
+		B7FE883925762B4000695D33 /* GPU.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7FE883825762B3F00695D33 /* GPU.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,6 +82,8 @@
 		B7FE88182574E48300695D33 /* UInt8+Bool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UInt8+Bool.swift"; sourceTree = "<group>"; };
 		B7FE881D2574EF2F00695D33 /* Joypad.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Joypad.swift; sourceTree = "<group>"; };
 		B7FE88222574EF4A00695D33 /* MemoryTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryTypes.swift; sourceTree = "<group>"; };
+		B7FE882E25752DAE00695D33 /* IO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IO.swift; sourceTree = "<group>"; };
+		B7FE883825762B3F00695D33 /* GPU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GPU.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -168,6 +172,8 @@
 				B7FE880C2573EC7A00695D33 /* ROM.swift */,
 				B733CF0C2572F4E90013E8D1 /* MMU.swift */,
 				B7FE881D2574EF2F00695D33 /* Joypad.swift */,
+				B7FE882E25752DAE00695D33 /* IO.swift */,
+				B7FE883825762B3F00695D33 /* GPU.swift */,
 			);
 			path = Engine;
 			sourceTree = "<group>";
@@ -198,6 +204,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = B733CEA1256EC3930013E8D1 /* Build configuration list for PBXNativeTarget "SwiftBoy" */;
 			buildPhases = (
+				B7FE884025764A4B00695D33 /* Generate ALU Instructions */,
 				B733CE72256EC3900013E8D1 /* Sources */,
 				B733CE73256EC3900013E8D1 /* Frameworks */,
 				B733CE74256EC3900013E8D1 /* Resources */,
@@ -316,6 +323,27 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		B7FE884025764A4B00695D33 /* Generate ALU Instructions */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Generate ALU Instructions";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nrm ${SRCROOT}/SwiftBoy/Engine/Instruction+Extended.swift\nruby ${SRCROOT}/Scripts/generate_ext_instruction_set.rb > ${SRCROOT}/SwiftBoy/Engine/Instruction+Extended.swift\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		B733CE72256EC3900013E8D1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -326,6 +354,8 @@
 				B733CEB7256ECFCF0013E8D1 /* UInt16+Bytes.swift in Sources */,
 				B7FE881E2574EF2F00695D33 /* Joypad.swift in Sources */,
 				B733CEDC257141000013E8D1 /* CPU.swift in Sources */,
+				B7FE882F25752DAE00695D33 /* IO.swift in Sources */,
+				B7FE883925762B4000695D33 /* GPU.swift in Sources */,
 				B7FE88192574E48300695D33 /* UInt8+Bool.swift in Sources */,
 				B733CEC425704F370013E8D1 /* UInt+Bits.swift in Sources */,
 				B733CE7C256EC3910013E8D1 /* GameViewController.swift in Sources */,

@@ -62,6 +62,7 @@ class Joypad: MemoryMappable {
     
     func write(byte: UInt8, at address: UInt16) {
         assert(address == 0x0, "Invalid address for a byte register")
+        reg = byte
         reg = registerForRequest(byte)
     }
     

@@ -30,10 +30,12 @@ extension UInt8 {
     
     var lowerNibble: Self {
         get { return self & 0x0F }
+        set { self = (self & 0xF0) | (newValue & 0x0F) }
     }
     
     var upperNibble: Self {
         get { return (self >> 4) }
+        set { self = (self & 0x0F) | ((newValue << 4) & 0xF0) }
     }
 }
 

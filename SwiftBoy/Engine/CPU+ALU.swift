@@ -8,199 +8,218 @@
 import Foundation
 
 extension CPU {
-    func rotateLeft(_ reg: inout UInt8, viaCarry: Bool = false) {
-        let bit7 = (reg >> 7)
+    func rotateLeft(_ reg: UInt8, viaCarry: Bool = false) -> UInt8 {
+        var res = reg << 1
+        res |= viaCarry ? registers.flags.C.intValue : reg[7]
         
-        reg <<= 1
-        reg |= viaCarry ? flags.C.intValue : bit7
+        registers.flags.C = reg[7] == 1
+        registers.flags.Z = (res == 0)
+        registers.flags.N = false
+        registers.flags.H = false
+        return res
+    }
+    
+    func rotateRight(_ reg: UInt8, viaCarry: Bool = false) -> UInt8 {
+        var res = reg >> 1
         
-        flags.C = (bit7 == 1)
-        flags.Z = (reg == 0)
-        flags.N = false
-        flags.H = false
-    }
-    
-    func rotateRight(_ reg: inout UInt8, viaCarry: Bool = false) {
-        let bit1 = reg & 0x01
-        reg >>= 1
+        res |= (viaCarry ? registers.flags.C.intValue : reg[1]) << 7
+        registers.flags.C = (reg[1] == 1)
         
-        reg |= (viaCarry ? flags.C.intValue : bit1) << 7
-        flags.C = (bit1 == 1)
+        registers.flags.Z = (res == 0)
+        registers.flags.N = false
+        registers.flags.H = false
         
-        flags.Z = (reg == 0)
-        flags.N = false
-        flags.H = false
+        return res
     }
     
-    func inc(_ reg: inout UInt8) {
-        flags.H = ((reg & 0xF) == 0xF)
-        reg &+= 1
-        flags.Z = (reg == 0)
-        flags.N = false
+    func inc(_ reg: UInt8) -> UInt8{
+        registers.flags.H = ((reg & 0xF) == 0xF)
+        let res = reg &+ 1
+        registers.flags.Z = (res == 0)
+        registers.flags.N = false
+        return res
     }
     
-    func inc(_ reg: inout UInt16) {
-        reg &+= 1
+    func inc(_ reg: UInt16) -> UInt16 {
+        let res = reg + 1
+        return res
     }
     
-    func dec(_ reg: inout UInt8) {
-        flags.H = ((reg & 0xF) == 0x0)
-        reg &-= 1
-        flags.Z = (reg == 0)
-        flags.N = true
+    func dec(_ reg: UInt8) -> UInt8 {
+        registers.flags.H = ((reg & 0xF) == 0x0)
+        let res = reg &- 1
+        registers.flags.Z = (res == 0)
+        registers.flags.N = true
+        return res
     }
     
-    func dec(_ reg: inout UInt16) {
-        reg &-= 1
+    func dec(_ reg: UInt16) -> UInt16 {
+        let res = reg &- 1
+        return res
     }
 
-    func add(_ reg: inout UInt8, value: UInt8) {
-        flags.H = ((reg & 0xF) + (value & 0xF) > 0xF)
-        (reg, flags.C) = reg.addingReportingOverflow(value)
-        flags.N = false
-        flags.Z = (reg == 0)
+    func add(_ reg: UInt8, value: UInt8) -> UInt8 {
+        var res: UInt8
+        registers.flags.H = ((reg & 0xF) + (value & 0xF) > 0xF)
+        (res, registers.flags.C) = reg.addingReportingOverflow(value)
+        registers.flags.N = false
+        registers.flags.Z = (res == 0)
+        return res
     }
 
-    func adc(_ reg: inout UInt8, value: UInt8) {
-        add(&reg, value: value)
-        let C = flags.C
-        add(&reg, value: flags.C.intValue)
-        if C == true { flags.C = C }
+    func adc(_ reg: UInt8, value: UInt8) -> UInt8 {
+        var res = add(reg, value: value)
+        let C = registers.flags.C
+        res = add(res, value: registers.flags.C.intValue)
+        if C == true { registers.flags.C = C }
+        return res
     }
     
-    func add(_ reg: inout UInt16, value: UInt16) {
-        flags.H = ((reg & 0xFF) + (value & 0xFF) > 0xFF)
-        flags.N = false
-        (reg, flags.C) = reg.addingReportingOverflow(value)
+    func add(_ reg: UInt16, value: UInt16) -> UInt16 {
+        var res = reg
+        registers.flags.H = ((reg & 0xFF) + (value & 0xFF) > 0xFF)
+        registers.flags.N = false
+        (res, registers.flags.C) = reg.addingReportingOverflow(value)
+        return res
     }
     
-    func sub(_ reg: inout UInt8, value: UInt8) {
-        flags.H = ((value & 0xF) > (reg & 0xF))
-        (reg, flags.C) = reg.subtractingReportingOverflow(value)
-        flags.N = true
+    func sub(_ reg: UInt8, value: UInt8) -> UInt8 {
+        var res = reg
+        registers.flags.H = ((value & 0xF) > (reg & 0xF))
+        (res, registers.flags.C) = reg.subtractingReportingOverflow(value)
+        registers.flags.N = true
+        return res
     }
     
-    func sbc(_ reg: inout UInt8, value: UInt8) {
-        sub(&reg, value: (value &- flags.C.intValue))
+    func sbc(_ reg: UInt8, value: UInt8) -> UInt8 {
+        sub(reg, value: (value &- registers.flags.C.intValue))
     }
     
-    func swap(_ val: UInt8) -> UInt8 {
-        var ret: UInt8 = val
-        swap(&ret)
-        return ret
+    func complement(_ reg: UInt8) -> UInt8 {
+        registers.flags.N = true
+        registers.flags.Z = true
+        registers.flags.C = false
+        return reg.complement
     }
     
-    func complement(_ reg: inout UInt8) {
-        reg = reg.complement
-        flags.N = true
-        flags.Z = true
-        flags.C = false
+    func and(_ reg: UInt8, value: UInt8) -> UInt8 {
+        let res = reg & value
+        registers.flags.Z = (res == 0)
+        registers.flags.N = false
+        registers.flags.H = true
+        registers.flags.C = false
+        return res
     }
     
-    func and(_ reg: inout UInt8, value: UInt8) {
-        reg &= value
-        flags.Z = (reg == 0)
-        flags.N = false
-        flags.H = true
-        flags.C = false
+    func xor(_ reg: UInt8, value: UInt8) -> UInt8 {
+        let res = reg ^ value
+        registers.flags.Z = (res == 0)
+        registers.flags.N = false
+        registers.flags.H = false
+        registers.flags.C = false
+        return res
     }
     
-    func xor(_ reg: inout UInt8, value: UInt8) {
-        reg ^= value
-        flags.Z = (reg == 0)
-        flags.N = false
-        flags.H = false
-        flags.C = false
-    }
-    
-    func or(_ reg: inout UInt8, value: UInt8) {
-        reg |= value
-        flags.Z = (reg == 0)
-        flags.N = false
-        flags.H = false
-        flags.C = false
+    func or(_ reg: UInt8, value: UInt8) -> UInt8 {
+        let res = reg | value
+        registers.flags.Z = (res == 0)
+        registers.flags.N = false
+        registers.flags.H = false
+        registers.flags.C = false
+        return res
     }
     
     func cmp(_ reg: UInt8, value: UInt8) {
-        var r = reg
-        sub(&r, value: value)
+        _ = sub(reg, value: value)
     }
     
     func daa() {
-        if registers.A.lowerNibble > 9 || flags.H {
+        if registers.A.lowerNibble > 9 || registers.flags.H {
             registers.A += 6
         }
-        if registers.A.upperNibble > 9 || flags.C {
+        if registers.A.upperNibble > 9 || registers.flags.C {
             registers.A += 60
         }
 //        if the lower 4 bits form a number greater than 9 or H is set, add $06 to the accumulator
 //        if the upper 4 bits form a number greater than 9 or C is set, add $60 to the accumulator
     }
     
-    func rlc(_ reg: inout UInt8) {
-        rotateLeft(&reg, viaCarry: false)
+    func rlc(_ reg:  UInt8) -> UInt8 {
+        rotateLeft(reg, viaCarry: false)
     }
 
-    func rrc(_ reg: inout UInt8) {
-        rotateRight(&reg, viaCarry: false)
+    func rrc(_ reg: UInt8) -> UInt8 {
+        rotateRight(reg, viaCarry: false)
     }
     
-    func rl(_ reg: inout UInt8) {
-        rotateLeft(&reg, viaCarry: true)
+    func rl(_ reg: UInt8) -> UInt8 {
+        rotateLeft(reg, viaCarry: true)
     }
     
-    func rr(_ reg: inout UInt8) {
-        rotateRight(&reg, viaCarry: true)
+    func rr(_ reg: UInt8) -> UInt8 {
+        rotateRight(reg, viaCarry: true)
     }
 
-    func sla(_ reg: inout UInt8) {
-        flags.C = (reg[7] == 1)
-        reg <<= 1
-        flags.Z = (reg == 0)
-        flags.N = false
-        flags.H = false
+    func sla(_ reg: UInt8) -> UInt8 {
+        registers.flags.C = (reg[7] == 1)
+        let res = reg << 1
+        registers.flags.Z = (res == 0)
+        registers.flags.N = false
+        registers.flags.H = false
+        return res
     }
 
-    func sra(_ reg: inout UInt8) {
-        flags.C = (reg[0] == 1)
-        reg >>= 1
-        reg[7] = reg[6]
-        flags.Z = (reg == 0)
-        flags.N = false
-        flags.H = false
+    func sra(_ reg: UInt8) -> UInt8 {
+        registers.flags.C = (reg[0] == 1)
+        var res = reg >> 1
+        res[7] = res[6]
+        registers.flags.Z = (res == 0)
+        registers.flags.N = false
+        registers.flags.H = false
+        
+        return res
     }
     
-    func swap(_ reg: inout UInt8) {
-        reg = ((reg >> 4) & 0x0F) | ((reg << 4) & 0xF0)
-        flags.Z = (reg == 0)
-        flags.N = false
-        flags.Z = false
-        flags.C = false
+    func swap(_ reg: UInt8) -> UInt8 {
+        let res = ((reg >> 4) & 0x0F) | ((reg << 4) & 0xF0)
+        registers.flags.Z = (res == 0)
+        registers.flags.N = false
+        registers.flags.Z = false
+        registers.flags.C = false
+        return res
     }
     
-    func srl(_ reg: inout UInt8) {
-        flags.C = (reg[0] == 1)
-        reg >>= 1
-        flags.Z = (reg == 0)
-        flags.N = false
-        flags.H = false
+    func srl(_ reg: UInt8) -> UInt8 {
+        registers.flags.C = (reg[0] == 1)
+        let res = reg >> 1
+        registers.flags.Z = (reg == 0)
+        registers.flags.N = false
+        registers.flags.H = false
+        return res
     }
     
-    func bit(_ index: Int, of reg: inout UInt8) {
+    func bit(_ index: Int, of reg: UInt8) {
         assert(index > 0 && index < 8, "Bit indexing out fo bounds")
-        flags.Z = reg[index] == 1
-        flags.N = false
-        flags.H = true
+        
+        registers.flags.Z = (reg[index] == 1)
+        registers.flags.N = false
+        registers.flags.H = true
     }
     
-    func res(_ index: Int, of reg: inout UInt8) {
+    func res(_ index: Int, of reg: UInt8) -> UInt8 {
         assert(index > 0 && index < 8, "Bit indexing out fo bounds")
-        reg[index] = 0
+        
+        var res = reg
+        res[index] = 0
+        return res
     }
 
-    func set(_ index: Int, of reg: inout UInt8) {
+    func set(_ index: Int, of reg: UInt8) -> UInt8 {
         assert(index > 0 && index < 8, "Bit indexing out fo bounds")
-        reg[index] = 1
+        
+        var res = reg
+        res[index] = 1
+        return res
     }
 
 }

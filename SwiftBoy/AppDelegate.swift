@@ -15,8 +15,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         let cpu = CPU()
         let bootURL = Bundle.main.url(forResource: "boot", withExtension: "gb")!
-        try! cpu.mmu.rom.load(url: bootURL)
-        for _ in 1...1000 {
+        try! cpu.mmu.biosROM?.load(url: bootURL)
+        cpu.mmu.rom.loadEmpty()
+        for _ in 1...25700 {
             cpu.tic()
         }
     }

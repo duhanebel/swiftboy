@@ -7,14 +7,19 @@
 
 import Foundation
 
+enum MemoryError: Error {
+    case readonly(UInt16)
+    case invalidAddress(UInt16)
+    case outOfBounds(UInt16, Range<UInt16>)
+}
 
 protocol MemoryMappableR {
-    func read(at address: UInt16) -> UInt8
-    func readWord(at address: UInt16) -> UInt16
+    func read(at address: UInt16) throws -> UInt8
+    func readWord(at address: UInt16) throws -> UInt16
 }
 protocol MemoryMappableW {
-    func write(byte: UInt8, at address: UInt16)
-    func write(word: UInt16, at address: UInt16)
+    func write(byte: UInt8, at address: UInt16) throws
+    func write(word: UInt16, at address: UInt16) throws
 }
 protocol MemoryMappable: MemoryMappableR, MemoryMappableW {}
 
@@ -75,6 +80,7 @@ struct InterruptRegister: MemoryMappableR {
 
 class MMU {
     struct MemoryRanges {
+        static let biosROM = UInt16(0x0000)..<UInt16(0x0100)
         static let rom = UInt16(0x0000)..<UInt16(0x4000)
         static let switchableRom = UInt16(0x4000)..<UInt16(0x8000)
         static let vram = UInt16(0x8000)..<UInt16(0xA000)
@@ -89,6 +95,7 @@ class MMU {
     }
     
     let rom: ROM = ROM()
+    var biosROM: ROM? = ROM()
     let switchableRom: ROM
     let ram: MemoryMappable = RAM(size: 0x2000)
     let extRam: MemoryMappable = RAM(size: 0x2000)
@@ -97,39 +104,47 @@ class MMU {
     let vram: MemoryMappable = RAM(size: 0x2000)
     let sram: MemoryMappable = RAM(size: 0x2000)
 
-    let io: MemoryMappable = ROM()
-    let ir: MemoryMappable = ROM()
+    let io: MemoryMappable = RAM(size: 0x2000)
+    let ir: MemoryMappable = RAM(size: 0x20)
     
     init() {
         self.switchableRom = rom
     }
-    func read(at address: UInt16) -> UInt8 {
-        let (dest, localAddress) = map(address: address)
-        return dest.read(at: localAddress)
+    func read(at address: UInt16) throws -> UInt8 {
+        let (dest, localAddress) = try map(address: address)
+        return try dest.read(at: localAddress)
     }
     
-    func readWord(at address: UInt16) -> UInt16 {
-        let (dest, localAddress) = map(address: address)
-        return dest.readWord(at: localAddress)
+    func readWord(at address: UInt16) throws -> UInt16 {
+        let (dest, localAddress) = try map(address: address)
+        return try dest.readWord(at: localAddress)
     }
     
-    func write(byte: UInt8, at address: UInt16) {
-        let (dest, localAddress) = map(address: address)
-        dest.write(byte: byte, at: localAddress)
+    func write(byte: UInt8, at address: UInt16) throws {
+        // Writing the value of 1 to the address 0xFF50 unmaps the boot ROM.
+        if(address ==  0xFF50 && byte == 1) {
+            biosROM = nil
+            return
+        }
+        let (dest, localAddress) = try map(address: address)
+        try dest.write(byte: byte, at: localAddress)
     }
-    func write(word: UInt16, at address: UInt16) {
-        let (dest, localAddress) = map(address: address)
-        dest.write(word: word, at: localAddress)
+    func write(word: UInt16, at address: UInt16) throws {
+        let (dest, localAddress) = try map(address: address)
+        try dest.write(word: word, at: localAddress)
     }
     
-    private func map(address: UInt16) -> (MemoryMappable, Word) {
+    private func map(address: UInt16) throws -> (MemoryMappable, Word) {
         switch(address) {
+        case MemoryRanges.biosROM:
+            guard let biosROM = biosROM else { fallthrough }
+            return (biosROM, address)
         case MemoryRanges.rom:
             return (rom, address)
         case MemoryRanges.switchableRom:
-            return (switchableRom, address - MemoryRanges.switchableRom.upperBound)
+            return (switchableRom, address - MemoryRanges.switchableRom.lowerBound)
         case MemoryRanges.vram:
-            return (vram, address - MemoryRanges.vram.upperBound)
+            return (vram, address - MemoryRanges.vram.lowerBound)
         case MemoryRanges.extRam:
             return (extRam, address - MemoryRanges.extRam.lowerBound)
         case MemoryRanges.workRam:
@@ -139,7 +154,7 @@ class MMU {
         case MemoryRanges.sram:
             return (sram, address - MemoryRanges.sram.lowerBound)
         case MemoryRanges.unusable:
-            return (rom, 0xffff)  // <------------------ fix as it's unusable
+            throw MemoryError.invalidAddress(address)
         case MemoryRanges.io:
             return (io, address - MemoryRanges.io.lowerBound)
         case MemoryRanges.hram:
@@ -147,7 +162,7 @@ class MMU {
         case MemoryRanges.InterruptRegister:
             return (ir, 0x0000)
         default:
-            return (rom, 0x0000)
+            throw MemoryError.invalidAddress(address)
         }
     }
 }

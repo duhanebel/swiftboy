@@ -104,6 +104,8 @@ struct Registers {
 typealias OpCode = UInt8
 
 class CPU {
+    static let clockSpeed = 4194304
+    
     enum State {
         case running
         case halt
@@ -120,8 +122,11 @@ class CPU {
     var state: State = .running
     var interruptState: IntState = .enabled
     
-    let mmu = MMU()
+    var mmu: MMU
     var registers = Registers()
+    
+    var intEnabled: InterruptRegister
+    var intRegister: InterruptRegister
     
     var cycles = 0
     
@@ -133,16 +138,78 @@ class CPU {
         return Instruction.allExtInstructions.reduce(into: [UInt8:Instruction]()) { table, item in table[item.opcode] = item }
     }()
     
-    func tic() {
+    init(mmu: MMU, intEnabled: InterruptRegister, intRegister: InterruptRegister) {
+        self.mmu = mmu
+        self.intEnabled = intEnabled
+        self.intRegister = intRegister
+    }
+    
+    func tic() -> Int {
+        let interruptTics = processInterrupts()
+        
+        switch(state){
+        case .running:
+            return (interruptTics > 0) ? interruptTics : fetchExecute()
+        case .halt:
+            fallthrough
+        case .stop:
+            return interruptTics
+        }
+    }
+    
+    private func fetchExecute() -> Int {
         let enableInterrupts = interruptState == .toEnable
         let disableInterrupts = interruptState == .toDisable
         
         let currentPC = registers.PC
         let rawOp = fetch()
-        guard let ins = decode(code: rawOp) else { return }
-        run(ins, for: currentPC)
+        guard let ins = decode(code: rawOp) else { return 0 }
+        let opCycles = run(ins, for: currentPC)
+        cycles += opCycles
         if enableInterrupts { interruptState = .enabled }
         else if disableInterrupts { interruptState = .disabled }
+        return cycles
+    }
+    
+    enum InterruptVectors: UInt16 {
+        case VBlank   = 0x0040
+        case LCDStat  = 0x0048
+        case timer    = 0x0050
+        case serial   = 0x0058
+        case joypad   = 0x0060
+    }
+    
+    private func processInterrupts() -> Int {
+        guard interruptState == .enabled else { return 0 }
+
+        var intVector: InterruptVectors? = nil
+        if intEnabled.VBlank && intRegister.VBlank {
+            intVector = .VBlank
+        }
+        if intEnabled.LCDStat && intEnabled.LCDStat {
+            intVector = .LCDStat
+        }
+        if intEnabled.timer && intEnabled.timer {
+            intVector = .timer
+        }
+        if intEnabled.serial && intEnabled.serial {
+            intVector = .serial
+        }
+        if intEnabled.joypad && intEnabled.joypad {
+            intVector = .joypad
+        }
+        
+        if let intVector = intVector {
+            disableIntAndJumpTo(vector: intVector)
+            return 12 // TODO: uh? are we sure it's 12?
+        }
+        return 0
+    }
+    
+    private func disableIntAndJumpTo(vector: InterruptVectors) {
+        self.interruptState = .disabled
+        push(registers.PC)
+        jump(to: vector.rawValue)
     }
     
     func readByteAdvance() -> UInt8 {
@@ -152,7 +219,7 @@ class CPU {
     }
     
     func readWordAdvance() -> UInt16 {
-        let val = try! mmu.readWord(at: registers.PC)
+        let val = readWord(at: registers.PC)
         registers.PC += 2
         return val
     }
@@ -186,23 +253,24 @@ class CPU {
         return ins
     }
     
-    func run(_ ins: Instruction, for currentPC: UInt16) {
-        cycles += ins.run(on: self)
+    func run(_ ins: Instruction, for currentPC: UInt16) -> Int {
+        let cycles = ins.run(on: self)
         print("\(String(format:"0x%04X", currentPC)): \(ins.disassembly)")
+        return cycles
     }
 }
 
 // MARK: Stack operations
 extension CPU {
     func pop() -> UInt16 {
-        let value = try! mmu.readWord(at: registers.SP)
+        let value = readWord(at: registers.SP)
         registers.SP += 2
         return value
     }
     
     func push(_ value: UInt16) {
         registers.SP -= 2
-        try! mmu.write(word: value, at: registers.SP)
+        write(word: value, at: registers.SP)
     }
 }
 
@@ -276,7 +344,10 @@ extension CPU {
     }
     
     func readWord(at address: UInt16) -> UInt16 {
-        return try! mmu.readWord(at: address)
+        var word: UInt16 = 0
+        word.lowerByte = try! mmu.read(at: address)
+        word.upperByte = try! mmu.read(at: address + 1)
+        return word
     }
     
     func write(byte: UInt8, at address: UInt16) {
@@ -284,7 +355,7 @@ extension CPU {
     }
     
     func write(word: UInt16, at address: UInt16) {
-        try! mmu.write(word: word, at: address)
+        try! mmu.write(byte: word.lowerByte, at: address)
+        try! mmu.write(byte: word.upperByte, at: address + 1)
     }
 }
-

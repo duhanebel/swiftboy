@@ -17,7 +17,7 @@ import Foundation
     Bit 2 - P12 in port
     Bit 1 - P11 in port
     Bit 0 - P10 in port
-  
+
           P14         P15
            |           |
   --P10----O-Right-----O-A-------
@@ -39,7 +39,8 @@ private extension Bool {
 }
 
 class Joypad: MemoryMappable {
-    private var reg: Byte = 0x0
+    // First two bit unimplemented, read as 1
+    private var reg: Byte = 0xC0
     
     private var leftPressed: Bool = false
     private var rightPressed: Bool = false
@@ -52,34 +53,32 @@ class Joypad: MemoryMappable {
     private var startPressed: Bool = false
     private var selectPressed: Bool = false
     
+    private(set) var intRegister: InterruptRegister
+    
+    init(intRegister: InterruptRegister) {
+        self.intRegister = intRegister
+    }
+    
     func read(at address: UInt16) -> UInt8 {
         return reg
     }
     
-    func readWord(at address: UInt16) -> UInt16 {
-        return UInt16(read(at: address))
-    }
-    
     func write(byte: UInt8, at address: UInt16) {
         assert(address == 0x0, "Invalid address for a byte register")
-        reg = byte
+        assert(address.lowerByte == 0x0, "First 4 bits are read only")
+        reg = byte | 0xC0 // first two bits not implemented, return 1
         reg = registerForRequest(byte)
     }
     
-    func write(word: UInt16, at address: UInt16) {
-        return write(byte: UInt8(word), at: address)
-    }
-    
     private func registerForRequest(_ request: Byte) -> Byte {
-        let directionKeys = 1 << 4
-        let actionKeys = 1 << 5
         var response = request
-        if request == directionKeys {
+        if request[4] == 1 {
             response[0] = rightPressed.toggled.intValue
             response[1] = leftPressed.toggled.intValue
             response[2] = upPressed.toggled.intValue
             response[3] = downPressed.toggled.intValue
-        } else if request == actionKeys {
+        }
+        if request[5] == 1 {
             response[0] = aPressed.toggled.intValue
             response[1] = bPressed.toggled.intValue
             response[2] = selectPressed.toggled.intValue
@@ -121,6 +120,7 @@ extension Joypad {
         case .select:
             selectPressed = true
         }
+        generateInterrupt()
     }
     
     func keyUp(key: Key) {
@@ -143,5 +143,10 @@ extension Joypad {
         case .select:
             selectPressed = false
         }
+        generateInterrupt() // TODO: does it generates an int on keyup?
+    }
+    
+    private func generateInterrupt() {
+        self.intRegister.joypad = true
     }
 }

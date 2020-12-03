@@ -21,10 +21,9 @@ extension CPU {
     
     func rotateRight(_ reg: UInt8, viaCarry: Bool = false) -> UInt8 {
         var res = reg >> 1
+        res |= (viaCarry ? registers.flags.C.intValue : reg[0]) << 7
         
-        res |= (viaCarry ? registers.flags.C.intValue : reg[1]) << 7
-        registers.flags.C = (reg[1] == 1)
-        
+        registers.flags.C = (reg[0] == 1)
         registers.flags.Z = (res == 0)
         registers.flags.N = false
         registers.flags.H = false

@@ -22,20 +22,8 @@ class RAM: MemoryMappable {
         return rawmem[Int(address)]
     }
     
-    func readWord(at address: UInt16) throws -> UInt16 {
-        var word: UInt16 = 0
-        word.lowerByte = try read(at: address)
-        word.upperByte = try read(at: address + 1)
-        return word
-    }
-    
     func write(byte: UInt8, at address: UInt16) throws {
         guard address < rawmem.count else { throw MemoryError.outOfBounds(address, 0x00..<UInt16(rawmem.count)) }
         rawmem[Int(address)] = byte
-    }
-    
-    func write(word: UInt16, at address: UInt16) throws {
-        try write(byte: word.lowerByte, at: address)
-        try write(byte: word.upperByte, at: address + 1)
     }
 }

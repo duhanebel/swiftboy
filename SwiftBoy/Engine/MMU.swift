@@ -15,50 +15,12 @@ enum MemoryError: Error {
 
 protocol MemoryMappableR {
     func read(at address: UInt16) throws -> UInt8
-    func readWord(at address: UInt16) throws -> UInt16
 }
 protocol MemoryMappableW {
     func write(byte: UInt8, at address: UInt16) throws
-    func write(word: UInt16, at address: UInt16) throws
 }
 protocol MemoryMappable: MemoryMappableR, MemoryMappableW {}
 
-struct InterruptRegister: MemoryMappableR {
-    func read(at address: UInt16) -> UInt8 {
-        return reg
-    }
-    
-    func readWord(at address: UInt16) -> UInt16 {
-        return UInt16(reg)
-    }
-    
-    private var reg: Byte
-    
-    var vBlankEnabled: Bool {
-        get { return reg[0].boolValue }
-        set { reg[0] = newValue.intValue }
-    }
-        
-    var LCDCEnabled: Bool {
-        get { return reg[1].boolValue }
-        set { reg[1] = newValue.intValue }
-    }
-    
-    var TimerOverflowEnabled: Bool {
-        get { return reg[2].boolValue }
-        set { reg[2] = newValue.intValue }
-    }
-    
-    var SerialIOTransferComplete: Bool {
-        get { return reg[3].boolValue }
-        set { reg[3] = newValue.intValue }
-    }
-    
-    var HiToLowJoypadTransition: Bool {
-        get { return reg[4].boolValue }
-        set { reg[4] = newValue.intValue }
-    }
-}
 
 /*
  Memory layout:
@@ -91,47 +53,49 @@ class MMU {
         static let unusable = UInt16(0xFEA0)..<UInt16(0xFF00)
         static let io = UInt16(0xFF00)..<UInt16(0xFF80)
         static let hram = UInt16(0xFF80)..<UInt16(0xFFFF)
-        static let InterruptRegister = UInt16(0xFFFF)...UInt16(0xFFFF)
     }
     
-    let rom: ROM = ROM()
-    var biosROM: ROM? = ROM()
-    let switchableRom: ROM
+    var rom: MemoryMappable! = ROM()
+    var biosROM: MemoryMappable?
+    var switchableRom: MemoryMappable! = ROM()
     let ram: MemoryMappable = RAM(size: 0x2000)
     let extRam: MemoryMappable = RAM(size: 0x2000)
-    let workRam: MemoryMappable = RAM(size: 0x2000)
 
-    let vram: MemoryMappable = RAM(size: 0x2000)
-    let sram: MemoryMappable = RAM(size: 0x2000)
+    let hram: MemoryMappable = RAM(size: 0x80)
 
-    let io: MemoryMappable = RAM(size: 0x2000)
-    let ir: MemoryMappable = RAM(size: 0x20)
+    let vram: MemoryMappable
+    let sram: MemoryMappable
+    let io: MemoryMappable
     
-    init() {
-        self.switchableRom = rom
+    init(rom: MemoryMappable?, biosROM: MemoryMappable?, switchableRom: MemoryMappable?,
+         vram: MemoryMappable, sram: MemoryMappable, io: MemoryMappable) {
+        
+        self.rom = rom
+        self.biosROM = biosROM
+        
+        if let switchableRom = switchableRom {
+            self.switchableRom = switchableRom
+        } else {
+            self.switchableRom = rom
+        }
+
+        self.vram = vram
+        self.sram = sram
+        self.io = io
     }
+    
     func read(at address: UInt16) throws -> UInt8 {
         let (dest, localAddress) = try map(address: address)
         return try dest.read(at: localAddress)
     }
     
-    func readWord(at address: UInt16) throws -> UInt16 {
-        let (dest, localAddress) = try map(address: address)
-        return try dest.readWord(at: localAddress)
-    }
-    
     func write(byte: UInt8, at address: UInt16) throws {
         // Writing the value of 1 to the address 0xFF50 unmaps the boot ROM.
-        if(address ==  0xFF50 && byte == 1) {
+        if(address ==  IO.MemoryLocations.bootROMRegister && byte == 1) {
             biosROM = nil
-            return
         }
         let (dest, localAddress) = try map(address: address)
         try dest.write(byte: byte, at: localAddress)
-    }
-    func write(word: UInt16, at address: UInt16) throws {
-        let (dest, localAddress) = try map(address: address)
-        try dest.write(word: word, at: localAddress)
     }
     
     private func map(address: UInt16) throws -> (MemoryMappable, Word) {
@@ -148,9 +112,9 @@ class MMU {
         case MemoryRanges.extRam:
             return (extRam, address - MemoryRanges.extRam.lowerBound)
         case MemoryRanges.workRam:
-            return (workRam, address - MemoryRanges.workRam.lowerBound)
-        case MemoryRanges.workRamEcho: // wram mirror
-            return (workRam, address - MemoryRanges.workRamEcho.lowerBound)
+            return (ram, address - MemoryRanges.workRam.lowerBound)
+        case MemoryRanges.workRamEcho: // ram mirror
+            return (ram, address - MemoryRanges.workRamEcho.lowerBound)
         case MemoryRanges.sram:
             return (sram, address - MemoryRanges.sram.lowerBound)
         case MemoryRanges.unusable:
@@ -159,8 +123,6 @@ class MMU {
             return (io, address - MemoryRanges.io.lowerBound)
         case MemoryRanges.hram:
             return (ram, address - MemoryRanges.hram.lowerBound)
-        case MemoryRanges.InterruptRegister:
-            return (ir, 0x0000)
         default:
             throw MemoryError.invalidAddress(address)
         }

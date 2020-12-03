@@ -20,15 +20,54 @@ import Foundation
    FF07 | TAC  | RW | Timer control (start/stop + clock select)
     ..  | Unused
    FF0F | IF   | RW | Interrupt flag
-   FF10 | Audio
-    ..  | Audio
-   FF3F | Audio
-   FF41 | Video
-    ..  | Video
-   FF4B | Video
+   FF10 |      |    | \
+    ..  |      |    |  |-- Audio
+   FF3F |      |    | /
+   FF40 |      |    | \
+    ..  |      |    |  |-- Video
+   FF4B |      |    | /
+   FF50 | BOOT | -- | BootROM toggle register (write 1 to unload the bootROM)
+     .. | Unused
    FFFF | IE   | RW | Interrupt enable
    XXXX | IME  | -- | Interrupt master enable
  */
+
+class InterruptRegister: MemoryMappable {
+    private var rawmem: UInt8 = 0x00
+    
+    var VBlank: Bool {
+        get { return rawmem[0].boolValue }
+        set { rawmem[0] = newValue.intValue }
+    }
+    
+    var LCDStat: Bool {
+        get { return rawmem[0].boolValue }
+        set { rawmem[0] = newValue.intValue }
+    }
+    
+    var timer: Bool {
+        get { return rawmem[0].boolValue }
+        set { rawmem[0] = newValue.intValue }
+    }
+    
+    var serial: Bool {
+        get { return rawmem[0].boolValue }
+        set { rawmem[0] = newValue.intValue }
+    }
+    
+    var joypad: Bool {
+        get { return rawmem[0].boolValue }
+        set { rawmem[0] = newValue.intValue }
+    }
+    
+    func read(at address: UInt16) throws -> UInt8 {
+        return rawmem
+    }
+    
+    func write(byte: UInt8, at address: UInt16) throws {
+        rawmem = byte
+    }
+}
 
 class IO: MemoryMappable {
     struct MemoryLocations {
@@ -39,6 +78,7 @@ class IO: MemoryMappable {
         static let interruptFlag = UInt16(0xFF0F)
         static let audio = UInt16(0xFF10)...UInt16(0xFF3F)
         static let video = UInt16(0xFF41)...UInt16(0xFF4B)
+        static let bootROMRegister: UInt16 = 0xFF50
         static let interruptEnabled = UInt16(0xFFFF)
     }
     
@@ -49,6 +89,7 @@ class IO: MemoryMappable {
     var interruptFlag: MemoryMappable
     var audio: MemoryMappable
     var video: MemoryMappable
+    let bootROMRegister: MemoryMappable
     var interruptEnabled: MemoryMappable
     
     init(joypad: MemoryMappable, serial: MemoryMappable, divider: MemoryMappable, timer: MemoryMappable,
@@ -60,6 +101,11 @@ class IO: MemoryMappable {
         self.interruptFlag = interruptFlag
         self.audio = audio
         self.video = video
+        // bit 7-1 Unimplemented: Read as 1
+        // bit 0 BOOT_OFF: Boot ROM lock bit
+        self.bootROMRegister = RAM(size: 1)
+        try! self.bootROMRegister.write(byte: 0xFE, at: 0x0)
+        
         self.interruptEnabled = interruptEnabled
     }
     
@@ -79,6 +125,8 @@ class IO: MemoryMappable {
             return (audio, address - MemoryLocations.audio.lowerBound)
         case MemoryLocations.video:
             return (video, address - MemoryLocations.video.lowerBound)
+        case MemoryLocations.bootROMRegister:
+            return (bootROMRegister, 0x00)
         case MemoryLocations.interruptEnabled:
             return (interruptEnabled, address - MemoryLocations.interruptEnabled)
         default:
@@ -91,17 +139,8 @@ class IO: MemoryMappable {
         return try dest.read(at: localAddress)
     }
     
-    func readWord(at address: UInt16) throws -> UInt16 {
-        let (dest, localAddress) = try map(address: address)
-        return try dest.readWord(at: localAddress)
-    }
-    
     func write(byte: UInt8, at address: UInt16) throws {
         let (dest, localAddress) = try map(address: address)
         try dest.write(byte: byte, at: localAddress)
-    }
-    func write(word: UInt16, at address: UInt16) throws {
-        let (dest, localAddress) = try map(address: address)
-        try dest.write(word: word, at: localAddress)
     }
 }

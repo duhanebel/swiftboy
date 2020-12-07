@@ -122,13 +122,19 @@ class CPU {
     var state: State = .running
     var interruptState: IntState = .enabled
     
-    var mmu: MMU
+    var mmu: MemoryMappable
     var registers = Registers()
     
     var intEnabled: InterruptRegister
     var intRegister: InterruptRegister
     
     var cycles = 0
+    
+    var fastBoot: Bool = false {
+        didSet {
+            registers.PC = fastBoot ? 0x0100 : 0x0000
+        }
+    }
     
     let instructionLookup: [UInt8:Instruction] = {
         return Instruction.allInstructions.reduce(into: [UInt8:Instruction]()) { table, item in table[item.opcode] = item }
@@ -138,7 +144,7 @@ class CPU {
         return Instruction.allExtInstructions.reduce(into: [UInt8:Instruction]()) { table, item in table[item.opcode] = item }
     }()
     
-    init(mmu: MMU, intEnabled: InterruptRegister, intRegister: InterruptRegister) {
+    init(mmu: MemoryMappable, intEnabled: InterruptRegister, intRegister: InterruptRegister) {
         self.mmu = mmu
         self.intEnabled = intEnabled
         self.intRegister = intRegister
@@ -168,7 +174,7 @@ class CPU {
         cycles += opCycles
         if enableInterrupts { interruptState = .enabled }
         else if disableInterrupts { interruptState = .disabled }
-        return cycles
+        return opCycles
     }
     
     enum InterruptVectors: UInt16 {
@@ -255,8 +261,25 @@ class CPU {
     
     func run(_ ins: Instruction, for currentPC: UInt16) -> Int {
         let cycles = ins.run(on: self)
+#if DEBUG
         print("\(String(format:"0x%04X", currentPC)): \(ins.disassembly)")
+#endif
         return cycles
+    }
+    
+    func dumpRam(from: UInt16, to: UInt16) {
+        var acc = 0
+        for i in from..<to {
+            if acc == 0 {
+                print(String(format:"%04X", i), terminator:": ")
+            }
+            print(String(format:"%02X", try! mmu.read(at: i)), terminator:"")
+            acc += 1
+            if acc >= 16 {
+                acc = 0
+                print("\n", terminator: "")
+            }
+        }
     }
 }
 

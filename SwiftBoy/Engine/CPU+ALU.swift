@@ -10,9 +10,9 @@ import Foundation
 extension CPU {
     func rotateLeft(_ reg: UInt8, viaCarry: Bool = false) -> UInt8 {
         var res = reg << 1
-        res |= viaCarry ? registers.flags.C.intValue : reg[7]
+        res[0] = viaCarry ? registers.flags.C.intValue : reg[7]
         
-        registers.flags.C = reg[7] == 1
+        registers.flags.C = reg[7].boolValue
         registers.flags.Z = (res == 0)
         registers.flags.N = false
         registers.flags.H = false
@@ -21,9 +21,9 @@ extension CPU {
     
     func rotateRight(_ reg: UInt8, viaCarry: Bool = false) -> UInt8 {
         var res = reg >> 1
-        res |= (viaCarry ? registers.flags.C.intValue : reg[0]) << 7
+        res[7] = viaCarry ? registers.flags.C.intValue : reg[0]
         
-        registers.flags.C = (reg[0] == 1)
+        registers.flags.C = reg[0].boolValue
         registers.flags.Z = (res == 0)
         registers.flags.N = false
         registers.flags.H = false
@@ -81,12 +81,19 @@ extension CPU {
         (res, registers.flags.C) = reg.addingReportingOverflow(value)
         return res
     }
-    
+   
+    /*
+     After comparing with Intel 8080 and Zilog 80, we find that decriptions of effect to Carry Flag and Half Carry are completely wrong.
+     The correct version should be:
+     Half Carry - Set if borrow from bit 4, which means it will NOT overflow to bit 4
+     Carry - Set if borrow form bit 8, which means it will NOT overflow to bit 8
+     */
     func sub(_ reg: UInt8, value: UInt8) -> UInt8 {
         var res = reg
         registers.flags.H = ((value & 0xF) > (reg & 0xF))
         (res, registers.flags.C) = reg.subtractingReportingOverflow(value)
         registers.flags.N = true
+        registers.flags.Z = (res == 0)
         return res
     }
     
@@ -160,8 +167,8 @@ extension CPU {
     }
 
     func sla(_ reg: UInt8) -> UInt8 {
-        registers.flags.C = (reg[7] == 1)
         let res = reg << 1
+        registers.flags.C = reg[7].boolValue
         registers.flags.Z = (res == 0)
         registers.flags.N = false
         registers.flags.H = false
@@ -169,9 +176,9 @@ extension CPU {
     }
 
     func sra(_ reg: UInt8) -> UInt8 {
-        registers.flags.C = (reg[0] == 1)
         var res = reg >> 1
-        res[7] = res[6]
+        res[7] = reg[7]
+        registers.flags.C = reg[0].boolValue
         registers.flags.Z = (res == 0)
         registers.flags.N = false
         registers.flags.H = false
@@ -189,9 +196,9 @@ extension CPU {
     }
     
     func srl(_ reg: UInt8) -> UInt8 {
-        registers.flags.C = (reg[0] == 1)
         let res = reg >> 1
-        registers.flags.Z = (reg == 0)
+        registers.flags.C = reg[0].boolValue
+        registers.flags.Z = (res == 0)
         registers.flags.N = false
         registers.flags.H = false
         return res

@@ -9,6 +9,15 @@ import Foundation
 
 protocol Actor {
     func compute(for tics: Int)
+    func tic()
+}
+
+extension Actor {
+    func compute(for tics: Int) {
+        for _ in 0..<tics {
+            tic()
+        }
+    }
 }
 
 protocol InterruptGenerator {
@@ -32,9 +41,15 @@ class Divider: Actor, MemoryMappable {
         self.cyclesPerTic = CPUSpeed / Divider.speed
     }
 
-    func compute(for tics: Int) {
-        self.tics += tics
-        rawdata &+= UInt8(tics / cyclesPerTic)
+//    func compute(for tics: Int) {
+//        self.tics += tics
+//        rawdata &+= UInt8(truncatingIfNeeded: (tics / cyclesPerTic))
+//        self.tics = tics % cyclesPerTic
+//    }
+    
+    func tic() {
+        self.tics += 1
+        rawdata &+= UInt8(truncatingIfNeeded: (tics / cyclesPerTic))
         self.tics = tics % cyclesPerTic
     }
     
@@ -113,9 +128,27 @@ class Counter: Actor, MemoryMappable {
     // at a rate specified by the Timer Control (TAC).  When the Timer Counter gets to 0xFF
     // and is incremented, it effectively overflows, and when this happens, it gets loaded with
     // the value held at the Timer Modulo (TMA).
-    func compute(for tics: Int) {
-        self.tics += tics
-        let counterDelta = tics / cyclesPerTic
+//    func compute(for tics: Int) {
+//        guard running else { return }
+//        self.tics += tics
+//        let counterDelta = self.tics / cyclesPerTic
+//        let overflow = (Int(counterData) + counterDelta) / 0xFFFF
+//        counterData &+= UInt8(tics / counterDelta)
+//
+//        for _ in 0..<overflow {
+//            generateInterrupt()
+//            counterData = moduloData
+//        }
+//
+//        self.tics = self.tics % cyclesPerTic
+//
+//        // TODO: should check for overflow again here for completeness??
+//    }
+    
+    func tic() {
+        guard running else { return }
+        self.tics += 1
+        let counterDelta = self.tics / cyclesPerTic
         let overflow = (Int(counterData) + counterDelta) / 0xFFFF
         counterData &+= UInt8(tics / counterDelta)
 
@@ -124,7 +157,7 @@ class Counter: Actor, MemoryMappable {
             counterData = moduloData
         }
         
-        self.tics = tics % cyclesPerTic
+        self.tics = self.tics % cyclesPerTic
         
         // TODO: should check for overflow again here for completeness??
     }
@@ -169,7 +202,7 @@ class Audio: Actor, MemoryMappable {
     func write(byte: UInt8, at address: UInt16) throws {
     }
     
-    func compute(for tics: Int) {
+    func tic() {
         
     }
 }
@@ -191,11 +224,11 @@ class Device {
     
     let queue: DispatchQueue = DispatchQueue(label: "com.swiftboy.compute")
     
-    static func gameBoy(biosROM: ROM?) -> Device {
+    static func gameBoy(biosROM: ROM?, rom: ROM, screen: Screen) -> Device {
         let intRegister = InterruptRegister()
-        let intEnabledRegister = InterruptRegister()
+        let intEnabledRegister = InterruptRegister(initialValue: 0xE0)
         
-        let ppu = PPU(screen: Screen())
+        let ppu = PPU(screen: screen, interruptRegister: intRegister)
         
         let joypad = Joypad(intRegister: intRegister)
         let divider = Divider(CPUSpeed: CPU.clockSpeed)
@@ -212,9 +245,9 @@ class Device {
                     video: ppu.registers,
                     interruptEnabled: intEnabledRegister)
         
-        let mmu = MMU(rom: nil,
+        let mmu = MMU(rom: rom,
                       biosROM: biosROM,
-                      switchableRom: nil,
+                      switchableRom: rom,
                       vram: ppu.vram,
                       sram: ppu.sram,
                       io: io)
@@ -240,6 +273,13 @@ class Device {
         self.audio = audio
     }
     
+    var fastBoot: Bool = false {
+        didSet {
+            cpu.fastBoot = fastBoot
+            mmu.biosROM = nil
+        }
+    }
+    
     func run() {
         running = true
         queue.async { self.compute() }
@@ -247,11 +287,13 @@ class Device {
     
     private func compute(at startTime: DispatchTime = DispatchTime.now()) {
         let cycles = cpu.tic()
-        timer.compute(for: cycles)
-        divider.compute(for: cycles)
-        ppu.compute(for: cycles)
-        audio.compute(for: cycles)
-        
+        for _ in 0..<cycles {
+            timer.tic()
+            divider.tic()
+            ppu.tic()
+            audio.tic()
+        }
+
         if running {
             let nextCycleDeadline = adjustRuntimeAfter(cycles: cycles, since: startTime)
             queue.asyncAfter(deadline: nextCycleDeadline, execute: { self.compute(at: nextCycleDeadline) })
@@ -259,8 +301,8 @@ class Device {
     }
     
     private func adjustRuntimeAfter(cycles: Int, since: DispatchTime) -> DispatchTime {
-        let cpuExpecteRunTimeInterval = (Double(cycles) / Double(CPU.clockSpeed))
-        let expectedCPURunTime = since + cpuExpecteRunTimeInterval
+        let cpuExpectedRunTimeInterval = (Double(cycles) / Double(CPU.clockSpeed))
+        let expectedCPURunTime = since + cpuExpectedRunTimeInterval
         
         let elapsedTime = since.distance(to: DispatchTime.now())
         return expectedCPURunTime - elapsedTime

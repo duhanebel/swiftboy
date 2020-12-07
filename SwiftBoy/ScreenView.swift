@@ -77,7 +77,7 @@
 import Cocoa
 import GLUT
 
-class ScreenView: NSOpenGLView {
+class ScreenView: NSOpenGLView, Screen {
 
   let screenWidth = 160
   let screenHeight = 144
@@ -96,17 +96,17 @@ class ScreenView: NSOpenGLView {
     super.init(coder: aDecoder)
     
     
-    timer = Timer.scheduledTimer(withTimeInterval: 1/60, repeats: true) { _ in
-
-        if(self.index > 4) { self.buffer[self.index-4] = 0}
-        self.buffer[self.index] = 255
-        self.buffer[self.index+1] = 255
-        self.buffer[self.index+2] = 255
-        self.buffer[self.index+3] = 255
-        self.index += 1
-        if self.index >= self.textureData.count-4 { self.index = 0 }
-        self.copyBuffer(self.buffer)
-    }
+//    timer = Timer.scheduledTimer(withTimeInterval: 1/60, repeats: true) { _ in
+//
+//        if(self.index > 4) { self.buffer[self.index-4] = 0}
+//        self.buffer[self.index] = 255
+//        self.buffer[self.index+1] = 255
+//        self.buffer[self.index+2] = 255
+//        self.buffer[self.index+3] = 255
+//        self.index += 1
+//        if self.index >= self.textureData.count-4 { self.index = 0 }
+//        self.copyBuffer(self.buffer)
+//    }
   }
   
   override var needsPanelToBecomeKey: Bool{
@@ -162,7 +162,10 @@ class ScreenView: NSOpenGLView {
     
         for j in 0 ..< self.screenHeight {
           for i in 0 ..< self.screenWidth {
-            let hue = 255 - screenBuffer[j*self.screenWidth+i]
+            let reverseY = j //(self.screenHeight - 1) - j
+            let reverseX = i // (self.screenWidth - 1) - i
+            let hue = 255 - screenBuffer[reverseY * self.screenWidth + reverseX]
+            
             self.textureData[(j*Int(self.texSize)+i)*4] = GLubyte(hue)
             self.textureData[(j*Int(self.texSize)+i)*4+1] = GLubyte(hue)
             self.textureData[(j*Int(self.texSize)+i)*4+2] = GLubyte(hue)

@@ -33,7 +33,7 @@ import Foundation
  */
 
 class InterruptRegister: MemoryMappable {
-    private var rawmem: UInt8 = 0x00
+    private var rawmem: UInt8
     
     var VBlank: Bool {
         get { return rawmem[0].boolValue }
@@ -41,23 +41,23 @@ class InterruptRegister: MemoryMappable {
     }
     
     var LCDStat: Bool {
-        get { return rawmem[0].boolValue }
-        set { rawmem[0] = newValue.intValue }
+        get { return rawmem[1].boolValue }
+        set { rawmem[1] = newValue.intValue }
     }
     
     var timer: Bool {
-        get { return rawmem[0].boolValue }
-        set { rawmem[0] = newValue.intValue }
+        get { return rawmem[2].boolValue }
+        set { rawmem[2] = newValue.intValue }
     }
     
     var serial: Bool {
-        get { return rawmem[0].boolValue }
-        set { rawmem[0] = newValue.intValue }
+        get { return rawmem[3].boolValue }
+        set { rawmem[3] = newValue.intValue }
     }
     
     var joypad: Bool {
-        get { return rawmem[0].boolValue }
-        set { rawmem[0] = newValue.intValue }
+        get { return rawmem[4].boolValue }
+        set { rawmem[4] = newValue.intValue }
     }
     
     func read(at address: UInt16) throws -> UInt8 {
@@ -66,6 +66,10 @@ class InterruptRegister: MemoryMappable {
     
     func write(byte: UInt8, at address: UInt16) throws {
         rawmem = byte
+    }
+    
+    init(initialValue: UInt8 = 0x0) {
+        rawmem = initialValue
     }
 }
 
@@ -77,11 +81,21 @@ class IO: MemoryMappable {
         static let timer = UInt16(0xFF05)...UInt16(0xFF07)
         static let interruptFlag = UInt16(0xFF0F)
         static let audio = UInt16(0xFF10)...UInt16(0xFF3F)
-        static let video = UInt16(0xFF41)...UInt16(0xFF4B)
+        static let video = UInt16(0xFF40)...UInt16(0xFF4B)
         static let bootROMRegister: UInt16 = 0xFF50
-        static let interruptEnabled = UInt16(0xFFFF)
+        static let interruptEnabled: UInt16 = 0xFFFF
     }
-    
+   
+    /* TODO: add these
+     FF6C - Undocumented (FEh) - Bit 0 (Read/Write) - CGB Mode Only
+     FF72 - Undocumented (00h) - Bit 0-7 (Read/Write)
+     FF73 - Undocumented (00h) - Bit 0-7 (Read/Write)
+     FF74 - Undocumented (00h) - Bit 0-7 (Read/Write) - CGB Mode Only
+     FF75 - Undocumented (8Fh) - Bit 4-6 (Read/Write)
+     FF76 - Undocumented (00h) - Always 00h (Read Only)
+     FF77 - Undocumented (00h) - Always 00h (Read Only)
+     These are undocumented CGB Registers. The numbers in brackets () indicate the initial values. Purpose of these registers is unknown (if any). Registers FF6C and FF74 are always FFh if the CGB is in Non CGB Mode.
+     */
     var joypad: MemoryMappable
     var serial: MemoryMappable
     var divider: MemoryMappable
@@ -100,14 +114,20 @@ class IO: MemoryMappable {
         self.timer = timer
         self.interruptFlag = interruptFlag
         self.audio = audio
-        self.video = video
+        self.video = AddressTranslator(memory: video, offset: MemoryLocations.video.lowerBound)
         // bit 7-1 Unimplemented: Read as 1
         // bit 0 BOOT_OFF: Boot ROM lock bit
         self.bootROMRegister = RAM(size: 1)
         try! self.bootROMRegister.write(byte: 0xFE, at: 0x0)
         
         self.interruptEnabled = interruptEnabled
+        
     }
+    
+//    private var handlers: [UInt16:MemoryMappable] = [:]
+//    private func register(_ handler: MemoryMappable, for address: MemoryLocations) {
+//        handler[address.rawValue] = handler
+//    }
     
     private func map(address: UInt16) throws -> (MemoryMappable, Word) {
         switch(address) {
@@ -120,15 +140,15 @@ class IO: MemoryMappable {
         case MemoryLocations.timer:
             return (timer, address - MemoryLocations.timer.lowerBound)
         case MemoryLocations.interruptFlag:
-            return (interruptFlag, address - MemoryLocations.interruptFlag)
+            return (interruptFlag, 0xFF)
         case MemoryLocations.audio:
             return (audio, address - MemoryLocations.audio.lowerBound)
         case MemoryLocations.video:
-            return (video, address - MemoryLocations.video.lowerBound)
+            return (video, address)
         case MemoryLocations.bootROMRegister:
             return (bootROMRegister, 0x00)
         case MemoryLocations.interruptEnabled:
-            return (interruptEnabled, address - MemoryLocations.interruptEnabled)
+            return (interruptEnabled, 0xFF)
         default:
             throw MemoryError.invalidAddress(address)
         }

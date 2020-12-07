@@ -40,7 +40,7 @@ protocol MemoryMappable: MemoryMappableR, MemoryMappableW {}
     FFFF | FFFF | Interrupts Enable Register (IE) |
  */
 
-class MMU {
+class MMU: MemoryMappable {
     struct MemoryRanges {
         static let biosROM = UInt16(0x0000)..<UInt16(0x0100)
         static let rom = UInt16(0x0000)..<UInt16(0x4000)
@@ -66,6 +66,8 @@ class MMU {
     let vram: MemoryMappable
     let sram: MemoryMappable
     let io: MemoryMappable
+    
+    
     
     init(rom: MemoryMappable?, biosROM: MemoryMappable?, switchableRom: MemoryMappable?,
          vram: MemoryMappable, sram: MemoryMappable, io: MemoryMappable) {
@@ -94,6 +96,10 @@ class MMU {
         if(address ==  IO.MemoryLocations.bootROMRegister && byte == 1) {
             biosROM = nil
         }
+        if MemoryRanges.rom.contains(address) ||
+            MemoryRanges.switchableRom.contains(address) {
+            return
+        }
         let (dest, localAddress) = try map(address: address)
         try dest.write(byte: byte, at: localAddress)
     }
@@ -120,7 +126,7 @@ class MMU {
         case MemoryRanges.unusable:
             throw MemoryError.invalidAddress(address)
         case MemoryRanges.io:
-            return (io, address - MemoryRanges.io.lowerBound)
+            return (io, address) //TODO: this is inconsistent - move bounds to destination
         case MemoryRanges.hram:
             return (ram, address - MemoryRanges.hram.lowerBound)
         default:

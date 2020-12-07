@@ -8,11 +8,16 @@
 import XCTest
 @testable import SwiftBoy
 
+
+// TODO: move this to alu
 class CPU_ALUTests: XCTestCase {
     var cpu: CPU!
 
     override func setUpWithError() throws {
-        cpu = CPU()
+        let mmu = MemorySegment(size: 0xFFFF)
+        let ir = InterruptRegister()
+        let ie = InterruptRegister()
+        cpu = CPU(mmu: mmu, intEnabled: ie, intRegister: ir)
     }
 
     override func tearDownWithError() throws {

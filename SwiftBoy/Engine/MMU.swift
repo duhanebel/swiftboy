@@ -96,8 +96,24 @@ class MMU: MemoryMappable {
         if(address ==  IO.MemoryLocations.bootROMRegister && byte == 1) {
             biosROM = nil
         }
+
+        // Writing to rom is fine if you have memory switch banks
+        // TODO: fix this up with real bank switchers
         if MemoryRanges.rom.contains(address) ||
             MemoryRanges.switchableRom.contains(address) {
+            return
+        }
+        
+        // TODO move this to an interceptor (dma transfer)
+        // and do timing: tis take 160ms
+        if(address == 0xFF46) {
+            // The source address written to 0xFF46 is divided by 0x100 (256)
+            var sourceAddress = UInt16(byte) << 8
+            for sramCounter in MemoryRanges.sram {
+                let sourceByte = try read(at:sourceAddress)
+                try sram.write(byte: sourceByte, at: sramCounter - MemoryRanges.sram.lowerBound)
+                sourceAddress += 1
+            }
             return
         }
         let (dest, localAddress) = try map(address: address)
@@ -112,7 +128,7 @@ class MMU: MemoryMappable {
         case MemoryRanges.rom:
             return (rom, address)
         case MemoryRanges.switchableRom:
-            return (switchableRom, address - MemoryRanges.switchableRom.lowerBound)
+            return (switchableRom, address)
         case MemoryRanges.vram:
             return (vram, address - MemoryRanges.vram.lowerBound)
         case MemoryRanges.extRam:
@@ -128,7 +144,9 @@ class MMU: MemoryMappable {
         case MemoryRanges.io:
             return (io, address) //TODO: this is inconsistent - move bounds to destination
         case MemoryRanges.hram:
-            return (ram, address - MemoryRanges.hram.lowerBound)
+            return (hram, address - MemoryRanges.hram.lowerBound)
+        case 0xFFFF: //TODO: do better
+            return(io, 0xFFFF)
         default:
             throw MemoryError.invalidAddress(address)
         }

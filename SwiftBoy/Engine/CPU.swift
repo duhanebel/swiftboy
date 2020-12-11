@@ -191,18 +191,23 @@ class CPU {
         var intVector: InterruptVectors? = nil
         if intEnabled.VBlank && intRegister.VBlank {
             intVector = .VBlank
+            intRegister.VBlank = false
         }
-        if intEnabled.LCDStat && intEnabled.LCDStat {
+        if intEnabled.LCDStat && intRegister.LCDStat {
             intVector = .LCDStat
+            intRegister.LCDStat = false
         }
-        if intEnabled.timer && intEnabled.timer {
+        if intEnabled.timer && intRegister.timer {
             intVector = .timer
+            intRegister.timer = false
         }
-        if intEnabled.serial && intEnabled.serial {
+        if intEnabled.serial && intRegister.serial {
             intVector = .serial
+            intRegister.serial = false
         }
-        if intEnabled.joypad && intEnabled.joypad {
+        if intEnabled.joypad && intRegister.joypad {
             intVector = .joypad
+            intRegister.joypad = false
         }
         
         if let intVector = intVector {
@@ -260,10 +265,10 @@ class CPU {
     }
     
     func run(_ ins: Instruction, for currentPC: UInt16) -> Int {
+        #if DEBUG
+        print("\(currentPC): \(ins.disassembly) ; \(ins.opcode, prefix: "")")
+        #endif
         let cycles = ins.run(on: self)
-#if DEBUG
-        print("\(String(format:"0x%04X", currentPC)): \(ins.disassembly)")
-#endif
         return cycles
     }
     
@@ -271,9 +276,9 @@ class CPU {
         var acc = 0
         for i in from..<to {
             if acc == 0 {
-                print(String(format:"%04X", i), terminator:": ")
+                print("\(i)", terminator:":")
             }
-            print(String(format:"%02X", try! mmu.read(at: i)), terminator:"")
+            print("\(try! mmu.read(at: i))", terminator:"")
             acc += 1
             if acc >= 16 {
                 acc = 0
@@ -300,11 +305,16 @@ extension CPU {
 // MARK: Call/Jump operations
 extension CPU {
     func jump(to address: UInt8) {
-        registers.PC = UInt16(address)
+        jump(to: UInt16(address))
     }
     
     func jump(offset: UInt8) {
-        registers.PC = UInt16(offset &+ registers.PC.lowerByte)
+        var offset16 = UInt16(offset)
+        // If it's negative (2-complement) number the negative prefix must be extended
+        if offset[7] == 1 {
+            offset16.upperByte = 0xFF
+        }
+        registers.PC = registers.PC &+ offset16
     }
     
     func jump(to address: UInt16) {
@@ -374,11 +384,23 @@ extension CPU {
     }
     
     func write(byte: UInt8, at address: UInt16) {
-        try! mmu.write(byte: byte, at: address)
+        do {
+            try mmu.write(byte: byte, at: address)
+        }
+        catch {
+            print("Write to bad ram \(address)")
+            return
+        }
     }
     
     func write(word: UInt16, at address: UInt16) {
-        try! mmu.write(byte: word.lowerByte, at: address)
-        try! mmu.write(byte: word.upperByte, at: address + 1)
+        do {
+            try mmu.write(byte: word.lowerByte, at: address)
+            try mmu.write(byte: word.upperByte, at: address + 1)
+        }
+        catch {
+            print("Write to bad ram \(address)")
+            return
+        }
     }
 }

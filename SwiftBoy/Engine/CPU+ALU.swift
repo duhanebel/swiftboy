@@ -205,7 +205,7 @@ extension CPU {
     }
     
     func bit(_ index: Int, of reg: UInt8) {
-        assert(index > 0 && index < 8, "Bit indexing out fo bounds")
+        assert(index >= 0 && index < 8, "Bit indexing out fo bounds")
         
         registers.flags.Z = (reg[index] == 1)
         registers.flags.N = false
@@ -213,7 +213,7 @@ extension CPU {
     }
     
     func res(_ index: Int, of reg: UInt8) -> UInt8 {
-        assert(index > 0 && index < 8, "Bit indexing out fo bounds")
+        assert(index >= 0 && index < 8, "Bit indexing out fo bounds")
         
         var res = reg
         res[index] = 0
@@ -221,7 +221,7 @@ extension CPU {
     }
 
     func set(_ index: Int, of reg: UInt8) -> UInt8 {
-        assert(index > 0 && index < 8, "Bit indexing out fo bounds")
+        assert(index >= 0 && index < 8, "Bit indexing out fo bounds")
         
         var res = reg
         res[index] = 1

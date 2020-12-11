@@ -40,6 +40,10 @@
 		B7FE8867257B893800695D33 /* CircularBufferTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7FE8866257B893800695D33 /* CircularBufferTests.swift */; };
 		B7FE886D257CCAC300695D33 /* TileFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7FE886C257CCAC300695D33 /* TileFetcher.swift */; };
 		B7FE8875257CCAE600695D33 /* Pixel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7FE8874257CCAE600695D33 /* Pixel.swift */; };
+		D91DEAFA257F7AC500590CD5 /* Debugger.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91DEAF9257F7AC500590CD5 /* Debugger.swift */; };
+		D91DEAFF2580EDA400590CD5 /* UInt16+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91DEAFE2580EDA400590CD5 /* UInt16+String.swift */; };
+		D91DEB042580EDDE00590CD5 /* UInt8+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91DEB032580EDDE00590CD5 /* UInt8+String.swift */; };
+		D91DEB092580F21300590CD5 /* DebuggerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91DEB082580F21300590CD5 /* DebuggerViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -100,6 +104,10 @@
 		B7FE8866257B893800695D33 /* CircularBufferTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularBufferTests.swift; sourceTree = "<group>"; };
 		B7FE886C257CCAC300695D33 /* TileFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TileFetcher.swift; sourceTree = "<group>"; };
 		B7FE8874257CCAE600695D33 /* Pixel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Pixel.swift; sourceTree = "<group>"; };
+		D91DEAF9257F7AC500590CD5 /* Debugger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Debugger.swift; sourceTree = "<group>"; };
+		D91DEAFE2580EDA400590CD5 /* UInt16+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UInt16+String.swift"; sourceTree = "<group>"; };
+		D91DEB032580EDDE00590CD5 /* UInt8+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UInt8+String.swift"; sourceTree = "<group>"; };
+		D91DEB082580F21300590CD5 /* DebuggerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebuggerViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,12 +162,14 @@
 				B733CEAD256EC4540013E8D1 /* Engine */,
 				B733CE79256EC3910013E8D1 /* AppDelegate.swift */,
 				B733CE7B256EC3910013E8D1 /* GameViewController.swift */,
+				B733CF1F2573A3E10013E8D1 /* ScreenView.swift */,
 				B733CE82256EC3930013E8D1 /* Assets.xcassets */,
 				B733CE84256EC3930013E8D1 /* Main.storyboard */,
 				B733CE87256EC3930013E8D1 /* Info.plist */,
 				B733CE88256EC3930013E8D1 /* SwiftBoy.entitlements */,
-				B733CF1F2573A3E10013E8D1 /* ScreenView.swift */,
 				B7FE88222574EF4A00695D33 /* MemoryTypes.swift */,
+				D91DEAF9257F7AC500590CD5 /* Debugger.swift */,
+				D91DEB082580F21300590CD5 /* DebuggerViewController.swift */,
 			);
 			path = SwiftBoy;
 			sourceTree = "<group>";
@@ -215,6 +225,8 @@
 				B733CEB6256ECFCF0013E8D1 /* UInt16+Bytes.swift */,
 				B733CEC325704F370013E8D1 /* UInt+Bits.swift */,
 				B7FE88182574E48300695D33 /* UInt8+Bool.swift */,
+				D91DEAFE2580EDA400590CD5 /* UInt16+String.swift */,
+				D91DEB032580EDDE00590CD5 /* UInt8+String.swift */,
 			);
 			path = BitConvenience;
 			sourceTree = "<group>";
@@ -385,10 +397,12 @@
 			files = (
 				B733CEF62572C9350013E8D1 /* RAM.swift in Sources */,
 				B733CF002572CCFA0013E8D1 /* CPU+ALU.swift in Sources */,
+				D91DEAFF2580EDA400590CD5 /* UInt16+String.swift in Sources */,
 				B733CEB7256ECFCF0013E8D1 /* UInt16+Bytes.swift in Sources */,
 				B7FE881E2574EF2F00695D33 /* Joypad.swift in Sources */,
 				B733CEDC257141000013E8D1 /* CPU.swift in Sources */,
 				B7FE882F25752DAE00695D33 /* IO.swift in Sources */,
+				D91DEAFA257F7AC500590CD5 /* Debugger.swift in Sources */,
 				B7FE883925762B4000695D33 /* PPU.swift in Sources */,
 				B7FE885D257B7B0100695D33 /* Stopwatch.swift in Sources */,
 				B7FE88192574E48300695D33 /* UInt8+Bool.swift in Sources */,
@@ -396,6 +410,7 @@
 				B733CE7C256EC3910013E8D1 /* GameViewController.swift in Sources */,
 				B733CF202573A3E10013E8D1 /* ScreenView.swift in Sources */,
 				B733CEFB2572C9D90013E8D1 /* Bool+Int.swift in Sources */,
+				D91DEB042580EDDE00590CD5 /* UInt8+String.swift in Sources */,
 				B7FE880D2573EC7A00695D33 /* ROM.swift in Sources */,
 				B7FE884D2577739600695D33 /* Device.swift in Sources */,
 				B7FE8875257CCAE600695D33 /* Pixel.swift in Sources */,
@@ -403,6 +418,7 @@
 				B7FE88232574EF4A00695D33 /* MemoryTypes.swift in Sources */,
 				B733CF0D2572F4E90013E8D1 /* MMU.swift in Sources */,
 				B733CEE92572BC600013E8D1 /* Instruction+Extended.swift in Sources */,
+				D91DEB092580F21300590CD5 /* DebuggerViewController.swift in Sources */,
 				B733CEE425726A350013E8D1 /* Instruction.swift in Sources */,
 				B733CE7A256EC3910013E8D1 /* AppDelegate.swift in Sources */,
 				B7FE886D257CCAC300695D33 /* TileFetcher.swift in Sources */,

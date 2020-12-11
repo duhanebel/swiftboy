@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17156"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17506"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -684,12 +684,12 @@
         <!--Window Controller-->
         <scene sceneID="R2V-B0-nI4">
             <objects>
-                <windowController id="B8D-0N-5wS" sceneMemberID="viewController">
+                <windowController storyboardIdentifier="gameController" id="B8D-0N-5wS" sceneMemberID="viewController">
                     <window key="window" title="SwiftBoy" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="IQv-IB-iLA">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-                        <rect key="contentRect" x="196" y="240" width="480" height="270"/>
-                        <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1027"/>
+                        <rect key="contentRect" x="42" y="50" width="480" height="430"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1025"/>
                         <connections>
                             <outlet property="delegate" destination="B8D-0N-5wS" id="sqa-yk-rIe"/>
                         </connections>
@@ -700,20 +700,58 @@
                 </windowController>
                 <customObject id="Oky-zY-oP4" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="250"/>
+            <point key="canvasLocation" x="68" y="334"/>
         </scene>
         <!--Game View Controller-->
         <scene sceneID="hIz-AP-VOD">
             <objects>
                 <viewController id="XfG-lQ-9wD" customClass="GameViewController" customModule="SwiftBoy" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" id="m2S-Jp-Qdl" customClass="ScreenView" customModule="SwiftBoy" customModuleProvider="target">
-                        <rect key="frame" x="0.0" y="0.0" width="480" height="432"/>
-                        <autoresizingMask key="autoresizingMask"/>
+                        <rect key="frame" x="0.0" y="0.0" width="480" height="430"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     </view>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="75" y="817"/>
+            <point key="canvasLocation" x="84" y="883"/>
+        </scene>
+        <!--Window Controller-->
+        <scene sceneID="0QD-TH-4ue">
+            <objects>
+                <windowController storyboardIdentifier="debugController" id="VXT-6z-t8u" sceneMemberID="viewController">
+                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="HRl-CD-UH6">
+                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+                        <rect key="contentRect" x="245" y="301" width="800" height="600"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1025"/>
+                        <view key="contentView" id="xj5-VW-1dF">
+                            <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </view>
+                        <connections>
+                            <outlet property="delegate" destination="VXT-6z-t8u" id="g7D-4f-Rf2"/>
+                        </connections>
+                    </window>
+                    <connections>
+                        <segue destination="Pfe-jq-rQP" kind="relationship" relationship="window.shadowedContentViewController" id="Wxh-bU-098"/>
+                    </connections>
+                </windowController>
+                <customObject id="cV0-yk-sty" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-696" y="-445"/>
+        </scene>
+        <!--Debugger View Controller-->
+        <scene sceneID="6Oz-Ar-etA">
+            <objects>
+                <viewController id="Pfe-jq-rQP" customClass="DebuggerViewController" customModule="SwiftBoy" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="y7w-zm-1NO">
+                        <rect key="frame" x="0.0" y="0.0" width="800" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                    </view>
+                </viewController>
+                <customObject id="a7D-24-Zt0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-702" y="249"/>
         </scene>
     </scenes>
 </document>

@@ -233,7 +233,7 @@ class Device {
         let joypad = Joypad(intRegister: intRegister)
         let divider = Divider(CPUSpeed: CPU.clockSpeed)
         let counter = Counter(CPUSpeed: CPU.clockSpeed, intRegister: intRegister)
-        let serial = RAM(size: 1) // unimplemented
+        let serial = RAM(size: 2) // unimplemented
         let audio = Audio()
         
         let io = IO(joypad: joypad,
@@ -285,6 +285,16 @@ class Device {
         queue.async { self.compute() }
     }
     
+    func keyDown(key: Joypad.Key) {
+        joypad.keyDown(key: key)
+    }
+    
+    func keyUp(key: Joypad.Key) {
+        joypad.keyUp(key: key)
+    }
+    
+    var didExecute: (()->Void)? = nil
+    
     private func compute(at startTime: DispatchTime = DispatchTime.now()) {
         let cycles = cpu.tic()
         for _ in 0..<cycles {
@@ -293,6 +303,7 @@ class Device {
             ppu.tic()
             audio.tic()
         }
+        didExecute?()
 
         if running {
             let nextCycleDeadline = adjustRuntimeAfter(cycles: cycles, since: startTime)

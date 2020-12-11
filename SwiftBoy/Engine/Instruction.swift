@@ -206,7 +206,7 @@ struct Instruction {
 
             Instruction(asm: "CPL",        opcode: 0x2F, cycles: 4, execute: { cpu in cpu.registers.A = cpu.registers.A.complement }),
 
-            Instruction(asm: "JR Z, r8",   opcode: 0x30, execute: { (cpu, arg: UInt8) in
+            Instruction(asm: "JR NC, r8",   opcode: 0x30, execute: { (cpu, arg: UInt8) in
                         if cpu.registers.flags.C == false {
                             cpu.jump(offset: arg)
                             return 12
@@ -219,7 +219,7 @@ struct Instruction {
             Instruction(asm: "INC SP",     opcode: 0x33, cycles: 8, execute: { cpu in cpu.registers.SP = cpu.inc(cpu.registers.SP) }),
             Instruction(asm: "INC (HL)",   opcode: 0x34, cycles: 12, execute: { cpu in cpu.registers.HL = cpu.inc(cpu.registers.HL) }),
             Instruction(asm: "DEC (HL)",   opcode: 0x35, cycles: 12, execute: { cpu in cpu.registers.HL = cpu.dec(cpu.registers.HL) }),
-            Instruction(asm: "LD (HL), d8",opcode: 0x36, cycles: 8, execute: { cpu, arg in cpu.write(word: arg, at: cpu.registers.HL) }),
+            Instruction(asm: "LD (HL), d8",opcode: 0x36, cycles: 8, execute: { cpu, arg in cpu.write(byte: arg, at: cpu.registers.HL) }),
 
             Instruction(asm: "SCF",        opcode: 0x37, cycles: 4, execute: { cpu in cpu.registers.flags.N = false; cpu.registers.flags.H = false; cpu.registers.flags.C  = true }),
 
@@ -551,15 +551,12 @@ struct Instruction {
 
             Instruction(asm: "LDH A, (a16)",opcode: 0xFA, cycles: 16, execute: { cpu, arg in cpu.registers.A = cpu.read(at: arg) }),
 
-            Instruction(asm: "EI",         opcode: 0xFB, cycles: 4, execute: { cpu in cpu.disableIntNext() }),
+            Instruction(asm: "EI",         opcode: 0xFB, cycles: 4, execute: { cpu in cpu.enableIntNext() }),
 
             Instruction(asm: "INVALID",    opcode: 0xFC, cycles: 4, execute: { cpu in cpu.panic() }),
             Instruction(asm: "INVALID",    opcode: 0xFD, cycles: 4, execute: { cpu in cpu.panic() }),
 
-            Instruction(asm: "CP d8",      opcode: 0xFE, cycles: 4, execute: {
-                            cpu, arg in cpu.cmp(cpu.registers.A, value: arg)
-                
-            }),
+            Instruction(asm: "CP d8",      opcode: 0xFE, cycles: 4, execute: { cpu, arg in cpu.cmp(cpu.registers.A, value: arg) }),
 
             Instruction(asm: "RST 38H",    opcode: 0xFF, cycles: 16, execute: { cpu in cpu.rst(to: 0x38)}),
     ]

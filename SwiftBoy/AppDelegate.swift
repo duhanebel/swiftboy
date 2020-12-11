@@ -11,9 +11,16 @@ import Cocoa
 class AppDelegate: NSObject, NSApplicationDelegate {
     
     @IBOutlet var window: NSWindow!
+    @IBOutlet var debugWindow: NSWindow!
+    var debugController: NSWindowController!
+    var mainController: NSWindowController!
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-
+        
+        let storyBoard = NSStoryboard(name: "Main", bundle: nil)
+        debugController = storyBoard.instantiateController(withIdentifier: "debugController") as? NSWindowController
+        debugController.showWindow(self)
+        
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {

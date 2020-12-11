@@ -13,6 +13,7 @@ import Foundation
    -----+------+----+-------------------------------------------
    FFOO | P1   | RW | Register for reading joy pad info
    FF01 | SB   | RW | Serial transfer data
+   FF02 | SBCL | RW | Serial transfer data clock
     ..  | Unused
    FF04 | DIV  | RW | Divider register ?
    FF05 | TIMA | RW | Timer counter (int when overflow)
@@ -68,6 +69,10 @@ class InterruptRegister: MemoryMappable {
         rawmem = byte
     }
     
+    var allOff: Bool {
+        return rawmem == 0
+    }
+    
     init(initialValue: UInt8 = 0x0) {
         rawmem = initialValue
     }
@@ -76,7 +81,7 @@ class InterruptRegister: MemoryMappable {
 class IO: MemoryMappable {
     struct MemoryLocations {
         static let joypad = UInt16(0xFF00)
-        static let serial = UInt16(0xFF01)
+        static let serial = UInt16(0xFF01)...UInt16(0xFF02)
         static let divider = UInt16(0xFF04)
         static let timer = UInt16(0xFF05)...UInt16(0xFF07)
         static let interruptFlag = UInt16(0xFF0F)
@@ -138,9 +143,9 @@ class IO: MemoryMappable {
         case MemoryLocations.divider:
             return (divider, 0x00)
         case MemoryLocations.timer:
-            return (timer, address - MemoryLocations.timer.lowerBound)
+            return (timer, address )//- MemoryLocations.timer.lowerBound)
         case MemoryLocations.interruptFlag:
-            return (interruptFlag, 0xFF)
+            return (interruptFlag, 0x00)
         case MemoryLocations.audio:
             return (audio, address - MemoryLocations.audio.lowerBound)
         case MemoryLocations.video:
@@ -148,7 +153,7 @@ class IO: MemoryMappable {
         case MemoryLocations.bootROMRegister:
             return (bootROMRegister, 0x00)
         case MemoryLocations.interruptEnabled:
-            return (interruptEnabled, 0xFF)
+            return (interruptEnabled, 0x00)
         default:
             throw MemoryError.invalidAddress(address)
         }

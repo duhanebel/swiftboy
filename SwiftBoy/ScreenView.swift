@@ -94,31 +94,10 @@ class ScreenView: NSOpenGLView, Screen {
   required init?(coder aDecoder: NSCoder) {
     textureData = [GLubyte](repeating: GLubyte(0), count: Int(texSize*texSize)*4)
     super.init(coder: aDecoder)
-    
-    
-//    timer = Timer.scheduledTimer(withTimeInterval: 1/60, repeats: true) { _ in
-//
-//        if(self.index > 4) { self.buffer[self.index-4] = 0}
-//        self.buffer[self.index] = 255
-//        self.buffer[self.index+1] = 255
-//        self.buffer[self.index+2] = 255
-//        self.buffer[self.index+3] = 255
-//        self.index += 1
-//        if self.index >= self.textureData.count-4 { self.index = 0 }
-//        self.copyBuffer(self.buffer)
-//    }
   }
   
-  override var needsPanelToBecomeKey: Bool{
-    get {
-      return true
-    }
-  }
-  override var acceptsFirstResponder: Bool {
-    get {
-      return true
-    }
-  }
+  override var needsPanelToBecomeKey: Bool{ get { return true } }
+  override var acceptsFirstResponder: Bool { get { return true } }
   
   override func prepareOpenGL() {
     super.prepareOpenGL()

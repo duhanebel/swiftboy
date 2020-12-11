@@ -304,8 +304,41 @@ extension CPU {
 
 // MARK: Call/Jump operations
 extension CPU {
-    func jump(to address: UInt8) {
-        jump(to: UInt16(address))
+    
+    func call(_ address: UInt16, if flag: Bool, is value: Bool) -> Bool {
+        if flag == value {
+            call(address)
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func jump(address: UInt16, if flag: Bool, is value: Bool) -> Bool {
+        if flag == value {
+            jump(to: address)
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func jump(offset: UInt8, if flag: Bool, is value: Bool) -> Bool {
+        if flag == value {
+            jump(offset: offset)
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func ret(if flag: Bool, is value: Bool) -> Bool {
+        if flag == value {
+            ret()
+            return true
+        } else {
+            return false
+        }
     }
     
     func jump(offset: UInt8) {
@@ -351,7 +384,7 @@ extension CPU {
     
     func rst(to address: UInt8) {
         push(registers.PC)
-        jump(to: address)
+        jump(to: UInt16(address))
     }
 }
 
@@ -383,6 +416,10 @@ extension CPU {
         return word
     }
     
+    func read(atFF haddress: UInt8) -> UInt8 {
+        return read(at: (0xFF00 + UInt16(haddress)))
+    }
+    
     func write(byte: UInt8, at address: UInt16) {
         do {
             try mmu.write(byte: byte, at: address)
@@ -402,5 +439,9 @@ extension CPU {
             print("Write to bad ram \(address)")
             return
         }
+    }
+    
+    func write(byte: UInt8, atFF haddress: UInt8) {
+        write(byte: byte, at: (0xFF00 + UInt16(haddress)))
     }
 }

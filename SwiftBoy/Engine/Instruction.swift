@@ -13,7 +13,7 @@ struct Instruction {
     let asm: String
     let opcode: UInt8
     let length: Length
-    private let cycles: Int?
+    let cycles: Int?
     private let execute: ((CPU) -> Void)!
     private let execute8: ((CPU, UInt8) -> Void)!
     private let execute16: ((CPU, UInt16) -> Void)!
@@ -87,6 +87,12 @@ struct Instruction {
         self.execute8b = execute8b
         self.execute16b = execute16b
     }
+}
+
+extension Instruction {
+    static func instructionMap() -> [UInt8:Instruction] {
+        Instruction.allInstructions.reduce(into: [UInt8:Instruction]()) { table, item in table[item.opcode] = item }        
+    }
     
      init(asm: String, opcode: UInt8, cycles: Int, execute: @escaping ((CPU) -> Void)) {
         self.init(asm: asm, opcode: opcode, cycles: cycles, argLenght: .single, execute: execute)
@@ -126,7 +132,7 @@ struct Instruction {
             Instruction(asm: "LD B, d8",   opcode: 0x06, cycles: 8, execute: { cpu, arg in cpu.registers.B = arg }),
 
             Instruction(asm: "RLCA",       opcode: 0x07, cycles: 4, execute: { cpu in
-                            cpu.registers.A = cpu.rotateLeft(cpu.registers.A);
+                            cpu.registers.A = cpu.rlc(cpu.registers.A);
                             cpu.registers.flags.Z = false }),
 
             Instruction(asm: "LD (a16), SP", opcode: 0x08, cycles: 20, execute: { cpu, arg in cpu.write(word: cpu.registers.SP, at: arg) }),
@@ -142,7 +148,7 @@ struct Instruction {
             Instruction(asm: "LD C, d8",   opcode: 0x0E, cycles: 8, execute: { cpu, arg in cpu.registers.C = arg }),
 
             Instruction(asm: "RRCA",       opcode: 0x0F, cycles: 4, execute: { cpu in
-                            cpu.registers.A = cpu.rotateRight(cpu.registers.A);
+                            cpu.registers.A = cpu.rrc(cpu.registers.A);
                             cpu.registers.flags.Z = false }),
 
             Instruction(asm: "STOP",       opcode: 0x10, cycles: 4, execute: { cpu in cpu.stop() }),
@@ -194,7 +200,9 @@ struct Instruction {
 
             Instruction(asm: "ADD HL, HL", opcode: 0x29, cycles: 8, execute: { cpu in cpu.registers.HL = cpu.add(cpu.registers.HL, value: cpu.registers.HL)}),
 
-            Instruction(asm: "LD A, (HL+)",opcode: 0x2A, cycles: 8, execute: { cpu in cpu.registers.A = cpu.read(at: cpu.registers.HL); cpu.registers.HL += 1 }),
+            Instruction(asm: "LD A, (HL+)",opcode: 0x2A, cycles: 8, execute: { cpu in
+                            cpu.registers.A = cpu.read(at: cpu.registers.HL);
+                            cpu.registers.HL += 1 }),
 
             Instruction(asm: "DEC HL",     opcode: 0x2B, cycles: 8, execute: { cpu in cpu.registers.HL = cpu.dec(cpu.registers.HL) }),
             Instruction(asm: "INC L",      opcode: 0x2C, cycles: 4, execute: { cpu in cpu.registers.L = cpu.inc(cpu.registers.L) }),
@@ -214,17 +222,20 @@ struct Instruction {
             Instruction(asm: "INC SP",     opcode: 0x33, cycles: 8, execute: { cpu in cpu.registers.SP = cpu.inc(cpu.registers.SP) }),
             Instruction(asm: "INC (HL)",   opcode: 0x34, cycles: 12, execute: { cpu in cpu.registers.HL = cpu.inc(cpu.registers.HL) }),
             Instruction(asm: "DEC (HL)",   opcode: 0x35, cycles: 12, execute: { cpu in cpu.registers.HL = cpu.dec(cpu.registers.HL) }),
-            Instruction(asm: "LD (HL), d8",opcode: 0x36, cycles: 8, execute: { cpu, arg in cpu.write(byte: arg, at: cpu.registers.HL) }),
+            Instruction(asm: "LD (HL), d8",opcode: 0x36, cycles: 12, execute: { cpu, arg in cpu.write(byte: arg, at: cpu.registers.HL) }),
 
             Instruction(asm: "SCF",        opcode: 0x37, cycles: 4, execute: { cpu in
-                            cpu.registers.flags.N = false; cpu.registers.flags.H = false;
+                            cpu.registers.flags.N = false;
+                            cpu.registers.flags.H = false;
                             cpu.registers.flags.C  = true }),
 
             Instruction(asm: "JR C, r8",   opcode: 0x38, execute: { (cpu, arg: UInt8) in cpu.jump(offset: arg, if: cpu.registers.flags.C, is: true) ? 12 : 8 }),
 
             Instruction(asm: "ADD HL, SP", opcode: 0x39, cycles: 8, execute: { cpu in cpu.registers.HL = cpu.add(cpu.registers.HL, value: cpu.registers.SP)}),
 
-            Instruction(asm: "LD A, (HL-)",opcode: 0x3A, cycles: 8, execute: { cpu in cpu.registers.A = cpu.read(at: cpu.registers.HL); cpu.registers.HL -= 1 }),
+            Instruction(asm: "LD A, (HL-)",opcode: 0x3A, cycles: 8, execute: { cpu in
+                            cpu.registers.A = cpu.read(at: cpu.registers.HL);
+                            cpu.registers.HL &-= 1 }),
 
             Instruction(asm: "DEC SP",     opcode: 0x3B, cycles: 8, execute: { cpu in cpu.registers.SP = cpu.dec(cpu.registers.SP) }),
             Instruction(asm: "INC A",      opcode: 0x3C, cycles: 4, execute: { cpu in cpu.registers.A = cpu.inc(cpu.registers.A) }),
@@ -298,9 +309,9 @@ struct Instruction {
             Instruction(asm: "LD (HL), H", opcode: 0x74, cycles: 8, execute: { cpu in cpu.write(byte: cpu.registers.H, at: cpu.registers.HL) }),
             Instruction(asm: "LD (HL), L", opcode: 0x75, cycles: 8, execute: { cpu in cpu.write(byte: cpu.registers.L, at: cpu.registers.HL) }),
 
-            Instruction(asm: "HALT",       opcode: 0x76, cycles: 4, execute: noop),
+            Instruction(asm: "HALT",       opcode: 0x76, cycles: 4, execute: { cpu in cpu.halt() }),
 
-            Instruction(asm: "LD (HL), L", opcode: 0x77, cycles: 8, execute: { cpu in cpu.write(byte: cpu.registers.A, at: cpu.registers.HL) }),
+            Instruction(asm: "LD (HL), A", opcode: 0x77, cycles: 8, execute: { cpu in cpu.write(byte: cpu.registers.A, at: cpu.registers.HL) }),
 
             Instruction(asm: "LD A, B",    opcode: 0x78, cycles: 4, execute: { cpu in cpu.registers.A = cpu.registers.B}),
             Instruction(asm: "LD A, C",    opcode: 0x79, cycles: 4, execute: { cpu in cpu.registers.A = cpu.registers.C}),
@@ -329,14 +340,14 @@ struct Instruction {
             Instruction(asm: "ADC A, (HL)",opcode: 0x8E, cycles: 8, execute: { cpu in cpu.registers.A = cpu.adc(cpu.registers.A, value: cpu.read(at:cpu.registers.HL)) }),
             Instruction(asm: "ADC A, A",   opcode: 0x8F, cycles: 4, execute: { cpu in cpu.registers.A = cpu.adc(cpu.registers.A, value: cpu.registers.A) }),
 
-            Instruction(asm: "SUB A, B",   opcode: 0x90, cycles: 4, execute: { cpu in cpu.registers.A = cpu.sub(cpu.registers.A, value: cpu.registers.B) }),
-            Instruction(asm: "SUB A, C",   opcode: 0x91, cycles: 4, execute: { cpu in cpu.registers.A = cpu.sub(cpu.registers.A, value: cpu.registers.C) }),
-            Instruction(asm: "SUB A, D",   opcode: 0x92, cycles: 4, execute: { cpu in cpu.registers.A = cpu.sub(cpu.registers.A, value: cpu.registers.D) }),
-            Instruction(asm: "SUB A, E",   opcode: 0x93, cycles: 4, execute: { cpu in cpu.registers.A = cpu.sub(cpu.registers.A, value: cpu.registers.E) }),
-            Instruction(asm: "SUB A, H",   opcode: 0x94, cycles: 4, execute: { cpu in cpu.registers.A = cpu.sub(cpu.registers.A, value: cpu.registers.H) }),
-            Instruction(asm: "SUB A, L",   opcode: 0x95, cycles: 4, execute: { cpu in cpu.registers.A = cpu.sub(cpu.registers.A, value: cpu.registers.L) }),
-            Instruction(asm: "SUB A, (HL)",opcode: 0x96, cycles: 8, execute: { cpu in cpu.registers.A = cpu.sub(cpu.registers.A, value: cpu.read(at:cpu.registers.HL)) }),
-            Instruction(asm: "SUB A, A",   opcode: 0x97, cycles: 4, execute: { cpu in cpu.registers.A = cpu.sub(cpu.registers.A, value: cpu.registers.A) }),
+            Instruction(asm: "SUB B",   opcode: 0x90, cycles: 4, execute: { cpu in cpu.registers.A = cpu.sub(cpu.registers.A, value: cpu.registers.B) }),
+            Instruction(asm: "SUB C",   opcode: 0x91, cycles: 4, execute: { cpu in cpu.registers.A = cpu.sub(cpu.registers.A, value: cpu.registers.C) }),
+            Instruction(asm: "SUB D",   opcode: 0x92, cycles: 4, execute: { cpu in cpu.registers.A = cpu.sub(cpu.registers.A, value: cpu.registers.D) }),
+            Instruction(asm: "SUB E",   opcode: 0x93, cycles: 4, execute: { cpu in cpu.registers.A = cpu.sub(cpu.registers.A, value: cpu.registers.E) }),
+            Instruction(asm: "SUB H",   opcode: 0x94, cycles: 4, execute: { cpu in cpu.registers.A = cpu.sub(cpu.registers.A, value: cpu.registers.H) }),
+            Instruction(asm: "SUB L",   opcode: 0x95, cycles: 4, execute: { cpu in cpu.registers.A = cpu.sub(cpu.registers.A, value: cpu.registers.L) }),
+            Instruction(asm: "SUB (HL)",opcode: 0x96, cycles: 8, execute: { cpu in cpu.registers.A = cpu.sub(cpu.registers.A, value: cpu.read(at:cpu.registers.HL)) }),
+            Instruction(asm: "SUB A",   opcode: 0x97, cycles: 4, execute: { cpu in cpu.registers.A = cpu.sub(cpu.registers.A, value: cpu.registers.A) }),
 
             Instruction(asm: "SBC A, B",   opcode: 0x98, cycles: 4, execute: { cpu in cpu.registers.A = cpu.sbc(cpu.registers.A, value: cpu.registers.B) }),
             Instruction(asm: "SBC A, C",   opcode: 0x99, cycles: 4, execute: { cpu in cpu.registers.A = cpu.sbc(cpu.registers.A, value: cpu.registers.C) }),
@@ -344,63 +355,63 @@ struct Instruction {
             Instruction(asm: "SBC A, E",   opcode: 0x9B, cycles: 4, execute: { cpu in cpu.registers.A = cpu.sbc(cpu.registers.A, value: cpu.registers.E) }),
             Instruction(asm: "SBC A, H",   opcode: 0x9C, cycles: 4, execute: { cpu in cpu.registers.A = cpu.sbc(cpu.registers.A, value: cpu.registers.H) }),
             Instruction(asm: "SBC A, L",   opcode: 0x9D, cycles: 4, execute: { cpu in cpu.registers.A = cpu.sbc(cpu.registers.A, value: cpu.registers.L) }),
-            Instruction(asm: "SBC A, (HL)",opcode: 0x9E, cycles: 4, execute: { cpu in cpu.registers.A = cpu.sbc(cpu.registers.A, value: cpu.read(at:cpu.registers.HL)) }),
+            Instruction(asm: "SBC A, (HL)",opcode: 0x9E, cycles: 8, execute: { cpu in cpu.registers.A = cpu.sbc(cpu.registers.A, value: cpu.read(at:cpu.registers.HL)) }),
             Instruction(asm: "SBC A, A",   opcode: 0x9F, cycles: 4, execute: { cpu in cpu.registers.A = cpu.sbc(cpu.registers.A, value: cpu.registers.A) }),
 
-            Instruction(asm: "AND A, B",   opcode: 0xA0, cycles: 4, execute: { cpu in cpu.registers.A = cpu.and(cpu.registers.A, value: cpu.registers.B) }),
-            Instruction(asm: "AND A, C",   opcode: 0xA1, cycles: 4, execute: { cpu in cpu.registers.A = cpu.and(cpu.registers.A, value: cpu.registers.C) }),
-            Instruction(asm: "AND A, D",   opcode: 0xA2, cycles: 4, execute: { cpu in cpu.registers.A = cpu.and(cpu.registers.A, value: cpu.registers.D) }),
-            Instruction(asm: "AND A, E",   opcode: 0xA3, cycles: 4, execute: { cpu in cpu.registers.A = cpu.and(cpu.registers.A, value: cpu.registers.E) }),
-            Instruction(asm: "AND A, H",   opcode: 0xA4, cycles: 4, execute: { cpu in cpu.registers.A = cpu.and(cpu.registers.A, value: cpu.registers.H) }),
-            Instruction(asm: "AND A, L",   opcode: 0xA5, cycles: 4, execute: { cpu in cpu.registers.A = cpu.and(cpu.registers.A, value: cpu.registers.L) }),
-            Instruction(asm: "AND A, (HL)",opcode: 0xA6, cycles: 8, execute: { cpu in cpu.registers.A = cpu.and(cpu.registers.A, value: cpu.read(at:cpu.registers.HL)) }),
-            Instruction(asm: "AND A, A",   opcode: 0xA7, cycles: 4, execute: { cpu in cpu.registers.A = cpu.and(cpu.registers.A, value: cpu.registers.A) }),
+            Instruction(asm: "AND B",   opcode: 0xA0, cycles: 4, execute: { cpu in cpu.registers.A = cpu.and(cpu.registers.A, value: cpu.registers.B) }),
+            Instruction(asm: "AND C",   opcode: 0xA1, cycles: 4, execute: { cpu in cpu.registers.A = cpu.and(cpu.registers.A, value: cpu.registers.C) }),
+            Instruction(asm: "AND D",   opcode: 0xA2, cycles: 4, execute: { cpu in cpu.registers.A = cpu.and(cpu.registers.A, value: cpu.registers.D) }),
+            Instruction(asm: "AND E",   opcode: 0xA3, cycles: 4, execute: { cpu in cpu.registers.A = cpu.and(cpu.registers.A, value: cpu.registers.E) }),
+            Instruction(asm: "AND H",   opcode: 0xA4, cycles: 4, execute: { cpu in cpu.registers.A = cpu.and(cpu.registers.A, value: cpu.registers.H) }),
+            Instruction(asm: "AND L",   opcode: 0xA5, cycles: 4, execute: { cpu in cpu.registers.A = cpu.and(cpu.registers.A, value: cpu.registers.L) }),
+            Instruction(asm: "AND (HL)",opcode: 0xA6, cycles: 8, execute: { cpu in cpu.registers.A = cpu.and(cpu.registers.A, value: cpu.read(at:cpu.registers.HL)) }),
+            Instruction(asm: "AND A",   opcode: 0xA7, cycles: 4, execute: { cpu in cpu.registers.A = cpu.and(cpu.registers.A, value: cpu.registers.A) }),
 
-            Instruction(asm: "XOR A, B",   opcode: 0xA8, cycles: 4, execute: { cpu in cpu.registers.A = cpu.xor(cpu.registers.A, value: cpu.registers.B) }),
-            Instruction(asm: "XOR A, C",   opcode: 0xA9, cycles: 4, execute: { cpu in cpu.registers.A = cpu.xor(cpu.registers.A, value: cpu.registers.C) }),
-            Instruction(asm: "XOR A, D",   opcode: 0xAA, cycles: 4, execute: { cpu in cpu.registers.A = cpu.xor(cpu.registers.A, value: cpu.registers.D) }),
-            Instruction(asm: "XOR A, E",   opcode: 0xAB, cycles: 4, execute: { cpu in cpu.registers.A = cpu.xor(cpu.registers.A, value: cpu.registers.E) }),
-            Instruction(asm: "XOR A, H",   opcode: 0xAC, cycles: 4, execute: { cpu in cpu.registers.A = cpu.xor(cpu.registers.A, value: cpu.registers.H) }),
-            Instruction(asm: "XOR A, L",   opcode: 0xAD, cycles: 4, execute: { cpu in cpu.registers.A = cpu.xor(cpu.registers.A, value: cpu.registers.L) }),
-            Instruction(asm: "XOR A, (HL)",opcode: 0xAE, cycles: 4, execute: { cpu in cpu.registers.A = cpu.xor(cpu.registers.A, value: cpu.read(at:cpu.registers.HL)) }),
-            Instruction(asm: "XOR A, A",   opcode: 0xAF, cycles: 4, execute: { cpu in cpu.registers.A = cpu.xor(cpu.registers.A, value: cpu.registers.A) }),
+            Instruction(asm: "XOR B",   opcode: 0xA8, cycles: 4, execute: { cpu in cpu.registers.A = cpu.xor(cpu.registers.A, value: cpu.registers.B) }),
+            Instruction(asm: "XOR C",   opcode: 0xA9, cycles: 4, execute: { cpu in cpu.registers.A = cpu.xor(cpu.registers.A, value: cpu.registers.C) }),
+            Instruction(asm: "XOR D",   opcode: 0xAA, cycles: 4, execute: { cpu in cpu.registers.A = cpu.xor(cpu.registers.A, value: cpu.registers.D) }),
+            Instruction(asm: "XOR E",   opcode: 0xAB, cycles: 4, execute: { cpu in cpu.registers.A = cpu.xor(cpu.registers.A, value: cpu.registers.E) }),
+            Instruction(asm: "XOR H",   opcode: 0xAC, cycles: 4, execute: { cpu in cpu.registers.A = cpu.xor(cpu.registers.A, value: cpu.registers.H) }),
+            Instruction(asm: "XOR L",   opcode: 0xAD, cycles: 4, execute: { cpu in cpu.registers.A = cpu.xor(cpu.registers.A, value: cpu.registers.L) }),
+            Instruction(asm: "XOR (HL)",opcode: 0xAE, cycles: 8, execute: { cpu in cpu.registers.A = cpu.xor(cpu.registers.A, value: cpu.read(at:cpu.registers.HL)) }),
+            Instruction(asm: "XOR A",   opcode: 0xAF, cycles: 4, execute: { cpu in cpu.registers.A = cpu.xor(cpu.registers.A, value: cpu.registers.A) }),
 
-            Instruction(asm: "OR A, B",    opcode: 0xB0, cycles: 4, execute: { cpu in cpu.registers.A = cpu.or(cpu.registers.A, value: cpu.registers.B) }),
-            Instruction(asm: "OR A, C",    opcode: 0xB1, cycles: 4, execute: { cpu in cpu.registers.A = cpu.or(cpu.registers.A, value: cpu.registers.C) }),
-            Instruction(asm: "OR A, D",    opcode: 0xB2, cycles: 4, execute: { cpu in cpu.registers.A = cpu.or(cpu.registers.A, value: cpu.registers.D) }),
-            Instruction(asm: "OR A, E",    opcode: 0xB3, cycles: 4, execute: { cpu in cpu.registers.A = cpu.or(cpu.registers.A, value: cpu.registers.E) }),
-            Instruction(asm: "OR A, H",    opcode: 0xB4, cycles: 4, execute: { cpu in cpu.registers.A = cpu.or(cpu.registers.A, value: cpu.registers.H) }),
-            Instruction(asm: "OR A, L",    opcode: 0xB5, cycles: 4, execute: { cpu in cpu.registers.A = cpu.or(cpu.registers.A, value: cpu.registers.L) }),
-            Instruction(asm: "OR A, (HL)", opcode: 0xB6, cycles: 8, execute: { cpu in cpu.registers.A = cpu.or(cpu.registers.A, value: cpu.read(at:cpu.registers.HL)) }),
-            Instruction(asm: "OR A, A",    opcode: 0xB7, cycles: 4, execute: { cpu in cpu.registers.A = cpu.or(cpu.registers.A, value: cpu.registers.A) }),
+            Instruction(asm: "OR B",    opcode: 0xB0, cycles: 4, execute: { cpu in cpu.registers.A = cpu.or(cpu.registers.A, value: cpu.registers.B) }),
+            Instruction(asm: "OR C",    opcode: 0xB1, cycles: 4, execute: { cpu in cpu.registers.A = cpu.or(cpu.registers.A, value: cpu.registers.C) }),
+            Instruction(asm: "OR D",    opcode: 0xB2, cycles: 4, execute: { cpu in cpu.registers.A = cpu.or(cpu.registers.A, value: cpu.registers.D) }),
+            Instruction(asm: "OR E",    opcode: 0xB3, cycles: 4, execute: { cpu in cpu.registers.A = cpu.or(cpu.registers.A, value: cpu.registers.E) }),
+            Instruction(asm: "OR H",    opcode: 0xB4, cycles: 4, execute: { cpu in cpu.registers.A = cpu.or(cpu.registers.A, value: cpu.registers.H) }),
+            Instruction(asm: "OR L",    opcode: 0xB5, cycles: 4, execute: { cpu in cpu.registers.A = cpu.or(cpu.registers.A, value: cpu.registers.L) }),
+            Instruction(asm: "OR (HL)", opcode: 0xB6, cycles: 8, execute: { cpu in cpu.registers.A = cpu.or(cpu.registers.A, value: cpu.read(at:cpu.registers.HL)) }),
+            Instruction(asm: "OR A",    opcode: 0xB7, cycles: 4, execute: { cpu in cpu.registers.A = cpu.or(cpu.registers.A, value: cpu.registers.A) }),
 
-            Instruction(asm: "CP A, B",    opcode: 0xB8, cycles: 4, execute: { cpu in cpu.cmp(cpu.registers.A, value: cpu.registers.B) }),
-            Instruction(asm: "CP A, C",    opcode: 0xB9, cycles: 4, execute: { cpu in cpu.cmp(cpu.registers.A, value: cpu.registers.C) }),
-            Instruction(asm: "CP A, D",    opcode: 0xBA, cycles: 4, execute: { cpu in cpu.cmp(cpu.registers.A, value: cpu.registers.D) }),
-            Instruction(asm: "CP A, E",    opcode: 0xBB, cycles: 4, execute: { cpu in cpu.cmp(cpu.registers.A, value: cpu.registers.E) }),
-            Instruction(asm: "CP A, H",    opcode: 0xBC, cycles: 4, execute: { cpu in cpu.cmp(cpu.registers.A, value: cpu.registers.H) }),
-            Instruction(asm: "CP A, L",    opcode: 0xBD, cycles: 4, execute: { cpu in cpu.cmp(cpu.registers.A, value: cpu.registers.L) }),
-            Instruction(asm: "CP A, (HL)", opcode: 0xBE, cycles: 4, execute: { cpu in cpu.cmp(cpu.registers.A, value: cpu.read(at:cpu.registers.HL)) }),
-            Instruction(asm: "CP A, A",    opcode: 0xBF, cycles: 4, execute: { cpu in cpu.cmp(cpu.registers.A, value: cpu.registers.A) }),
+            Instruction(asm: "CP B",    opcode: 0xB8, cycles: 4, execute: { cpu in cpu.cmp(cpu.registers.A, value: cpu.registers.B) }),
+            Instruction(asm: "CP C",    opcode: 0xB9, cycles: 4, execute: { cpu in cpu.cmp(cpu.registers.A, value: cpu.registers.C) }),
+            Instruction(asm: "CP D",    opcode: 0xBA, cycles: 4, execute: { cpu in cpu.cmp(cpu.registers.A, value: cpu.registers.D) }),
+            Instruction(asm: "CP E",    opcode: 0xBB, cycles: 4, execute: { cpu in cpu.cmp(cpu.registers.A, value: cpu.registers.E) }),
+            Instruction(asm: "CP H",    opcode: 0xBC, cycles: 4, execute: { cpu in cpu.cmp(cpu.registers.A, value: cpu.registers.H) }),
+            Instruction(asm: "CP L",    opcode: 0xBD, cycles: 4, execute: { cpu in cpu.cmp(cpu.registers.A, value: cpu.registers.L) }),
+            Instruction(asm: "CP (HL)", opcode: 0xBE, cycles: 8, execute: { cpu in cpu.cmp(cpu.registers.A, value: cpu.read(at:cpu.registers.HL)) }),
+            Instruction(asm: "CP A",    opcode: 0xBF, cycles: 4, execute: { cpu in cpu.cmp(cpu.registers.A, value: cpu.registers.A) }),
 
             Instruction(asm: "RET NZ",     opcode: 0xC0, execute: { cpu in cpu.ret(if: cpu.registers.flags.Z, is: false) ? 20 : 8 }),
 
-            Instruction(asm: "POP BC",     opcode: 0xC1, cycles: 12, execute: { cpu in cpu.registers.BC = cpu.pop()}),
+            Instruction(asm: "POP BC",     opcode: 0xC1, cycles: 12, execute: { cpu in cpu.registers.BC = cpu.pop() }),
 
-            Instruction(asm: "JP NZ a16",  opcode: 0xC2, execute: { cpu, arg in cpu.jump(address: arg, if: cpu.registers.flags.Z, is: false) ? 16 : 12 }),
+            Instruction(asm: "JP NZ, a16", opcode: 0xC2, execute: { cpu, arg in cpu.jump(address: arg, if: cpu.registers.flags.Z, is: false) ? 16 : 12 }),
 
-            Instruction(asm: "JP a16",     opcode: 0xc3, cycles: 16, execute: { (cpu, arg: UInt16) in cpu.jump(to: arg) }),
+            Instruction(asm: "JP a16",     opcode: 0xc3, cycles: 16, execute: { cpu, arg in cpu.jump(to: arg) }),
             Instruction(asm: "CALL NZ, a16", opcode: 0xC4, execute: { cpu, arg in cpu.call(arg, if: cpu.registers.flags.Z, is: false) ? 24 : 12 }),
 
             Instruction(asm: "PUSH BC",    opcode: 0xC5, cycles: 16, execute: { cpu in cpu.push(cpu.registers.BC)}),
-            Instruction(asm: "OR A, d8",   opcode: 0xC6, cycles: 8,  execute: { cpu, arg in cpu.registers.A = cpu.or(cpu.registers.A, value: arg) }),
-            Instruction(asm: "RST 00H",    opcode: 0xC7, cycles: 32, execute: { cpu in cpu.rst(to: 0x00)}),
+            Instruction(asm: "ADD A, d8",   opcode: 0xC6, cycles: 8,  execute: { cpu, arg in cpu.registers.A = cpu.add(cpu.registers.A, value: arg) }),
+            Instruction(asm: "RST 00H",    opcode: 0xC7, cycles: 16, execute: { cpu in cpu.rst(to: 0x00)}),
             Instruction(asm: "RET Z",      opcode: 0xC8, execute: { cpu in cpu.ret(if: cpu.registers.flags.Z, is: true) ? 20 : 8 }),
 
             Instruction(asm: "RET",        opcode: 0xC9, cycles: 16, execute: { cpu in cpu.ret() }),
-            Instruction(asm: "JP Z a16",   opcode: 0xCA, execute: { cpu, arg in cpu.jump(address: arg, if: cpu.registers.flags.Z, is: true) ? 16 : 12 }),
+            Instruction(asm: "JP Z, a16",  opcode: 0xCA, execute: { cpu, arg in cpu.jump(address: arg, if: cpu.registers.flags.Z, is: true) ? 16 : 12 }),
 
-            Instruction(asm: "PREFIX",    opcode: 0xCB, cycles: 0, execute: { cpu in  }),
+            Instruction(asm: "PREFIX",    opcode: 0xCB, cycles: 4, execute: { _ in  } ),
             Instruction(asm: "CALL Z, a16", opcode: 0xCC, execute: { cpu, arg in cpu.call(arg, if: cpu.registers.flags.Z, is: true) ? 24 : 12 }),
 
             Instruction(asm: "CALL a16",   opcode: 0xCD, cycles: 24, execute: { cpu, arg in cpu.call(arg) }),
@@ -412,9 +423,9 @@ struct Instruction {
 
             Instruction(asm: "POP DE",     opcode: 0xD1, cycles: 12, execute: { cpu in cpu.registers.DE = cpu.pop()}),
 
-            Instruction(asm: "JP NC a16",  opcode: 0xD2, execute: { cpu, arg in cpu.jump(address: arg, if: cpu.registers.flags.C, is: false) ? 16 : 12 }),
+            Instruction(asm: "JP NC, a16", opcode: 0xD2, execute: { cpu, arg in cpu.jump(address: arg, if: cpu.registers.flags.C, is: false) ? 16 : 12 }),
 
-            Instruction(asm: "INVALID",    opcode: 0xD3, cycles: 4, execute: { cpu in cpu.panic() }),
+            Instruction(asm: "ILLEGAL_D3",    opcode: 0xD3, cycles: 4, execute: { cpu in cpu.panic() }),
             Instruction(asm: "CALL NC, a16",opcode: 0xD4, execute: { cpu, arg in cpu.call(arg, if: cpu.registers.flags.C, is: false) ? 24 : 12 }),
 
             Instruction(asm: "PUSH DE",    opcode: 0xD5, cycles: 16, execute: { cpu in cpu.push(cpu.registers.DE)}),
@@ -424,76 +435,77 @@ struct Instruction {
 
             Instruction(asm: "RET C",      opcode: 0xD8, execute: { cpu in cpu.ret(if: cpu.registers.flags.C, is: true) ? 20 : 8 }),
 
-            Instruction(asm: "RETI",       opcode: 0xD9, cycles: 16, execute: { cpu in cpu.ret(); cpu.enableInterrupts()}),
+            Instruction(asm: "RETI",       opcode: 0xD9, cycles: 16, execute: { cpu in
+                            cpu.ret();
+                            cpu.enableInterrupts()}),
 
-            Instruction(asm: "JP C a16",   opcode: 0xDA, execute: { cpu, arg in cpu.jump(address: arg, if: cpu.registers.flags.C, is: true) ? 16 : 12 }),
+            Instruction(asm: "JP C, a16",  opcode: 0xDA, execute: { cpu, arg in cpu.jump(address: arg, if: cpu.registers.flags.C, is: true) ? 16 : 12 }),
 
-            Instruction(asm: "INVALID",    opcode: 0xDB, cycles: 4, execute: { cpu in cpu.panic() }),
+            Instruction(asm: "ILLEGAL_DB",    opcode: 0xDB, cycles: 4, execute: { cpu in cpu.panic() }),
 
             Instruction(asm: "CALL C, a16",opcode: 0xDC, execute: { cpu, arg in cpu.call(arg, if: cpu.registers.flags.C, is: true) ? 24 : 12 }),
 
-            Instruction(asm: "INVALID",    opcode: 0xDD, cycles: 4, execute: { cpu in cpu.panic() }),
+            Instruction(asm: "ILLEGAL_DD",    opcode: 0xDD, cycles: 4, execute: { cpu in cpu.panic() }),
 
             Instruction(asm: "SBC A, d8",  opcode: 0xDE, cycles: 8,  execute: { cpu, arg in cpu.registers.A = cpu.sbc(cpu.registers.A, value: arg) }),
 
-            Instruction(asm: "RST 18H",    opcode: 0xDF, cycles: 16, execute: { cpu in cpu.rst(to: 0x18)}),
+            Instruction(asm: "RST 18H",    opcode: 0xDF, cycles: 16, execute: { cpu in cpu.rst(to: 0x18) }),
 
-            Instruction(asm: "LDH (a8), A",opcode: 0xE0, cycles: 12, execute: { cpu, arg in cpu.write(byte: cpu.registers.A, atFF: arg)}),
+            Instruction(asm: "LDH (a8), A",opcode: 0xE0, cycles: 12, execute: { cpu, arg in cpu.write(byte: cpu.registers.A, atFF: arg) }),
 
-            Instruction(asm: "POP HL",     opcode: 0xE1, cycles: 12, execute: { cpu in cpu.registers.HL = cpu.pop()}),
+            Instruction(asm: "POP HL",     opcode: 0xE1, cycles: 12, execute: { cpu in cpu.registers.HL = cpu.pop() }),
 
             Instruction(asm: "LD (C), A",  opcode: 0xE2, cycles: 8, execute: { cpu in cpu.write(byte: cpu.registers.A, atFF: cpu.registers.C) }),
 
-            Instruction(asm: "INVALID",    opcode: 0xE3, cycles: 4, execute: { cpu in cpu.panic() }),
-            Instruction(asm: "INVALID",    opcode: 0xE4, cycles: 4, execute: { cpu in cpu.panic() }),
+            Instruction(asm: "ILLEGAL_E3",    opcode: 0xE3, cycles: 4, execute: { cpu in cpu.panic() }),
+            Instruction(asm: "ILLEGAL_E4",    opcode: 0xE4, cycles: 4, execute: { cpu in cpu.panic() }),
 
-            Instruction(asm: "PUSH HL",    opcode: 0xE5, cycles: 16, execute: { cpu in cpu.push(cpu.registers.HL)}),
+            Instruction(asm: "PUSH HL",    opcode: 0xE5, cycles: 16, execute: { cpu in cpu.push(cpu.registers.HL) }),
 
             Instruction(asm: "AND d8",     opcode: 0xE6, cycles: 8,  execute: { cpu, arg in cpu.registers.A = cpu.and(cpu.registers.A, value: arg) }),
 
-            Instruction(asm: "RST 20H",    opcode: 0xE7, cycles: 16, execute: { cpu in cpu.rst(to: 0x20)}),
+            Instruction(asm: "RST 20H",    opcode: 0xE7, cycles: 16, execute: { cpu in cpu.rst(to: 0x20) }),
 
-            Instruction(asm: "ADC A, d8",  opcode: 0xE8, cycles: 16,  execute: { cpu, arg in cpu.registers.SP = cpu.add(cpu.registers.SP, value: arg) }),
+            Instruction(asm: "ADD SP, r8", opcode: 0xE8, cycles: 16,  execute: { (cpu, arg: UInt8) in cpu.registers.SP = cpu.add(cpu.registers.SP, value: arg) }),
 
             Instruction(asm: "JP HL",      opcode: 0xE9, cycles: 4, execute: { cpu in cpu.jump(to: cpu.registers.HL) }),
 
-            Instruction(asm: "LDH (a16), A",opcode: 0xEA, cycles: 16, execute: { cpu, arg in cpu.write(byte: cpu.registers.A, at: arg)}),
+            Instruction(asm: "LD (a16), A",opcode: 0xEA, cycles: 16, execute: { cpu, arg in cpu.write(byte: cpu.registers.A, at: arg) }),
 
-            Instruction(asm: "INVALID",    opcode: 0xEB, cycles: 4, execute: { cpu in cpu.panic() }),
-            Instruction(asm: "INVALID",    opcode: 0xEC, cycles: 4, execute: { cpu in cpu.panic() }),
-            Instruction(asm: "INVALID",    opcode: 0xED, cycles: 4, execute: { cpu in cpu.panic() }),
+            Instruction(asm: "ILLEGAL_EB",    opcode: 0xEB, cycles: 4, execute: { cpu in cpu.panic() }),
+            Instruction(asm: "ILLEGAL_EC",    opcode: 0xEC, cycles: 4, execute: { cpu in cpu.panic() }),
+            Instruction(asm: "ILLEGAL_ED",    opcode: 0xED, cycles: 4, execute: { cpu in cpu.panic() }),
 
-            Instruction(asm: "XOR d8",     opcode: 0xEE, cycles: 4, execute: { cpu, arg in cpu.registers.A = cpu.xor(cpu.registers.A, value: arg) }),
+            Instruction(asm: "XOR d8",     opcode: 0xEE, cycles: 8, execute: { cpu, arg in cpu.registers.A = cpu.xor(cpu.registers.A, value: arg) }),
 
-            Instruction(asm: "RST 28H",    opcode: 0xEF, cycles: 16, execute: { cpu in cpu.rst(to: 0x28)}),
+            Instruction(asm: "RST 28H",    opcode: 0xEF, cycles: 16, execute: { cpu in cpu.rst(to: 0x28) }),
 
-            Instruction(asm: "LDH A, (a8)",opcode: 0xF0, cycles: 12, execute: { cpu, arg in cpu.registers.A = cpu.read(atFF: arg)}),
+            Instruction(asm: "LDH A, (a8)",opcode: 0xF0, cycles: 12, execute: { cpu, arg in cpu.registers.A = cpu.read(atFF: arg) }),
 
-            // When we pop 16-bit unsigned number to register pair AF, low 4 bits of register F should be reset to 0.
-            Instruction(asm: "POP AF",     opcode: 0xF1, cycles: 12, execute: { cpu in cpu.registers.AF = cpu.pop() & 0xFFF0}),
+            Instruction(asm: "POP AF",     opcode: 0xF1, cycles: 12, execute: { cpu in cpu.registers.AF = cpu.pop() }),
 
-            Instruction(asm: "LDH A, (C)", opcode: 0xF2, cycles: 12, execute: { cpu in cpu.registers.A = cpu.read(atFF:cpu.registers.C) }),
+            Instruction(asm: "LD A, (C)", opcode: 0xF2, cycles: 8, execute: { cpu in cpu.registers.A = cpu.read(atFF: cpu.registers.C) }),
 
             Instruction(asm: "DI",         opcode: 0xF3, cycles: 4, execute: { cpu in cpu.disableIntNext() }),
 
-            Instruction(asm: "INVALID",    opcode: 0xF4, cycles: 4, execute: { cpu in cpu.panic() }),
-            Instruction(asm: "PUSH AF",    opcode: 0xF5, cycles: 16, execute: { cpu in cpu.push(cpu.registers.AF)}),
+            Instruction(asm: "ILLEGAL_F4",    opcode: 0xF4, cycles: 4, execute: { cpu in cpu.panic() }),
+            Instruction(asm: "PUSH AF",    opcode: 0xF5, cycles: 16, execute: { cpu in cpu.push(cpu.registers.AF) }),
             Instruction(asm: "OR d8",      opcode: 0xF6, cycles: 8,  execute: { cpu, arg in cpu.registers.A = cpu.or(cpu.registers.A, value: arg) }),
-            Instruction(asm: "RST 30H",    opcode: 0xF7, cycles: 16, execute: { cpu in cpu.rst(to: 0x30)}),
+            Instruction(asm: "RST 30H",    opcode: 0xF7, cycles: 16, execute: { cpu in cpu.rst(to: 0x30) }),
 
-            Instruction(asm: "LD HL, SP + r8", opcode: 0xF8, cycles: 12, execute: { cpu, arg in cpu.registers.HL = cpu.registers.SP &+ arg}),
+            Instruction(asm: "LD HL, SP+r8", opcode: 0xF8, cycles: 12, execute: { (cpu, arg: UInt8) in cpu.registers.HL = cpu.registers.SP &+ UInt16(arg) }),
             Instruction(asm: "LD SP, HL",  opcode: 0xF9, cycles: 8, execute: { cpu in cpu.registers.SP = cpu.registers.HL }),
 
-            Instruction(asm: "LDH A, (a16)",opcode: 0xFA, cycles: 16, execute: { cpu, arg in cpu.registers.A = cpu.read(at: arg) }),
+            Instruction(asm: "LD A, (a16)",opcode: 0xFA, cycles: 16, execute: { cpu, arg in cpu.registers.A = cpu.read(at: arg) }),
 
             Instruction(asm: "EI",         opcode: 0xFB, cycles: 4, execute: { cpu in cpu.enableIntNext() }),
 
-            Instruction(asm: "INVALID",    opcode: 0xFC, cycles: 4, execute: { cpu in cpu.panic() }),
-            Instruction(asm: "INVALID",    opcode: 0xFD, cycles: 4, execute: { cpu in cpu.panic() }),
+            Instruction(asm: "ILLEGAL_FC",    opcode: 0xFC, cycles: 4, execute: { cpu in cpu.panic() }),
+            Instruction(asm: "ILLEGAL_FD",    opcode: 0xFD, cycles: 4, execute: { cpu in cpu.panic() }),
 
-            Instruction(asm: "CP d8",      opcode: 0xFE, cycles: 4, execute: { cpu, arg in cpu.cmp(cpu.registers.A, value: arg) }),
+            Instruction(asm: "CP d8",      opcode: 0xFE, cycles: 8, execute: { cpu, arg in cpu.cmp(cpu.registers.A, value: arg) }),
 
-            Instruction(asm: "RST 38H",    opcode: 0xFF, cycles: 16, execute: { cpu in cpu.rst(to: 0x38)}),
+            Instruction(asm: "RST 38H",    opcode: 0xFF, cycles: 16, execute: { cpu in cpu.rst(to: 0x38) }),
     ]
         return allInstructions
     }()

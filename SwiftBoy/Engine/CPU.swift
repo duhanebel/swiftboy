@@ -19,6 +19,9 @@ struct Flags {
     
     init(values: UInt8) {
         byteValue = values
+        
+        // Bottom 4 bits of the flag register are always zero and can't be changed
+        // for example by a direct write to AF
         byteValue.lowerNibble = 0x0
     }
     
@@ -62,8 +65,8 @@ struct Registers {
             return AF
         }
         set {
-            A = newValue.lowerByte
-            flags = Flags(values: newValue.upperByte)
+            A = newValue.upperByte
+            flags = Flags(values: newValue.lowerByte)
         }
     }
     
@@ -212,7 +215,7 @@ class CPU {
         
         if let intVector = intVector {
             disableIntAndJumpTo(vector: intVector)
-            return 12 // TODO: uh? are we sure it's 12?
+            return 32 // TODO: uh? are we sure it's 32?
         }
         return 0
     }
@@ -396,6 +399,10 @@ extension CPU {
     
     func stop() {
         state = .stop
+    }
+    
+    func halt() {
+        state = .halt
     }
     
     func panic() {

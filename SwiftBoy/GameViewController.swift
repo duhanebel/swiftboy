@@ -16,7 +16,7 @@ class GameViewController: NSViewController {
         super.viewDidLoad()
         let bootURL = Bundle.main.url(forResource: "boot", withExtension: "gb")!
         let tetrisURL = Bundle.main.url(forResource: "tetris", withExtension: "gb")!
-//        let tetrisURL = Bundle.main.url(forResource: "test_bits", withExtension: "gb")!
+//        let tetrisURL = Bundle.main.url(forResource: "cpu_special", withExtension: "gb")!
         let bootROM = ROM()
         let rom = ROM()
         try! bootROM.load(url: bootURL)
@@ -24,8 +24,6 @@ class GameViewController: NSViewController {
         device = Device.gameBoy(biosROM: bootROM, rom: rom, screen: self.view as! Screen)
         
         device.fastBoot = true
-
-       
     }
     
     override func viewDidAppear() {

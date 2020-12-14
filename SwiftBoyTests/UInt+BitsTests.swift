@@ -32,6 +32,13 @@ class UInt8_BitsTests: XCTestCase {
         XCTAssertEqual(num, 0b00010100)
     }
     
+    func testSetsBitsIllegal() throws {
+        var num: UInt8 = 0b00010010
+        num[2] = 2
+        num[1] = 0
+        XCTAssertEqual(num, 0b00010100)
+    }
+    
     func testLowerNibble() throws {
         let num: UInt8 = 0xFA
         XCTAssertEqual(num.lowerNibble, 0x0A)

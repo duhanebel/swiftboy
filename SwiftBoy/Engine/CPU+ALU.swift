@@ -74,6 +74,10 @@ extension CPU {
         return res
     }
     
+    func add(_ reg: UInt16, value: UInt8) -> UInt16 {
+        return add(reg, value: UInt16(value))
+    }
+    
     func add(_ reg: UInt16, value: UInt16) -> UInt16 {
         var res = reg
         registers.flags.H = ((reg & 0xFF) + (value & 0xFF) > 0xFF)

@@ -31,9 +31,15 @@ puts %Q(
         
 )
 
-puts "extension Instruction {"
-puts "     static var allExtInstructions: [Instruction] = ["
-(0...0x3F).each do |i|
+puts %Q(
+extension Instruction {
+    static func extInstructionMap() -> [UInt8:Instruction]{
+        Instruction.allExtInstructions.reduce(into: [UInt8:Instruction]()) { table, item in table[item.opcode] = item }
+    }
+    static var allExtInstructions: [Instruction] = [
+)
+
+(0..0x3F).each do |i|
   op = ops[i / regs.size]
   reg = regs[i % regs.size]
   if reg != "(HL)"
@@ -44,7 +50,7 @@ puts "     static var allExtInstructions: [Instruction] = ["
   puts "" if i % regs.size == regs.size-1
 end
 
-(0x40...0xFF).each do |i|
+(0x40..0xFF).each do |i|
   op_name = ops[i / regs.size]
   reg = regs[i % regs.size]
   op = op_name.split.first
@@ -56,10 +62,10 @@ end
     puts "        Instruction(asm: \"#{op} #{bit}, #{reg}\", opcode: 0x#{sprintf("%02x",i).upcase}, cycles: 8, execute: { cpu in cpu.registers.#{reg} = cpu.#{op.downcase}(#{bit}, of: cpu.registers.#{reg}) }),"
     end
   else
-    if op == "SET"
-      cost = 12
-    else
+    if op == "SET" or op == "RES"
       cost = 16
+    else
+      cost = 12
     end
     if op == "BIT"
         puts "        Instruction(asm: \"#{op} #{bit}, #{reg}\", opcode: 0x#{sprintf("%02x",i).upcase}, cycles: #{cost}, execute: { cpu in  cpu.#{op.downcase}(#{bit}, of: cpu.read(at: cpu.registers.HL)) }),"

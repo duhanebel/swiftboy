@@ -40,7 +40,7 @@ private extension Bool {
 
 class Joypad: MemoryMappable {
     // First two bit unimplemented, read as 1
-    private var reg: Byte = 0xC0
+    private var reg: Byte = 0xF0
     
     private var leftPressed: Bool = false
     private var rightPressed: Bool = false
@@ -66,19 +66,21 @@ class Joypad: MemoryMappable {
     func write(byte: UInt8, at address: UInt16) {
         assert(address == 0x0, "Invalid address for a byte register")
         assert(address.lowerByte == 0x0, "First 4 bits are read only")
-        reg = byte | 0xC0 // first two bits not implemented, return 1
-        reg = registerForRequest(byte)
+        // first two bits not implemented, return 1
+        reg = registerForRequest(byte | 0xC0)
     }
     
     private func registerForRequest(_ request: Byte) -> Byte {
         var response = request
-        if request[4] == 1 {
+        // 1 represent button NOT pressed
+        // 0 represent button PRESSED
+        if request[4] == 0 {
             response[0] = rightPressed.toggled.intValue
             response[1] = leftPressed.toggled.intValue
             response[2] = upPressed.toggled.intValue
             response[3] = downPressed.toggled.intValue
         }
-        if request[5] == 1 {
+        if request[5] == 0 {
             response[0] = aPressed.toggled.intValue
             response[1] = bPressed.toggled.intValue
             response[2] = selectPressed.toggled.intValue

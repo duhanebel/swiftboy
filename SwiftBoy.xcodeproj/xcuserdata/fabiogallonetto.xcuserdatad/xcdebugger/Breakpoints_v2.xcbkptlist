@@ -114,5 +114,135 @@
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "82BA1485-49E4-4112-A284-3E17108F288F"
+            shouldBeEnabled = "No"
+            condition = "currentPC == 0x03a5"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SwiftBoy/Engine/CPU.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "274"
+            endingLineNumber = "274"
+            landmarkName = "run(_:for:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "3EC9F985-14DC-42E1-9A97-CCD9B20A48DA"
+            shouldBeEnabled = "No"
+            condition = "address == 0xFF85"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SwiftBoy/Engine/CPU.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "432"
+            endingLineNumber = "432"
+            landmarkName = "write(byte:at:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "DBF2C6A0-0B37-4957-854B-1F42BBF6B111"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SwiftBoy/Engine/Instruction.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "411"
+            endingLineNumber = "411"
+            landmarkName = "allInstructions"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "DBF2C6A0-0B37-4957-854B-1F42BBF6B111 - a470581b157a19e0"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; Swift.Array&lt;SwiftBoy.Instruction&gt; in variable initialization expression of static SwiftBoy.Instruction.allInstructions : Swift.Array&lt;SwiftBoy.Instruction&gt;"
+                  moduleName = "SwiftBoy"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/fabiogallonetto/Development/swiftboy/SwiftBoy/Engine/Instruction.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "400"
+                  endingLineNumber = "400"
+                  offsetFromSymbolStart = "30515">
+               </Location>
+               <Location
+                  uuid = "DBF2C6A0-0B37-4957-854B-1F42BBF6B111 - 108f881c703c887a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #194 (SwiftBoy.CPU) -&gt; () in closure #1 () -&gt; Swift.Array&lt;SwiftBoy.Instruction&gt; in variable initialization expression of static SwiftBoy.Instruction.allInstructions : Swift.Array&lt;SwiftBoy.Instruction&gt;"
+                  moduleName = "SwiftBoy"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/fabiogallonetto/Development/swiftboy/SwiftBoy/Engine/Instruction.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "400"
+                  endingLineNumber = "400"
+                  offsetFromSymbolStart = "19">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C1B92E4B-E6E9-4D96-968C-20D8A65CE33E"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SwiftBoy/Engine/Instruction.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "481"
+            endingLineNumber = "481"
+            landmarkName = "allInstructions"
+            landmarkType = "24">
+            <Locations>
+               <Location
+                  uuid = "C1B92E4B-E6E9-4D96-968C-20D8A65CE33E - a470581b157a12ac"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; Swift.Array&lt;SwiftBoy.Instruction&gt; in variable initialization expression of static SwiftBoy.Instruction.allInstructions : Swift.Array&lt;SwiftBoy.Instruction&gt;"
+                  moduleName = "SwiftBoy"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/fabiogallonetto/Development/swiftboy/SwiftBoy/Engine/Instruction.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "468"
+                  endingLineNumber = "468"
+                  offsetFromSymbolStart = "36126">
+               </Location>
+               <Location
+                  uuid = "C1B92E4B-E6E9-4D96-968C-20D8A65CE33E - f9270b8d37c2332f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #232 (SwiftBoy.CPU) -&gt; () in closure #1 () -&gt; Swift.Array&lt;SwiftBoy.Instruction&gt; in variable initialization expression of static SwiftBoy.Instruction.allInstructions : Swift.Array&lt;SwiftBoy.Instruction&gt;"
+                  moduleName = "SwiftBoy"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/fabiogallonetto/Development/swiftboy/SwiftBoy/Engine/Instruction.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "468"
+                  endingLineNumber = "468"
+                  offsetFromSymbolStart = "22">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

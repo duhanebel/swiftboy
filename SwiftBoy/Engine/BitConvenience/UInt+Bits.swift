@@ -13,7 +13,8 @@ extension UInt8 {
             return (self >> index) & 0x01
         }
         set {
-            guard self[index] != newValue else { return }
+            let bitValue = (newValue == 0) ? 0 : 1
+            guard self[index] != bitValue else { return }
             self ^= (1 << index)
         }
     }

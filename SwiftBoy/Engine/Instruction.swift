@@ -212,7 +212,7 @@ extension Instruction {
 
             Instruction(asm: "CPL",        opcode: 0x2F, cycles: 4, execute: { cpu in cpu.registers.A = cpu.registers.A.complement }),
 
-            Instruction(asm: "JR NC, r8",   opcode: 0x30, execute: { (cpu, arg: UInt8) in cpu.jump(offset: arg, if: cpu.registers.flags.C, is: false) ? 12 : 8 }),
+            Instruction(asm: "JR NC, r8",   opcode: 0x30, execute: { cpu, arg in cpu.jump(offset: arg, if: cpu.registers.flags.C, is: false) ? 12 : 8 }),
 
             Instruction(asm: "LD SP, d16", opcode: 0x31, cycles: 12, execute: { cpu, arg in cpu.registers.SP = arg }),
             Instruction(asm: "LD (HL-), A",opcode: 0x32, cycles: 8, execute: { cpu in
@@ -220,8 +220,8 @@ extension Instruction {
                             cpu.registers.HL &-= 1}),
 
             Instruction(asm: "INC SP",     opcode: 0x33, cycles: 8, execute: { cpu in cpu.registers.SP = cpu.inc(cpu.registers.SP) }),
-            Instruction(asm: "INC (HL)",   opcode: 0x34, cycles: 12, execute: { cpu in cpu.registers.HL = cpu.inc(cpu.registers.HL) }),
-            Instruction(asm: "DEC (HL)",   opcode: 0x35, cycles: 12, execute: { cpu in cpu.registers.HL = cpu.dec(cpu.registers.HL) }),
+            Instruction(asm: "INC (HL)",   opcode: 0x34, cycles: 12, execute: { cpu in cpu.write(byte: cpu.inc(cpu.read(at: cpu.registers.HL)), at: cpu.registers.HL) }),
+            Instruction(asm: "DEC (HL)",   opcode: 0x35, cycles: 12, execute: { cpu in cpu.write(byte: cpu.dec(cpu.read(at: cpu.registers.HL)), at: cpu.registers.HL) }),
             Instruction(asm: "LD (HL), d8",opcode: 0x36, cycles: 12, execute: { cpu, arg in cpu.write(byte: arg, at: cpu.registers.HL) }),
 
             Instruction(asm: "SCF",        opcode: 0x37, cycles: 4, execute: { cpu in
@@ -229,7 +229,7 @@ extension Instruction {
                             cpu.registers.flags.H = false;
                             cpu.registers.flags.C  = true }),
 
-            Instruction(asm: "JR C, r8",   opcode: 0x38, execute: { (cpu, arg: UInt8) in cpu.jump(offset: arg, if: cpu.registers.flags.C, is: true) ? 12 : 8 }),
+            Instruction(asm: "JR C, r8",   opcode: 0x38, execute: { cpu, arg in cpu.jump(offset: arg, if: cpu.registers.flags.C, is: true) ? 12 : 8 }),
 
             Instruction(asm: "ADD HL, SP", opcode: 0x39, cycles: 8, execute: { cpu in cpu.registers.HL = cpu.add(cpu.registers.HL, value: cpu.registers.SP)}),
 

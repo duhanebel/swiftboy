@@ -9,3 +9,4 @@ import Foundation
 
 typealias Byte = UInt8
 typealias Word = UInt16
+typealias Address = UInt16

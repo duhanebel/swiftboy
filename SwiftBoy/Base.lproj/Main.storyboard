@@ -706,7 +706,7 @@
         <scene sceneID="hIz-AP-VOD">
             <objects>
                 <viewController id="XfG-lQ-9wD" customClass="GameViewController" customModule="SwiftBoy" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="m2S-Jp-Qdl" customClass="ScreenView" customModule="SwiftBoy" customModuleProvider="target">
+                    <view key="view" id="m2S-Jp-Qdl" customClass="MTKView">
                         <rect key="frame" x="0.0" y="0.0" width="480" height="430"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     </view>
@@ -751,7 +751,45 @@
                 </viewController>
                 <customObject id="a7D-24-Zt0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-702" y="249"/>
+            <point key="canvasLocation" x="-696" y="455"/>
+        </scene>
+        <!--Window Controller-->
+        <scene sceneID="Ec5-M0-u2N">
+            <objects>
+                <windowController storyboardIdentifier="vramController" id="cSB-Zf-wR5" sceneMemberID="viewController">
+                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="Zbn-rZ-lxI" userLabel="VRAM Explorer">
+                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+                        <rect key="contentRect" x="245" y="301" width="270" height="270"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1025"/>
+                        <view key="contentView" id="rW8-j4-6qE">
+                            <rect key="frame" x="0.0" y="0.0" width="270" height="270"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </view>
+                        <connections>
+                            <outlet property="delegate" destination="cSB-Zf-wR5" id="64R-HE-5nr"/>
+                        </connections>
+                    </window>
+                    <connections>
+                        <segue destination="OfO-1u-kcF" kind="relationship" relationship="window.shadowedContentViewController" id="VgN-j4-WnJ"/>
+                    </connections>
+                </windowController>
+                <customObject id="9zu-mo-CcI" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="74" y="-710"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="n7e-bh-Dgu">
+            <objects>
+                <viewController id="OfO-1u-kcF" customClass="VRAMViewController" sceneMemberID="viewController">
+                    <view key="view" id="oeb-HJ-sqM">
+                        <rect key="frame" x="0.0" y="0.0" width="270" height="270"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </view>
+                </viewController>
+                <customObject id="8Jy-tC-3Q4" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="84" y="-280"/>
         </scene>
     </scenes>
 </document>

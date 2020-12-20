@@ -22,7 +22,7 @@ class GameViewController: NSViewController {
         try! bootROM.load(url: bootURL)
         try! rom.load(url: tetrisURL)
         device = Device.gameBoy(biosROM: bootROM, rom: rom, screen: self.view as! Screen)
-        
+        device.didExecute = { DispatchQueue.main.async { ((NSApplication.shared.delegate as! AppDelegate).debugController.contentViewController as? VRAMViewController)?.update(self.device.ppu.vram)}}
         device.fastBoot = true
     }
     

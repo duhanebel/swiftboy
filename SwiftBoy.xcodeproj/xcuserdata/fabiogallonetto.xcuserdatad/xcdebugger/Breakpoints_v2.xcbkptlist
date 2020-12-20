@@ -23,84 +23,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "3E431F2D-F8A6-445A-8CC0-6C4529844ADF"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "SwiftBoy/Engine/Device.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "166"
-            endingLineNumber = "166"
-            landmarkName = "read(at:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "3E431F2D-F8A6-445A-8CC0-6C4529844ADF - 4d4fae0b5f9ee458"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "SwiftBoy.Counter.read(at: Swift.UInt16) throws -&gt; Swift.UInt8"
-                  moduleName = "SwiftBoy"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/fabiogallonetto/Development/swiftboy/SwiftBoy/Engine/Device.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "166"
-                  endingLineNumber = "166"
-                  offsetFromSymbolStart = "105">
-               </Location>
-               <Location
-                  uuid = "3E431F2D-F8A6-445A-8CC0-6C4529844ADF - 4d4fae0b5f9ee458"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "SwiftBoy.Counter.read(at: Swift.UInt16) throws -&gt; Swift.UInt8"
-                  moduleName = "SwiftBoy"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/fabiogallonetto/Development/swiftboy/SwiftBoy/Engine/Device.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "166"
-                  endingLineNumber = "166"
-                  offsetFromSymbolStart = "126">
-               </Location>
-               <Location
-                  uuid = "3E431F2D-F8A6-445A-8CC0-6C4529844ADF - 4d4fae0b5f9ee458"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "SwiftBoy.Counter.read(at: Swift.UInt16) throws -&gt; Swift.UInt8"
-                  moduleName = "SwiftBoy"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/fabiogallonetto/Development/swiftboy/SwiftBoy/Engine/Device.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "166"
-                  endingLineNumber = "166"
-                  offsetFromSymbolStart = "186">
-               </Location>
-               <Location
-                  uuid = "3E431F2D-F8A6-445A-8CC0-6C4529844ADF - 4d4fae0b5f9ee458"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "SwiftBoy.Counter.read(at: Swift.UInt16) throws -&gt; Swift.UInt8"
-                  moduleName = "SwiftBoy"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/fabiogallonetto/Development/swiftboy/SwiftBoy/Engine/Device.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "166"
-                  endingLineNumber = "166"
-                  offsetFromSymbolStart = "244">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "0388CC59-94DF-4560-AB41-270B9ED5F203"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -242,6 +164,22 @@
                   offsetFromSymbolStart = "22">
                </Location>
             </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2655C75B-B518-4715-9886-95DBED82A198"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "SwiftBoy/Debugger/VRAMViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "29"
+            endingLineNumber = "29"
+            landmarkName = "update(_:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

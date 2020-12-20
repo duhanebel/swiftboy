@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		B733CE7A256EC3910013E8D1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CE79256EC3910013E8D1 /* AppDelegate.swift */; };
-		B733CE7C256EC3910013E8D1 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CE7B256EC3910013E8D1 /* GameViewController.swift */; };
 		B733CE83256EC3930013E8D1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B733CE82256EC3930013E8D1 /* Assets.xcassets */; };
 		B733CE86256EC3930013E8D1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B733CE84256EC3930013E8D1 /* Main.storyboard */; };
 		B733CE92256EC3930013E8D1 /* SwiftBoyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CE91256EC3930013E8D1 /* SwiftBoyTests.swift */; };
@@ -24,7 +23,6 @@
 		B733CF002572CCFA0013E8D1 /* CPU+ALU.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CEFF2572CCFA0013E8D1 /* CPU+ALU.swift */; };
 		B733CF082572CD360013E8D1 /* CPU+ALUTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CF072572CD360013E8D1 /* CPU+ALUTests.swift */; };
 		B733CF0D2572F4E90013E8D1 /* MMU.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CF0C2572F4E90013E8D1 /* MMU.swift */; };
-		B733CF202573A3E10013E8D1 /* ScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CF1F2573A3E10013E8D1 /* ScreenView.swift */; };
 		B7387318257D21CC00C4CAC8 /* tetris.gb in Resources */ = {isa = PBXBuildFile; fileRef = B7387314257D218300C4CAC8 /* tetris.gb */; };
 		B738731D257D5E8300C4CAC8 /* cpu_bits.gb in Resources */ = {isa = PBXBuildFile; fileRef = B738731C257D5E8300C4CAC8 /* cpu_bits.gb */; };
 		B7FE880D2573EC7A00695D33 /* ROM.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7FE880C2573EC7A00695D33 /* ROM.swift */; };
@@ -50,6 +48,13 @@
 		D9723A2425862FDA00AFB3CF /* Opcodes.json in Resources */ = {isa = PBXBuildFile; fileRef = D9723A2325862FDA00AFB3CF /* Opcodes.json */; };
 		D9723A2C2586300400AFB3CF /* OpcodesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9723A2B2586300400AFB3CF /* OpcodesTests.swift */; };
 		D9723A402588BBD300AFB3CF /* DisassemblyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9723A3F2588BBD300AFB3CF /* DisassemblyView.swift */; };
+		D9723A4D2588F4D400AFB3CF /* MemoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9723A4C2588F4D400AFB3CF /* MemoryView.swift */; };
+		D9723A5525891C3600AFB3CF /* TilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9723A5425891C3600AFB3CF /* TilesView.swift */; };
+		D9723A5A25891DDA00AFB3CF /* CGImage+BitImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9723A5925891DDA00AFB3CF /* CGImage+BitImage.swift */; };
+		D99B05A9258F534900A1C5B1 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99B05A8258F534900A1C5B1 /* GameViewController.swift */; };
+		D9FA218B258A016400F0393B /* VRAMViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FA218A258A016400F0393B /* VRAMViewController.swift */; };
+		D9FA21BE258F447E00F0393B /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = D9FA21BB258F447E00F0393B /* Shaders.metal */; };
+		D9FA21BF258F447E00F0393B /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FA21BC258F447E00F0393B /* Renderer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -120,6 +125,15 @@
 		D9723A2325862FDA00AFB3CF /* Opcodes.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Opcodes.json; sourceTree = "<group>"; };
 		D9723A2B2586300400AFB3CF /* OpcodesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpcodesTests.swift; sourceTree = "<group>"; };
 		D9723A3F2588BBD300AFB3CF /* DisassemblyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisassemblyView.swift; sourceTree = "<group>"; };
+		D9723A472588EDC100AFB3CF /* AlignedColumnList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlignedColumnList.swift; sourceTree = "<group>"; };
+		D9723A4C2588F4D400AFB3CF /* MemoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoryView.swift; sourceTree = "<group>"; };
+		D9723A5425891C3600AFB3CF /* TilesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TilesView.swift; sourceTree = "<group>"; };
+		D9723A5925891DDA00AFB3CF /* CGImage+BitImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGImage+BitImage.swift"; sourceTree = "<group>"; };
+		D99B05A8258F534900A1C5B1 /* GameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GameViewController.swift; path = "Metal Renderer/GameViewController.swift"; sourceTree = "<group>"; };
+		D9FA218A258A016400F0393B /* VRAMViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VRAMViewController.swift; sourceTree = "<group>"; };
+		D9FA21BB258F447E00F0393B /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		D9FA21BC258F447E00F0393B /* Renderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
+		D9FA21BD258F447E00F0393B /* ShaderTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -173,9 +187,10 @@
 			children = (
 				D9723A3E2588BB3800AFB3CF /* Debugger */,
 				B733CEAD256EC4540013E8D1 /* Engine */,
+				D99B05B0258FCA1A00A1C5B1 /* OpenGL renderer (legacy) */,
+				D9FA21BA258F446A00F0393B /* Metal Renderer */,
 				B733CE79256EC3910013E8D1 /* AppDelegate.swift */,
-				B733CE7B256EC3910013E8D1 /* GameViewController.swift */,
-				B733CF1F2573A3E10013E8D1 /* ScreenView.swift */,
+				D99B05A8258F534900A1C5B1 /* GameViewController.swift */,
 				B733CE82256EC3930013E8D1 /* Assets.xcassets */,
 				B733CE84256EC3930013E8D1 /* Main.storyboard */,
 				B733CE87256EC3930013E8D1 /* Info.plist */,
@@ -279,8 +294,32 @@
 				D91DEAF9257F7AC500590CD5 /* Debugger.swift */,
 				D91DEB082580F21300590CD5 /* DebuggerViewController.swift */,
 				D9723A3F2588BBD300AFB3CF /* DisassemblyView.swift */,
+				D9723A472588EDC100AFB3CF /* AlignedColumnList.swift */,
+				D9723A4C2588F4D400AFB3CF /* MemoryView.swift */,
+				D9723A5425891C3600AFB3CF /* TilesView.swift */,
+				D9723A5925891DDA00AFB3CF /* CGImage+BitImage.swift */,
+				D9FA218A258A016400F0393B /* VRAMViewController.swift */,
 			);
 			path = Debugger;
+			sourceTree = "<group>";
+		};
+		D99B05B0258FCA1A00A1C5B1 /* OpenGL renderer (legacy) */ = {
+			isa = PBXGroup;
+			children = (
+				B733CE7B256EC3910013E8D1 /* GameViewController.swift */,
+				B733CF1F2573A3E10013E8D1 /* ScreenView.swift */,
+			);
+			path = "OpenGL renderer (legacy)";
+			sourceTree = "<group>";
+		};
+		D9FA21BA258F446A00F0393B /* Metal Renderer */ = {
+			isa = PBXGroup;
+			children = (
+				D9FA21BC258F447E00F0393B /* Renderer.swift */,
+				D9FA21BB258F447E00F0393B /* Shaders.metal */,
+				D9FA21BD258F447E00F0393B /* ShaderTypes.h */,
+			);
+			path = "Metal Renderer";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -441,12 +480,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D9723A5525891C3600AFB3CF /* TilesView.swift in Sources */,
 				B733CEF62572C9350013E8D1 /* RAM.swift in Sources */,
 				B733CF002572CCFA0013E8D1 /* CPU+ALU.swift in Sources */,
+				D9723A5A25891DDA00AFB3CF /* CGImage+BitImage.swift in Sources */,
+				D9FA21BF258F447E00F0393B /* Renderer.swift in Sources */,
 				D91DEAFF2580EDA400590CD5 /* UInt16+String.swift in Sources */,
+				D99B05A9258F534900A1C5B1 /* GameViewController.swift in Sources */,
 				B733CEB7256ECFCF0013E8D1 /* UInt16+Bytes.swift in Sources */,
 				B7FE881E2574EF2F00695D33 /* Joypad.swift in Sources */,
 				B733CEDC257141000013E8D1 /* CPU.swift in Sources */,
+				D9FA218B258A016400F0393B /* VRAMViewController.swift in Sources */,
 				B7FE882F25752DAE00695D33 /* IO.swift in Sources */,
 				D91DEAFA257F7AC500590CD5 /* Debugger.swift in Sources */,
 				B7FE883925762B4000695D33 /* PPU.swift in Sources */,
@@ -454,8 +498,6 @@
 				B7FE88192574E48300695D33 /* UInt8+Bool.swift in Sources */,
 				D9723A402588BBD300AFB3CF /* DisassemblyView.swift in Sources */,
 				B733CEC425704F370013E8D1 /* UInt+Bits.swift in Sources */,
-				B733CE7C256EC3910013E8D1 /* GameViewController.swift in Sources */,
-				B733CF202573A3E10013E8D1 /* ScreenView.swift in Sources */,
 				B733CEFB2572C9D90013E8D1 /* Bool+Int.swift in Sources */,
 				D91DEB042580EDDE00590CD5 /* UInt8+String.swift in Sources */,
 				B7FE880D2573EC7A00695D33 /* ROM.swift in Sources */,
@@ -463,10 +505,12 @@
 				B7FE8875257CCAE600695D33 /* Pixel.swift in Sources */,
 				B7FE8862257B873600695D33 /* CircularBuffer.swift in Sources */,
 				B7FE88232574EF4A00695D33 /* CPUTypes.swift in Sources */,
+				D9FA21BE258F447E00F0393B /* Shaders.metal in Sources */,
 				B733CF0D2572F4E90013E8D1 /* MMU.swift in Sources */,
 				B733CEE92572BC600013E8D1 /* Instruction+Extended.swift in Sources */,
 				D91DEB092580F21300590CD5 /* DebuggerViewController.swift in Sources */,
 				B733CEE425726A350013E8D1 /* Instruction.swift in Sources */,
+				D9723A4D2588F4D400AFB3CF /* MemoryView.swift in Sources */,
 				B733CE7A256EC3910013E8D1 /* AppDelegate.swift in Sources */,
 				B7FE886D257CCAC300695D33 /* TileFetcher.swift in Sources */,
 			);
@@ -576,6 +620,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -630,6 +675,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OBJC_BRIDGING_HEADER = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 			};
 			name = Release;
@@ -649,6 +695,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.duhanebel.SwiftBoy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(TARGET_NAME)/Metal Renderer/ShaderTypes.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -668,6 +715,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.duhanebel.SwiftBoy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "$(TARGET_NAME)/Metal Renderer/ShaderTypes.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;

@@ -14,13 +14,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     @IBOutlet var debugWindow: NSWindow!
     var debugController: NSWindowController!
     var mainController: NSWindowController!
+    var vramController: VRAMViewController!
     
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         
         let storyBoard = NSStoryboard(name: "Main", bundle: nil)
-        debugController = storyBoard.instantiateController(withIdentifier: "debugController") as? NSWindowController
+        debugController = storyBoard.instantiateController(withIdentifier: "vramController") as? NSWindowController
         debugController.showWindow(self)
-        
+        vramController = debugController.contentViewController as? VRAMViewController
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {

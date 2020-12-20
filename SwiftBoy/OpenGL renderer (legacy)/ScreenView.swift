@@ -1,78 +1,9 @@
-////
-////  ScreenView.swift
-////  SwiftBoy
-////
-////  Created by Fabio Gallonetto on 29/11/2020.
-////
 //
-//import Foundation
-//import Cocoa
+//  ScreenView.swift
+//  SwiftBoy
 //
-//struct Pixel {}
+//  Created by Fabio Gallonetto on 29/11/2020.
 //
-//let screenWidth = 160
-//let screenHeight = 144
-//let screenSize = screenWidth * screenHeight
-//
-//class ScreenView: NSView {
-//    var buffer: Array<CGColor> = Array(repeating: .black, count: screenSize)
-//    var index: Int = 0
-//
-//    var timer: Timer! = nil
-//
-//    required init?(coder: NSCoder) {
-//        super.init(coder: coder)
-//        self.wantsLayer = true
-//        self.layer?.backgroundColor = .black
-//        timer = Timer.scheduledTimer(withTimeInterval: 1/60, repeats: true) { _ in
-//            if(self.index > 4) { self.buffer[self.index-4] = .black}
-//            self.buffer[self.index] = .white
-//            self.buffer[self.index+1] = .white
-//            self.buffer[self.index+2] = .white
-//            self.buffer[self.index+3] = .white
-//            self.needsDisplay = true
-//            self.index += 1
-//            if self.index >= self.buffer.count-4 { self.index = 0 }
-//        }
-//    }
-//
-//    override func draw(_ dirtyRect: NSRect) {
-//        super.draw(dirtyRect)
-//        let context = NSGraphicsContext.current?.cgContext
-//        context?.setShouldAntialias(false)
-//
-//        for w in 0..<screenWidth {
-//            for h in 0..<screenHeight {
-//                let loc = pixelLocation(x: w, y: h)
-//                let color = buffer[h*screenWidth + w]
-//                drawPixel(at: loc, color: color)
-//            }
-//        }
-//    }
-//
-//    private func pixelLocation(x: Int, y: Int) -> CGRect {
-//        let size = pixelSize()
-//        return CGRect(x: CGFloat(x)*size.width, y: CGFloat(y) * size.height, width: size.width, height: size.height)
-//    }
-//
-//    func drawPixel(at rect: NSRect, color: CGColor) {
-//        let context = NSGraphicsContext.current?.cgContext
-//
-//        let borderColor = CGColor.white
-//        let path = CGPath(rect: rect, transform: nil)
-//
-//        context?.setLineWidth(0.1)
-//        context?.setFillColor(color)
-//        context?.setStrokeColor(borderColor)
-//        context?.addPath(path)
-//        context?.drawPath(using: .fillStroke)
-//    }
-//
-//    func pixelSize() -> CGSize {
-//        let pixelSize = Int(self.bounds.size.width) / screenWidth
-//        return CGSize(width: pixelSize, height: pixelSize)
-//    }
-//}
 
 import Cocoa
 import GLUT
@@ -141,9 +72,7 @@ class ScreenView: NSOpenGLView, Screen {
     
         for j in 0 ..< self.screenHeight {
           for i in 0 ..< self.screenWidth {
-            let reverseY = j //(self.screenHeight - 1) - j
-            let reverseX = i // (self.screenWidth - 1) - i
-            let hue = 255 - screenBuffer[reverseY * self.screenWidth + reverseX]
+            let hue = 255 - screenBuffer[j * self.screenWidth + i]
             
             self.textureData[(j*Int(self.texSize)+i)*4] = GLubyte(hue)
             self.textureData[(j*Int(self.texSize)+i)*4+1] = GLubyte(hue)

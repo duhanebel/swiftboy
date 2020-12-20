@@ -87,7 +87,7 @@ struct DebuggerView: View {
         GeometryReader { geometry in
             HSplitView() {
                 VSplitView() {
-                    DisassemblyView()
+                    //DisassemblyView()
                     Control()
                     HexReader()
                 }.frame(minWidth: geometry.size.width*2/3, idealWidth: geometry.size.width*2/3)

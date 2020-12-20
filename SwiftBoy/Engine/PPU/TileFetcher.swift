@@ -58,7 +58,7 @@ class TileFetcher: Actor {
         case readTile
         case readData0
         case readData1
-      //  case writeTile
+        case writeTile
     }
     
     private(set) var state: State = .readTile
@@ -71,39 +71,6 @@ class TileFetcher: Actor {
     }
     
     private var tics: Int = 0
-    
-//    func compute(for tics: Int) {
-//        // The fetcher runs at half the speed of the PPU
-//        self.tics = tics
-//        guard self.tics >= 2 else { return }
-//
-//        for _ in 0..<tics/2 {
-//            switch(state) {
-//            case .idle:
-//                if buffer.count <= 8 {
-//                    state = .readTile
-//                }
-//            case .readTile:
-//                currentTileID = try! vram.read(at: tileMapAddress)
-//                state = .readData0
-//            case .readData0:
-//                let tileLineAddress = memoryAddressFor(tile: currentTileID, line: tileLine)
-//                tileData.t0 = try! vram.read(at: tileLineAddress)
-//                state = .readData1
-//            case .readData1:
-//                let tileLineAddress = memoryAddressFor(tile: currentTileID, line: tileLine)
-//                tileData.t1 = try! vram.read(at: tileLineAddress+1)
-//                state = .writeTile
-//            case .writeTile:
-//                tileData.pixels.forEach { buffer.push(value:$0) }
-//                tileMapAddress += 1
-//                state = buffer.count > 8 ? .idle : .readTile
-//            }
-//            self.tics -= 2
-//        }
-//
-//
-//    }
     
     func tic() {
         // The fetcher runs at half the speed of the PPU
@@ -125,8 +92,9 @@ class TileFetcher: Actor {
         case .readData1:
             let tileLineAddress = memoryAddressFor(tile: currentTileID, line: tileLine)
             tileData.t1 = try! vram.read(at: tileLineAddress+1)
-          //  state = .writeTile
-       // case .writeTile:
+            state = .writeTile
+            fallthrough // read and rendering is done at the same time
+        case .writeTile:
             tileData.pixels.forEach { buffer.push(value:$0) }
             tileMapAddress += 1
             state = buffer.count > 8 ? .idle : .readTile

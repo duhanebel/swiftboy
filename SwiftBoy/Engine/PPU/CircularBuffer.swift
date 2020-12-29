@@ -12,14 +12,14 @@ struct CircularBuffer<T: ExpressibleByNilLiteral> {
     private var storage: [T]
     private var readIndex = 0
     private var writeIndex = 0
-    private var storedCount = 0
+    private(set) var storedCount = 0
     
     init(size: Int) {
         storage = Array<T>(repeating: T.init(nilLiteral: ()), count: size)
     }
     
     var count: Int {
-        return storedCount
+        return storage.count
     }
     
     var isEmpty: Bool {
@@ -38,7 +38,7 @@ struct CircularBuffer<T: ExpressibleByNilLiteral> {
     
     mutating func push(value: T) {
         storage[writeIndex] = value
-        writeIndex = (writeIndex + 1) % storage.count
+        writeIndex = (writeIndex + 1) % count
         storedCount += 1
     }
     
@@ -46,7 +46,7 @@ struct CircularBuffer<T: ExpressibleByNilLiteral> {
         assert(!isEmpty, "Cannot pop from an empty buffer")
         
         let val = storage[readIndex]
-        readIndex = (readIndex + 1) % storage.count
+        readIndex = (readIndex + 1) % count
         storedCount -= 1
         return val
     }

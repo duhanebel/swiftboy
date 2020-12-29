@@ -25,7 +25,6 @@ struct RowItem {
         self.items = items
     }
     
-    
     func text(at column: Int) -> String {
         if items.count > column {
             return items[column]

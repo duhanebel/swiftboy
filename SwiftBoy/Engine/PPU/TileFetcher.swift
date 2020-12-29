@@ -5,6 +5,10 @@
 //  Created by Fabio Gallonetto on 06/12/2020.
 //
 
+private extension CircularBuffer {
+    var hasSpaceForOneTile: Bool { return (count - storedCount) >= 8 }
+}
+
 /*
   Each row of a tile is 2 bytes worth of data (8 pixels with 2 bits per pixel equals 16 bits or 2 bytes).
   Instead of each pixels value coming one after the other, each pixel is split between the two bytes.
@@ -41,10 +45,23 @@ class TileFetcher: Actor {
         }
     }
     
+    //The fetcher works in a period of 8 T-cycles
+    struct Timing {
+        static let readTile = 0
+        static let readT0 = 2
+        static let readT1 = 4
+        static let write = 6
+    }
+    
+    // The fetcher is considered busy during the first 5 T-cycles of its period
+    var isBusy: Bool {
+        tics < 5
+    }
     
     var buffer = CircularBuffer<Pixel>(size: 16)
     
-    private var vram: MemoryMappable
+    private var tileDataRam: MemoryMappable
+    private var tileMapRam: MemoryMappable
     
     private let tileLine: UInt8
     private var tileMapAddress: UInt16
@@ -54,7 +71,6 @@ class TileFetcher: Actor {
     private var tileData: TileData = TileData(t0: 0, t1: 0)
     
     enum State {
-        case idle
         case readTile
         case readData0
         case readData1
@@ -63,8 +79,9 @@ class TileFetcher: Actor {
     
     private(set) var state: State = .readTile
     
-    init(vram: MemoryMappable, tileMapAddress: UInt16, tileDataAddress: UInt16, tileLine: UInt8) {
-        self.vram = vram
+    init(tileDataRam: MemoryMappable, tileMapRam: MemoryMappable? = nil, tileMapAddress: UInt16, tileDataAddress: UInt16, tileLine: UInt8) {
+        self.tileDataRam = tileDataRam
+        self.tileMapRam = tileMapRam ?? tileDataRam
         self.tileMapAddress = tileMapAddress
         self.tileDataAddress = tileDataAddress
         self.tileLine = tileLine
@@ -74,32 +91,32 @@ class TileFetcher: Actor {
     
     func tic() {
         // The fetcher runs at half the speed of the PPU
-        self.tics += 1
-        guard self.tics == 2 else { return }
-        
-        switch(state) {
-        case .idle:
-            if buffer.count <= 8 {
-                state = .readTile
+        if tics % 2 == 1 {
+            switch(state) {
+            case .readTile:  // 0-1
+                currentTileID = try! tileMapRam.read(at: tileMapAddress)
+                state = .readData0
+            case .readData0: // 2-3
+                let tileLineAddress0 = memoryAddressFor(tile: currentTileID, line: tileLine)
+                tileData.t0 = try! tileDataRam.read(at: tileLineAddress0)
+                state = .readData1
+            case .readData1: // 4-5
+                let tileLineAddress1 = memoryAddressFor(tile: currentTileID, line: tileLine) + 1
+                tileData.t1 = try! tileDataRam.read(at: tileLineAddress1)
+                state = .writeTile
+                if buffer.isEmpty { // on the first line there is no idle time as the buffer is empty
+                    tics = 7
+                    fallthrough
+                }
+            case .writeTile: // 6-7
+                if buffer.hasSpaceForOneTile {
+                    tileData.pixels.forEach { buffer.push(value:$0) }
+                    tileMapAddress += 1
+                    state = .readTile
+                }
             }
-        case .readTile:
-            currentTileID = try! vram.read(at: tileMapAddress)
-            state = .readData0
-        case .readData0:
-            let tileLineAddress = memoryAddressFor(tile: currentTileID, line: tileLine)
-            tileData.t0 = try! vram.read(at: tileLineAddress)
-            state = .readData1
-        case .readData1:
-            let tileLineAddress = memoryAddressFor(tile: currentTileID, line: tileLine)
-            tileData.t1 = try! vram.read(at: tileLineAddress+1)
-            state = .writeTile
-            fallthrough // read and rendering is done at the same time
-        case .writeTile:
-            tileData.pixels.forEach { buffer.push(value:$0) }
-            tileMapAddress += 1
-            state = buffer.count > 8 ? .idle : .readTile
         }
-        self.tics = 0
+        tics = (tics + 1) % 8
     }
  
     func reset() {
@@ -107,7 +124,40 @@ class TileFetcher: Actor {
         state = .readTile
         tics = 0
     }
-    // Tile are store sequentially in vram.
+    
+    func dumpTile() -> [Pixel] {
+        var pixels: [Pixel] = []
+        let tileLineAddress0 = memoryAddressFor(tile: currentTileID, line: 0)
+        for i in 0..<8 {
+            let t0 = try! tileDataRam.read(at: (tileLineAddress0 + UInt16(i*2)))
+            let t1 = try! tileDataRam.read(at: (tileLineAddress0 + UInt16(i*2 + 1)))
+            let tileData = TileFetcher.TileData(t0: t0, t1: t1)
+            pixels.append(contentsOf: tileData.pixels)
+        }
+        return pixels
+    }
+    
+    func tileString() -> String {
+        let pixels = dumpTile()
+        var string = ""
+        for i in 0..<8 {
+            for j in 0..<8 {
+                switch(pixels[i*8+j]) {
+                case .black:
+                    string += "■"
+                case .darkGray:
+                    string += "▨"
+                case .lightGray:
+                    string += "▥"
+                case .white:
+                    string += "□"
+                }
+            }
+            string += "\n"
+        }
+        return string
+    }
+    // Tile are store sequentially in tileDataRam.
     // A tile's graphical data takes 16 bytes (2 bytes per row of 8 pixels).
     // Each line (0f 8 pixels) is 2 bytes
     private func memoryAddressFor(tile: UInt8, line: UInt8) -> UInt16 {

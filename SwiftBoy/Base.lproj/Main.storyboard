@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="17506" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17506"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17701"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -60,6 +60,12 @@
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <menu key="submenu" title="File" id="bib-Uj-vzu">
                                     <items>
+                                        <menuItem title="Tetris" id="914-nV-bmQ" userLabel="Tetris">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <connections>
+                                                <action selector="openTetris:" target="Voe-Tx-rLC" id="mfo-DP-3A0"/>
+                                            </connections>
+                                        </menuItem>
                                         <menuItem title="New" keyEquivalent="n" id="Was-JA-tGl">
                                             <connections>
                                                 <action selector="newDocument:" target="Ady-hI-5gd" id="4Si-XN-c54"/>
@@ -706,20 +712,20 @@
         <scene sceneID="hIz-AP-VOD">
             <objects>
                 <viewController id="XfG-lQ-9wD" customClass="GameViewController" customModule="SwiftBoy" customModuleProvider="target" sceneMemberID="viewController">
-                    <view key="view" id="m2S-Jp-Qdl" customClass="MTKView">
+                    <view key="view" id="m2S-Jp-Qdl" customClass="ScreenView" customModule="SwiftBoy" customModuleProvider="target">
                         <rect key="frame" x="0.0" y="0.0" width="480" height="430"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                     </view>
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="84" y="883"/>
+            <point key="canvasLocation" x="84" y="988"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="0QD-TH-4ue">
             <objects>
                 <windowController storyboardIdentifier="debugController" id="VXT-6z-t8u" sceneMemberID="viewController">
-                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="HRl-CD-UH6">
+                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="HRl-CD-UH6" userLabel="Debugger">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
                         <rect key="contentRect" x="245" y="301" width="800" height="600"/>
@@ -751,17 +757,18 @@
                 </viewController>
                 <customObject id="a7D-24-Zt0" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-696" y="455"/>
+            <point key="canvasLocation" x="-806" y="457"/>
         </scene>
         <!--Window Controller-->
         <scene sceneID="Ec5-M0-u2N">
             <objects>
                 <windowController storyboardIdentifier="vramController" id="cSB-Zf-wR5" sceneMemberID="viewController">
-                    <window key="window" title="Window" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="" animationBehavior="default" id="Zbn-rZ-lxI" userLabel="VRAM Explorer">
+                    <window key="window" title="VRAM Explorer" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="tt4tr" animationBehavior="default" id="Zbn-rZ-lxI" userLabel="VRAM Explorer">
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-                        <rect key="contentRect" x="245" y="301" width="270" height="270"/>
+                        <rect key="contentRect" x="683" y="459" width="270" height="270"/>
                         <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1025"/>
+                        <value key="minSize" type="size" width="270" height="270"/>
                         <view key="contentView" id="rW8-j4-6qE">
                             <rect key="frame" x="0.0" y="0.0" width="270" height="270"/>
                             <autoresizingMask key="autoresizingMask"/>
@@ -781,11 +788,14 @@
         <!--View Controller-->
         <scene sceneID="n7e-bh-Dgu">
             <objects>
-                <viewController id="OfO-1u-kcF" customClass="VRAMViewController" sceneMemberID="viewController">
-                    <view key="view" id="oeb-HJ-sqM">
+                <viewController id="OfO-1u-kcF" customClass="VRAMViewController" customModule="SwiftBoy" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="oeb-HJ-sqM" customClass="TilesView">
                         <rect key="frame" x="0.0" y="0.0" width="270" height="270"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </view>
+                    <connections>
+                        <outlet property="ramView" destination="oeb-HJ-sqM" id="1mZ-nl-Mgl"/>
+                    </connections>
                 </viewController>
                 <customObject id="8Jy-tC-3Q4" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>

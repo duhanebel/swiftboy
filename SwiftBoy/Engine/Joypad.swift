@@ -9,8 +9,8 @@ import Foundation
 
 /*
   Register format:
-    Bit 7 - Not used
-    Bit 6 - Not used
+    Bit 7 - Not used (reads as 1)
+    Bit 6 - Not used (reads as 1)
     Bit 5 - P15 out port
     Bit 4 - P14 out port
     Bit 3 - P13 in port
@@ -59,11 +59,11 @@ class Joypad: MemoryMappable {
         self.intRegister = intRegister
     }
     
-    func read(at address: UInt16) -> UInt8 {
+    func read(at address: Address) -> Byte {
         return reg
     }
     
-    func write(byte: UInt8, at address: UInt16) {
+    func write(byte: Byte, at address: Address) {
         assert(address == 0x0, "Invalid address for a byte register")
         assert(address.lowerByte == 0x0, "First 4 bits are read only")
         // first two bits not implemented, return 1

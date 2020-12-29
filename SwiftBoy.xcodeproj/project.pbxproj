@@ -42,6 +42,11 @@
 		D91DEAFF2580EDA400590CD5 /* UInt16+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91DEAFE2580EDA400590CD5 /* UInt16+String.swift */; };
 		D91DEB042580EDDE00590CD5 /* UInt8+String.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91DEB032580EDDE00590CD5 /* UInt8+String.swift */; };
 		D91DEB092580F21300590CD5 /* DebuggerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D91DEB082580F21300590CD5 /* DebuggerViewController.swift */; };
+		D94155DB25922839005576B3 /* OAM.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94155DA25922839005576B3 /* OAM.swift */; };
+		D94155E025939365005576B3 /* SpritesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94155DF25939365005576B3 /* SpritesViewController.swift */; };
+		D94155E825949160005576B3 /* PixelPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94155E725949160005576B3 /* PixelPipeline.swift */; };
+		D94155ED25949225005576B3 /* Sprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94155EC25949225005576B3 /* Sprite.swift */; };
+		D94155F2259B2CF2005576B3 /* ScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94155F1259B2CF1005576B3 /* ScreenView.swift */; };
 		D9723A182583DC2E00AFB3CF /* cpu_int.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9723A152583DC2E00AFB3CF /* cpu_int.gb */; };
 		D9723A192583DC2E00AFB3CF /* cpu_op-sp-hl.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9723A162583DC2E00AFB3CF /* cpu_op-sp-hl.gb */; };
 		D9723A1A2583DC2E00AFB3CF /* cpu_special.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9723A172583DC2E00AFB3CF /* cpu_special.gb */; };
@@ -119,6 +124,11 @@
 		D91DEAFE2580EDA400590CD5 /* UInt16+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UInt16+String.swift"; sourceTree = "<group>"; };
 		D91DEB032580EDDE00590CD5 /* UInt8+String.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UInt8+String.swift"; sourceTree = "<group>"; };
 		D91DEB082580F21300590CD5 /* DebuggerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebuggerViewController.swift; sourceTree = "<group>"; };
+		D94155DA25922839005576B3 /* OAM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OAM.swift; sourceTree = "<group>"; };
+		D94155DF25939365005576B3 /* SpritesViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpritesViewController.swift; sourceTree = "<group>"; };
+		D94155E725949160005576B3 /* PixelPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelPipeline.swift; sourceTree = "<group>"; };
+		D94155EC25949225005576B3 /* Sprite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sprite.swift; sourceTree = "<group>"; };
+		D94155F1259B2CF1005576B3 /* ScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenView.swift; sourceTree = "<group>"; };
 		D9723A152583DC2E00AFB3CF /* cpu_int.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = cpu_int.gb; sourceTree = "<group>"; };
 		D9723A162583DC2E00AFB3CF /* cpu_op-sp-hl.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "cpu_op-sp-hl.gb"; sourceTree = "<group>"; };
 		D9723A172583DC2E00AFB3CF /* cpu_special.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = cpu_special.gb; sourceTree = "<group>"; };
@@ -231,7 +241,6 @@
 				B7FE882E25752DAE00695D33 /* IO.swift */,
 				B7FE884C2577739600695D33 /* Device.swift */,
 				B7FE885C257B7B0100695D33 /* Stopwatch.swift */,
-				B7FE8861257B873600695D33 /* CircularBuffer.swift */,
 			);
 			path = Engine;
 			sourceTree = "<group>";
@@ -265,6 +274,10 @@
 				B7FE883825762B3F00695D33 /* PPU.swift */,
 				B7FE886C257CCAC300695D33 /* TileFetcher.swift */,
 				B7FE8874257CCAE600695D33 /* Pixel.swift */,
+				D94155DA25922839005576B3 /* OAM.swift */,
+				D94155E725949160005576B3 /* PixelPipeline.swift */,
+				D94155EC25949225005576B3 /* Sprite.swift */,
+				B7FE8861257B873600695D33 /* CircularBuffer.swift */,
 			);
 			path = PPU;
 			sourceTree = "<group>";
@@ -294,11 +307,12 @@
 				D91DEAF9257F7AC500590CD5 /* Debugger.swift */,
 				D91DEB082580F21300590CD5 /* DebuggerViewController.swift */,
 				D9723A3F2588BBD300AFB3CF /* DisassemblyView.swift */,
-				D9723A472588EDC100AFB3CF /* AlignedColumnList.swift */,
 				D9723A4C2588F4D400AFB3CF /* MemoryView.swift */,
 				D9723A5425891C3600AFB3CF /* TilesView.swift */,
 				D9723A5925891DDA00AFB3CF /* CGImage+BitImage.swift */,
 				D9FA218A258A016400F0393B /* VRAMViewController.swift */,
+				D94155DF25939365005576B3 /* SpritesViewController.swift */,
+				D9723A472588EDC100AFB3CF /* AlignedColumnList.swift */,
 			);
 			path = Debugger;
 			sourceTree = "<group>";
@@ -318,6 +332,7 @@
 				D9FA21BC258F447E00F0393B /* Renderer.swift */,
 				D9FA21BB258F447E00F0393B /* Shaders.metal */,
 				D9FA21BD258F447E00F0393B /* ShaderTypes.h */,
+				D94155F1259B2CF1005576B3 /* ScreenView.swift */,
 			);
 			path = "Metal Renderer";
 			sourceTree = "<group>";
@@ -493,6 +508,7 @@
 				D9FA218B258A016400F0393B /* VRAMViewController.swift in Sources */,
 				B7FE882F25752DAE00695D33 /* IO.swift in Sources */,
 				D91DEAFA257F7AC500590CD5 /* Debugger.swift in Sources */,
+				D94155DB25922839005576B3 /* OAM.swift in Sources */,
 				B7FE883925762B4000695D33 /* PPU.swift in Sources */,
 				B7FE885D257B7B0100695D33 /* Stopwatch.swift in Sources */,
 				B7FE88192574E48300695D33 /* UInt8+Bool.swift in Sources */,
@@ -501,15 +517,19 @@
 				B733CEFB2572C9D90013E8D1 /* Bool+Int.swift in Sources */,
 				D91DEB042580EDDE00590CD5 /* UInt8+String.swift in Sources */,
 				B7FE880D2573EC7A00695D33 /* ROM.swift in Sources */,
+				D94155E025939365005576B3 /* SpritesViewController.swift in Sources */,
 				B7FE884D2577739600695D33 /* Device.swift in Sources */,
 				B7FE8875257CCAE600695D33 /* Pixel.swift in Sources */,
 				B7FE8862257B873600695D33 /* CircularBuffer.swift in Sources */,
 				B7FE88232574EF4A00695D33 /* CPUTypes.swift in Sources */,
 				D9FA21BE258F447E00F0393B /* Shaders.metal in Sources */,
 				B733CF0D2572F4E90013E8D1 /* MMU.swift in Sources */,
+				D94155ED25949225005576B3 /* Sprite.swift in Sources */,
 				B733CEE92572BC600013E8D1 /* Instruction+Extended.swift in Sources */,
+				D94155E825949160005576B3 /* PixelPipeline.swift in Sources */,
 				D91DEB092580F21300590CD5 /* DebuggerViewController.swift in Sources */,
 				B733CEE425726A350013E8D1 /* Instruction.swift in Sources */,
+				D94155F2259B2CF2005576B3 /* ScreenView.swift in Sources */,
 				D9723A4D2588F4D400AFB3CF /* MemoryView.swift in Sources */,
 				B733CE7A256EC3910013E8D1 /* AppDelegate.swift in Sources */,
 				B7FE886D257CCAC300695D33 /* TileFetcher.swift in Sources */,

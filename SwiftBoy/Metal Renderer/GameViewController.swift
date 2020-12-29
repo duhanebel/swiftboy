@@ -16,32 +16,19 @@ class GameViewController: NSViewController {
 
     var device: Device!
     
-    var screenBuff: Array<UInt8>!
+    private var screenBuff: Array<UInt8>!
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         metalSetup()
-        
-        let bootURL = Bundle.main.url(forResource: "boot", withExtension: "gb")!
-        let tetrisURL = Bundle.main.url(forResource: "tetris", withExtension: "gb")!
-//       let tetrisURL = Bundle.main.url(forResource: "cpu_bits", withExtension: "gb")!
-        let bootROM = ROM()
-        let rom = ROM()
-        try! bootROM.load(url: bootURL)
-        try! rom.load(url: tetrisURL)
-        device = Device.gameBoy(biosROM: bootROM, rom: rom, screen: self)
-        device.didExecute = { DispatchQueue.main.async { ((NSApplication.shared.delegate as! AppDelegate).debugController.contentViewController as? VRAMViewController)?.update(self.device.ppu.vram)}}
-        device.fastBoot = true
     }
     
     override func viewDidAppear() {
         super.viewDidAppear()
-        device.run()
     }
     
     func metalSetup() {
-        guard let mtkView = self.view as? MTKView else {
+        guard let mtkView = self.view as? ScreenView else {
             print("View attached to GameViewController is not an MTKView")
             return
         }
@@ -62,6 +49,7 @@ class GameViewController: NSViewController {
         renderer = newRenderer
         renderer.mtkView(mtkView, drawableSizeWillChange: mtkView.drawableSize)
         mtkView.delegate = renderer
+        mtkView.inputDelegate = self
         
         screenBuff = Array<UInt8>(repeating: 0, count: renderer.width*renderer.height*4)
     }
@@ -86,7 +74,7 @@ extension GameViewController: Screen {
     }
 }
 
-extension GameViewController {
+extension GameViewController: InputDelegate {
     enum Keycode: UInt16 {
         case w = 13
         case a = 0

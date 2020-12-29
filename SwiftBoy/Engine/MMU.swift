@@ -21,6 +21,23 @@ protocol MemoryMappableW {
 }
 protocol MemoryMappable: MemoryMappableR, MemoryMappableW {}
 
+//protocol Interceptor {
+//    static var affectedRange: Range<Address> { get }
+//    var allowWrite: Bool { get }
+//    func process(byte: Byte, at: Address)
+//}
+//
+//struct BootRomUnload: Interceptor {
+//    static var affectedRange: Range<Address> = IO.MemoryLocations.bootROMRegister...IO.MemoryLocations.bootROMRegister
+//    var allowWrite = false
+//
+//    private var mmu: MMU
+//    func process(byte: Byte, at: Address) {
+//        if byte == 1 {
+//            mmu.biosROM = nil
+//        }
+//    }
+//}
 
 /*
  Memory layout:
@@ -67,7 +84,19 @@ class MMU: MemoryMappable {
     let sram: MemoryMappable
     let io: MemoryMappable
     
+    private var memoryObservers: [MemoryObserver] = []
     
+    func register(observer: MemoryObserver) {
+        memoryObservers.append(observer)
+    }
+    
+    func notifyObservers(for address: Address) {
+        for observer in memoryObservers {
+            if observer.observedRange.contains(address) {
+                observer.memoryChanged(sender: self)
+            }
+        }
+    }
     
     init(rom: MemoryMappable?, biosROM: MemoryMappable?, switchableRom: MemoryMappable?,
          vram: MemoryMappable, sram: MemoryMappable, io: MemoryMappable) {
@@ -91,10 +120,13 @@ class MMU: MemoryMappable {
         return try dest.read(at: localAddress)
     }
     
+    //private var writeInterceptors: [Range<UInt16>:Interceptor] = [:]
+    
     func write(byte: UInt8, at address: UInt16) throws {
         // Writing the value of 1 to the address 0xFF50 unmaps the boot ROM.
         if(address ==  IO.MemoryLocations.bootROMRegister && byte == 1) {
             biosROM = nil
+            return
         }
 
         // Writing to rom is fine if you have memory switch banks
@@ -104,20 +136,26 @@ class MMU: MemoryMappable {
             return
         }
         
-        // TODO move this to an interceptor (dma transfer)
-        // and do timing: tis take 160ms
+        // TODO timing: this take 160ms - does it need to be accounted for anywhere?
         if(address == 0xFF46) {
             // The source address written to 0xFF46 is divided by 0x100 (256)
-            var sourceAddress = UInt16(byte) << 8
-            for sramCounter in MemoryRanges.sram {
-                let sourceByte = try read(at:sourceAddress)
-                try sram.write(byte: sourceByte, at: sramCounter - MemoryRanges.sram.lowerBound)
-                sourceAddress += 1
-            }
+            let sourceAddress = UInt16(byte) << 8
+            try performDmaTransfer(from: sourceAddress)
             return
         }
         let (dest, localAddress) = try map(address: address)
         try dest.write(byte: byte, at: localAddress)
+        
+        notifyObservers(for: address)
+    }
+    
+    private func performDmaTransfer(from address: Address) throws {
+        var sourceAddress = address
+        for sramCounter in MemoryRanges.sram {
+            let sourceByte = try read(at:sourceAddress)
+            try sram.write(byte: sourceByte, at: sramCounter - MemoryRanges.sram.lowerBound)
+            sourceAddress += 1
+        }
     }
     
     private func map(address: UInt16) throws -> (MemoryMappable, Word) {

@@ -269,7 +269,7 @@ class CPU {
     
     func run(_ ins: Instruction, for currentPC: UInt16) -> Int {
         #if DEBUG
-        print("\(currentPC): \(ins.disassembly) ; \(ins.opcode, prefix: "")")
+        //print("\(currentPC): \(ins.disassembly) ; \(ins.opcode, prefix: "")")
         #endif
         let cycles = ins.run(on: self)
         return cycles
@@ -281,7 +281,7 @@ class CPU {
             if acc == 0 {
                 print("\(i)", terminator:":")
             }
-            print("\(try! mmu.read(at: i))", terminator:"")
+            print("\(try! mmu.read(at: i), prefix:" ")", terminator:"")
             acc += 1
             if acc >= 16 {
                 acc = 0

@@ -7,12 +7,6 @@
 
 import Foundation
 
-private extension String {
-    static func stringWith(ASCII: [UInt8]) -> String {
-        return ASCII.reduce("") { acc, val in return acc + String(UnicodeScalar(val)) }
-    }
-}
-
 /*
  ROM header:
    Location  | Name            | Size | Details
@@ -188,7 +182,6 @@ struct ROMHeader {
     
     var RAMBanks: Int { RAMSize / 8 }
     
-    
     private let data: [Byte]
     
     init(data: [Byte]) {
@@ -223,17 +216,15 @@ struct ROMHeader {
     }
 }
 
+protocol MemoryController {
+    func addressFor(address: Address) -> Address
+}
 
 class ROM: MemoryMappable {
     private var rawmem: [UInt8] = []
     var header: ROMHeader? = nil
-     
-//    class func emptyRom() -> ROM {
-//        let rom = ROM()
-//        rom.rawmem = Array<UInt8>(repeating: 0xFF, count: 0x4FFF)
-//        return rom
-//    }
-    
+    var mbc: MemoryController? = nil
+
     func load(url: URL) throws {
         rawmem = try Array<UInt8>(Data(contentsOf: url))
         if rawmem.count > ROMHeader.MemoryLocations.headerEnd {
@@ -242,6 +233,11 @@ class ROM: MemoryMappable {
         }
         
         _ = self.header?.validate()
+        
+        if self.header?.cartrigeType == .MBC1 {
+            self.mbc = MBC1()
+        }
+        
         _ = self.validate()
     }
     
@@ -255,8 +251,15 @@ class ROM: MemoryMappable {
     }
     
     func read(at address: UInt16) throws -> UInt8 {
-        guard address < rawmem.count else { throw MemoryError.outOfBounds(address, 0x00..<UInt16(rawmem.count)) }
-        return rawmem[Int(address)]
+        
+        var realAddress = address
+        if address >= 0x4000,
+           let mbc = mbc {
+            realAddress = mbc.addressFor(address: address)
+        }
+        
+        guard realAddress < rawmem.count else { throw MemoryError.outOfBounds(realAddress, 0x00..<UInt16(rawmem.count)) }
+        return rawmem[Int(realAddress)]
     }
     
     func write(byte: UInt8, at address: UInt16) throws {

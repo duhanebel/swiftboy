@@ -9,9 +9,7 @@ import Foundation
 
 extension UInt8 {
     subscript(index: Int) -> UInt8 {
-        get {
-            return (self >> index) & 0x01
-        }
+        get { (self >> index) & 0x01 }
         set {
             let bitValue = (newValue == 0) ? 0 : 1
             guard self[index] != bitValue else { return }
@@ -30,13 +28,22 @@ extension UInt8 {
     }
     
     var lowerNibble: Self {
-        get { return self & 0x0F }
+        get { self & 0x0F }
         set { self = (self & 0xF0) | (newValue & 0x0F) }
     }
     
     var upperNibble: Self {
-        get { return (self >> 4) }
+        get { self >> 4 }
         set { self = (self & 0x0F) | ((newValue << 4) & 0xF0) }
+    }
+    
+    var signed16: UInt16 {
+        get {
+            var res = UInt16(self)
+            // preserve 2-complement when extending
+            if self[7] == 0x01 { res |= 0xFFFF << 8 }
+            return res
+        }
     }
 }
 

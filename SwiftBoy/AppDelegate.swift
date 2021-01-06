@@ -35,8 +35,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func setupGame() {
         let bootURL = Bundle.main.url(forResource: "boot", withExtension: "gb")!
-        let tetrisURL = Bundle.main.url(forResource: "tetris", withExtension: "gb")!
-      // let tetrisURL = Bundle.main.url(forResource: "cpu_bits", withExtension: "gb")!
+      //  let tetrisURL = Bundle.main.url(forResource: "tetris", withExtension: "gb")!
+        let tetrisURL = Bundle.main.url(forResource: "cpu_instrs", withExtension: "gb")!
+       //let tetrisURL = Bundle.main.url(forResource: "interrupt_time", withExtension: "gb")!
+
         let bootROM = ROM()
         let rom = ROM()
         try! bootROM.load(url: bootURL)

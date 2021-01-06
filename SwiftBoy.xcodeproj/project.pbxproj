@@ -47,6 +47,10 @@
 		D94155E825949160005576B3 /* PixelPipeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94155E725949160005576B3 /* PixelPipeline.swift */; };
 		D94155ED25949225005576B3 /* Sprite.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94155EC25949225005576B3 /* Sprite.swift */; };
 		D94155F2259B2CF2005576B3 /* ScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94155F1259B2CF1005576B3 /* ScreenView.swift */; };
+		D94155FA259CC892005576B3 /* CPU+OperationsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94155F9259CC892005576B3 /* CPU+OperationsTests.swift */; };
+		D94155FF259CD91D005576B3 /* MBC1.swift in Sources */ = {isa = PBXBuildFile; fileRef = D94155FE259CD91D005576B3 /* MBC1.swift */; };
+		D9415607259CE3FB005576B3 /* cpu_instrs.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9415606259CE3FB005576B3 /* cpu_instrs.gb */; };
+		D941560C259E2AE3005576B3 /* String+ASCII.swift in Sources */ = {isa = PBXBuildFile; fileRef = D941560B259E2AE3005576B3 /* String+ASCII.swift */; };
 		D9723A182583DC2E00AFB3CF /* cpu_int.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9723A152583DC2E00AFB3CF /* cpu_int.gb */; };
 		D9723A192583DC2E00AFB3CF /* cpu_op-sp-hl.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9723A162583DC2E00AFB3CF /* cpu_op-sp-hl.gb */; };
 		D9723A1A2583DC2E00AFB3CF /* cpu_special.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9723A172583DC2E00AFB3CF /* cpu_special.gb */; };
@@ -57,6 +61,19 @@
 		D9723A5525891C3600AFB3CF /* TilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9723A5425891C3600AFB3CF /* TilesView.swift */; };
 		D9723A5A25891DDA00AFB3CF /* CGImage+BitImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9723A5925891DDA00AFB3CF /* CGImage+BitImage.swift */; };
 		D99B05A9258F534900A1C5B1 /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D99B05A8258F534900A1C5B1 /* GameViewController.swift */; };
+		D9E6F6EE25A0ECC100E5F0A9 /* APU.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E6F6ED25A0ECC100E5F0A9 /* APU.swift */; };
+		D9E6F6F325A0ECEC00E5F0A9 /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E6F6F225A0ECEC00E5F0A9 /* Timer.swift */; };
+		D9E6F6F825A0ED0000E5F0A9 /* Divider.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9E6F6F725A0ED0000E5F0A9 /* Divider.swift */; };
+		D9E6F70325A1E38100E5F0A9 /* cpu_op-r-imm.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9E6F6FC25A1E31A00E5F0A9 /* cpu_op-r-imm.gb */; };
+		D9E6F70E25A209D900E5F0A9 /* cpu_misc-instrs.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9E6F70725A209D800E5F0A9 /* cpu_misc-instrs.gb */; };
+		D9E6F70F25A209D900E5F0A9 /* cpu_ld-r-r.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9E6F70825A209D800E5F0A9 /* cpu_ld-r-r.gb */; };
+		D9E6F71025A209D900E5F0A9 /* cpu_op-r-r.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9E6F70925A209D800E5F0A9 /* cpu_op-r-r.gb */; };
+		D9E6F71125A209D900E5F0A9 /* cpu_bit-ops.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9E6F70A25A209D900E5F0A9 /* cpu_bit-ops.gb */; };
+		D9E6F71225A209D900E5F0A9 /* cpu_jr-jp-call-ret-rst.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9E6F70B25A209D900E5F0A9 /* cpu_jr-jp-call-ret-rst.gb */; };
+		D9E6F71325A209D900E5F0A9 /* cpu_op-a-hl.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9E6F70C25A209D900E5F0A9 /* cpu_op-a-hl.gb */; };
+		D9E6F71425A209D900E5F0A9 /* cpu_op-rp.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9E6F70D25A209D900E5F0A9 /* cpu_op-rp.gb */; };
+		D9E6F71C25A2206200E5F0A9 /* instr_timing.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9E6F71B25A2206200E5F0A9 /* instr_timing.gb */; };
+		D9E6F72125A220C900E5F0A9 /* interrupt_time.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9E6F72025A220C900E5F0A9 /* interrupt_time.gb */; };
 		D9FA218B258A016400F0393B /* VRAMViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FA218A258A016400F0393B /* VRAMViewController.swift */; };
 		D9FA21BE258F447E00F0393B /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = D9FA21BB258F447E00F0393B /* Shaders.metal */; };
 		D9FA21BF258F447E00F0393B /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FA21BC258F447E00F0393B /* Renderer.swift */; };
@@ -129,6 +146,10 @@
 		D94155E725949160005576B3 /* PixelPipeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelPipeline.swift; sourceTree = "<group>"; };
 		D94155EC25949225005576B3 /* Sprite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sprite.swift; sourceTree = "<group>"; };
 		D94155F1259B2CF1005576B3 /* ScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenView.swift; sourceTree = "<group>"; };
+		D94155F9259CC892005576B3 /* CPU+OperationsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CPU+OperationsTests.swift"; sourceTree = "<group>"; };
+		D94155FE259CD91D005576B3 /* MBC1.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MBC1.swift; sourceTree = "<group>"; };
+		D9415606259CE3FB005576B3 /* cpu_instrs.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = cpu_instrs.gb; sourceTree = "<group>"; };
+		D941560B259E2AE3005576B3 /* String+ASCII.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+ASCII.swift"; sourceTree = "<group>"; };
 		D9723A152583DC2E00AFB3CF /* cpu_int.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = cpu_int.gb; sourceTree = "<group>"; };
 		D9723A162583DC2E00AFB3CF /* cpu_op-sp-hl.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "cpu_op-sp-hl.gb"; sourceTree = "<group>"; };
 		D9723A172583DC2E00AFB3CF /* cpu_special.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = cpu_special.gb; sourceTree = "<group>"; };
@@ -140,6 +161,19 @@
 		D9723A5425891C3600AFB3CF /* TilesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TilesView.swift; sourceTree = "<group>"; };
 		D9723A5925891DDA00AFB3CF /* CGImage+BitImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGImage+BitImage.swift"; sourceTree = "<group>"; };
 		D99B05A8258F534900A1C5B1 /* GameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = GameViewController.swift; path = "Metal Renderer/GameViewController.swift"; sourceTree = "<group>"; };
+		D9E6F6ED25A0ECC100E5F0A9 /* APU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APU.swift; sourceTree = "<group>"; };
+		D9E6F6F225A0ECEC00E5F0A9 /* Timer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timer.swift; sourceTree = "<group>"; };
+		D9E6F6F725A0ED0000E5F0A9 /* Divider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Divider.swift; sourceTree = "<group>"; };
+		D9E6F6FC25A1E31A00E5F0A9 /* cpu_op-r-imm.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "cpu_op-r-imm.gb"; sourceTree = "<group>"; };
+		D9E6F70725A209D800E5F0A9 /* cpu_misc-instrs.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "cpu_misc-instrs.gb"; sourceTree = "<group>"; };
+		D9E6F70825A209D800E5F0A9 /* cpu_ld-r-r.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "cpu_ld-r-r.gb"; sourceTree = "<group>"; };
+		D9E6F70925A209D800E5F0A9 /* cpu_op-r-r.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "cpu_op-r-r.gb"; sourceTree = "<group>"; };
+		D9E6F70A25A209D900E5F0A9 /* cpu_bit-ops.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "cpu_bit-ops.gb"; sourceTree = "<group>"; };
+		D9E6F70B25A209D900E5F0A9 /* cpu_jr-jp-call-ret-rst.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "cpu_jr-jp-call-ret-rst.gb"; sourceTree = "<group>"; };
+		D9E6F70C25A209D900E5F0A9 /* cpu_op-a-hl.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "cpu_op-a-hl.gb"; sourceTree = "<group>"; };
+		D9E6F70D25A209D900E5F0A9 /* cpu_op-rp.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "cpu_op-rp.gb"; sourceTree = "<group>"; };
+		D9E6F71B25A2206200E5F0A9 /* instr_timing.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = instr_timing.gb; sourceTree = "<group>"; };
+		D9E6F72025A220C900E5F0A9 /* interrupt_time.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = interrupt_time.gb; sourceTree = "<group>"; };
 		D9FA218A258A016400F0393B /* VRAMViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VRAMViewController.swift; sourceTree = "<group>"; };
 		D9FA21BB258F447E00F0393B /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		D9FA21BC258F447E00F0393B /* Renderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
@@ -205,6 +239,7 @@
 				B733CE84256EC3930013E8D1 /* Main.storyboard */,
 				B733CE87256EC3930013E8D1 /* Info.plist */,
 				B733CE88256EC3930013E8D1 /* SwiftBoy.entitlements */,
+				D941560B259E2AE3005576B3 /* String+ASCII.swift */,
 			);
 			path = SwiftBoy;
 			sourceTree = "<group>";
@@ -220,6 +255,7 @@
 				B733CF072572CD360013E8D1 /* CPU+ALUTests.swift */,
 				B7FE8866257B893800695D33 /* CircularBufferTests.swift */,
 				D9723A2B2586300400AFB3CF /* OpcodesTests.swift */,
+				D94155F9259CC892005576B3 /* CPU+OperationsTests.swift */,
 			);
 			path = SwiftBoyTests;
 			sourceTree = "<group>";
@@ -236,11 +272,15 @@
 				B733CEE82572BC600013E8D1 /* Instruction+Extended.swift */,
 				B733CEF52572C9350013E8D1 /* RAM.swift */,
 				B7FE880C2573EC7A00695D33 /* ROM.swift */,
+				D94155FE259CD91D005576B3 /* MBC1.swift */,
 				B733CF0C2572F4E90013E8D1 /* MMU.swift */,
 				B7FE881D2574EF2F00695D33 /* Joypad.swift */,
 				B7FE882E25752DAE00695D33 /* IO.swift */,
 				B7FE884C2577739600695D33 /* Device.swift */,
 				B7FE885C257B7B0100695D33 /* Stopwatch.swift */,
+				D9E6F6ED25A0ECC100E5F0A9 /* APU.swift */,
+				D9E6F6F225A0ECEC00E5F0A9 /* Timer.swift */,
+				D9E6F6F725A0ED0000E5F0A9 /* Divider.swift */,
 			);
 			path = Engine;
 			sourceTree = "<group>";
@@ -285,10 +325,21 @@
 		D9723A1E2583DC3D00AFB3CF /* Test */ = {
 			isa = PBXGroup;
 			children = (
+				D9415606259CE3FB005576B3 /* cpu_instrs.gb */,
 				D9723A172583DC2E00AFB3CF /* cpu_special.gb */,
+				D9E6F72025A220C900E5F0A9 /* interrupt_time.gb */,
+				D9E6F71B25A2206200E5F0A9 /* instr_timing.gb */,
 				B738731C257D5E8300C4CAC8 /* cpu_bits.gb */,
+				D9E6F6FC25A1E31A00E5F0A9 /* cpu_op-r-imm.gb */,
 				D9723A152583DC2E00AFB3CF /* cpu_int.gb */,
 				D9723A162583DC2E00AFB3CF /* cpu_op-sp-hl.gb */,
+				D9E6F70D25A209D900E5F0A9 /* cpu_op-rp.gb */,
+				D9E6F70825A209D800E5F0A9 /* cpu_ld-r-r.gb */,
+				D9E6F70B25A209D900E5F0A9 /* cpu_jr-jp-call-ret-rst.gb */,
+				D9E6F70725A209D800E5F0A9 /* cpu_misc-instrs.gb */,
+				D9E6F70925A209D800E5F0A9 /* cpu_op-r-r.gb */,
+				D9E6F70A25A209D900E5F0A9 /* cpu_bit-ops.gb */,
+				D9E6F70C25A209D900E5F0A9 /* cpu_op-a-hl.gb */,
 			);
 			path = Test;
 			sourceTree = "<group>";
@@ -442,12 +493,23 @@
 			buildActionMask = 2147483647;
 			files = (
 				B7FE88142573F2D400695D33 /* boot.gb in Resources */,
+				D9415607259CE3FB005576B3 /* cpu_instrs.gb in Resources */,
 				B738731D257D5E8300C4CAC8 /* cpu_bits.gb in Resources */,
+				D9E6F71425A209D900E5F0A9 /* cpu_op-rp.gb in Resources */,
+				D9E6F70E25A209D900E5F0A9 /* cpu_misc-instrs.gb in Resources */,
+				D9E6F71C25A2206200E5F0A9 /* instr_timing.gb in Resources */,
 				B733CE83256EC3930013E8D1 /* Assets.xcassets in Resources */,
 				D9723A1A2583DC2E00AFB3CF /* cpu_special.gb in Resources */,
+				D9E6F71325A209D900E5F0A9 /* cpu_op-a-hl.gb in Resources */,
+				D9E6F70325A1E38100E5F0A9 /* cpu_op-r-imm.gb in Resources */,
 				B733CE86256EC3930013E8D1 /* Main.storyboard in Resources */,
 				D9723A182583DC2E00AFB3CF /* cpu_int.gb in Resources */,
+				D9E6F72125A220C900E5F0A9 /* interrupt_time.gb in Resources */,
+				D9E6F71125A209D900E5F0A9 /* cpu_bit-ops.gb in Resources */,
 				B7387318257D21CC00C4CAC8 /* tetris.gb in Resources */,
+				D9E6F71025A209D900E5F0A9 /* cpu_op-r-r.gb in Resources */,
+				D9E6F70F25A209D900E5F0A9 /* cpu_ld-r-r.gb in Resources */,
+				D9E6F71225A209D900E5F0A9 /* cpu_jr-jp-call-ret-rst.gb in Resources */,
 				D9723A192583DC2E00AFB3CF /* cpu_op-sp-hl.gb in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -496,6 +558,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D9723A5525891C3600AFB3CF /* TilesView.swift in Sources */,
+				D9E6F6F825A0ED0000E5F0A9 /* Divider.swift in Sources */,
 				B733CEF62572C9350013E8D1 /* RAM.swift in Sources */,
 				B733CF002572CCFA0013E8D1 /* CPU+ALU.swift in Sources */,
 				D9723A5A25891DDA00AFB3CF /* CGImage+BitImage.swift in Sources */,
@@ -503,6 +566,8 @@
 				D91DEAFF2580EDA400590CD5 /* UInt16+String.swift in Sources */,
 				D99B05A9258F534900A1C5B1 /* GameViewController.swift in Sources */,
 				B733CEB7256ECFCF0013E8D1 /* UInt16+Bytes.swift in Sources */,
+				D9E6F6EE25A0ECC100E5F0A9 /* APU.swift in Sources */,
+				D9E6F6F325A0ECEC00E5F0A9 /* Timer.swift in Sources */,
 				B7FE881E2574EF2F00695D33 /* Joypad.swift in Sources */,
 				B733CEDC257141000013E8D1 /* CPU.swift in Sources */,
 				D9FA218B258A016400F0393B /* VRAMViewController.swift in Sources */,
@@ -519,11 +584,13 @@
 				B7FE880D2573EC7A00695D33 /* ROM.swift in Sources */,
 				D94155E025939365005576B3 /* SpritesViewController.swift in Sources */,
 				B7FE884D2577739600695D33 /* Device.swift in Sources */,
+				D941560C259E2AE3005576B3 /* String+ASCII.swift in Sources */,
 				B7FE8875257CCAE600695D33 /* Pixel.swift in Sources */,
 				B7FE8862257B873600695D33 /* CircularBuffer.swift in Sources */,
 				B7FE88232574EF4A00695D33 /* CPUTypes.swift in Sources */,
 				D9FA21BE258F447E00F0393B /* Shaders.metal in Sources */,
 				B733CF0D2572F4E90013E8D1 /* MMU.swift in Sources */,
+				D94155FF259CD91D005576B3 /* MBC1.swift in Sources */,
 				D94155ED25949225005576B3 /* Sprite.swift in Sources */,
 				B733CEE92572BC600013E8D1 /* Instruction+Extended.swift in Sources */,
 				D94155E825949160005576B3 /* PixelPipeline.swift in Sources */,
@@ -544,6 +611,7 @@
 				D9723A2C2586300400AFB3CF /* OpcodesTests.swift in Sources */,
 				B733CF082572CD360013E8D1 /* CPU+ALUTests.swift in Sources */,
 				B733CEBF256ECFFF0013E8D1 /* UInt16+BytesTests.swift in Sources */,
+				D94155FA259CC892005576B3 /* CPU+OperationsTests.swift in Sources */,
 				B733CE92256EC3930013E8D1 /* SwiftBoyTests.swift in Sources */,
 				B7FE8867257B893800695D33 /* CircularBufferTests.swift in Sources */,
 			);

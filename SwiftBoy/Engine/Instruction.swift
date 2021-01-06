@@ -178,6 +178,9 @@ extension Instruction {
 
             Instruction(asm: "LD E, d8",   opcode: 0x1E, cycles: 8, execute: { cpu, arg in cpu.registers.E = arg }),
 
+            /*
+             RLCA, RLA, RRCA, RRA instructions: the flags are described wrong in the CPU manual: after the execution C contains the rotated bit while N, H and Z are always 0. The equivalent instructions in the extended CB opcode space however set Z if the result is 0 and that's correctly documented.
+             */
             Instruction(asm: "RRA",        opcode: 0x1F, cycles: 4, execute: { cpu in
                             cpu.registers.A = cpu.rr(cpu.registers.A);
                             cpu.registers.flags.Z = false }),
@@ -493,7 +496,7 @@ extension Instruction {
             Instruction(asm: "OR d8",      opcode: 0xF6, cycles: 8,  execute: { cpu, arg in cpu.registers.A = cpu.or(cpu.registers.A, value: arg) }),
             Instruction(asm: "RST 30H",    opcode: 0xF7, cycles: 16, execute: { cpu in cpu.rst(to: 0x30) }),
 
-            Instruction(asm: "LD HL, SP+r8", opcode: 0xF8, cycles: 12, execute: { (cpu, arg: UInt8) in cpu.registers.HL = cpu.registers.SP &+ UInt16(arg) }),
+            Instruction(asm: "LD HL, SP+r8", opcode: 0xF8, cycles: 12, execute: { (cpu, arg: UInt8) in cpu.registers.HL = cpu.add(cpu.registers.SP, value: arg) }),
             Instruction(asm: "LD SP, HL",  opcode: 0xF9, cycles: 8, execute: { cpu in cpu.registers.SP = cpu.registers.HL }),
 
             Instruction(asm: "LD A, (a16)",opcode: 0xFA, cycles: 16, execute: { cpu, arg in cpu.registers.A = cpu.read(at: arg) }),

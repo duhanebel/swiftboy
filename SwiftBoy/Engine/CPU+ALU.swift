@@ -31,7 +31,7 @@ extension CPU {
         return res
     }
     
-    func inc(_ reg: UInt8) -> UInt8{
+    func inc(_ reg: UInt8) -> UInt8 {
         registers.flags.H = ((reg & 0xF) == 0xF)
         let res = reg &+ 1
         registers.flags.Z = (res == 0)
@@ -40,7 +40,7 @@ extension CPU {
     }
     
     func inc(_ reg: UInt16) -> UInt16 {
-        let res = reg + 1
+        let res = reg &+ 1
         return res
     }
     
@@ -67,20 +67,35 @@ extension CPU {
     }
 
     func adc(_ reg: UInt8, value: UInt8) -> UInt8 {
+        let hadCarry = registers.flags.C
         var res = add(reg, value: value)
-        let C = registers.flags.C
-        res = add(res, value: registers.flags.C.intValue)
-        if C == true { registers.flags.C = C }
+        // C and H flags need to be updated for both operations + value and +1
+        if hadCarry {
+            let addC = registers.flags.C
+            let addH = registers.flags.H
+            res = add(res, value: 1)
+            if addH == true { registers.flags.H = addH }
+            if addC == true { registers.flags.C = addC }
+        }
         return res
     }
     
     func add(_ reg: UInt16, value: UInt8) -> UInt16 {
-        return add(reg, value: UInt16(value))
+        let res = reg &+ value.signed16
+        // On the gameboy, when adding u8 to u16, the H and carry flags
+        // behave like when adding two u8 together
+        registers.flags.H = ((reg & 0xF) + UInt16(value & 0xF) > 0xF)
+        registers.flags.C = ((reg & 0xFF) + UInt16(value & 0xFF) > 0xFF)
+        registers.flags.N = false
+        registers.flags.Z = false
+        return res
     }
     
     func add(_ reg: UInt16, value: UInt16) -> UInt16 {
         var res = reg
-        registers.flags.H = ((reg & 0xFF) + (value & 0xFF) > 0xFF)
+        // On 16-bit operations, H is calculated for bit 11
+        // (which is H of the upper-byte)
+        registers.flags.H = ((reg & 0xFFF) + (value & 0xFFF) > 0xFFF)
         registers.flags.N = false
         (res, registers.flags.C) = reg.addingReportingOverflow(value)
         return res
@@ -94,7 +109,7 @@ extension CPU {
      */
     func sub(_ reg: UInt8, value: UInt8) -> UInt8 {
         var res = reg
-        registers.flags.H = ((value & 0xF) > (reg & 0xF))
+        registers.flags.H = ((value & 0x0F) > (reg & 0x0F))
         (res, registers.flags.C) = reg.subtractingReportingOverflow(value)
         registers.flags.N = true
         registers.flags.Z = (res == 0)
@@ -102,7 +117,17 @@ extension CPU {
     }
     
     func sbc(_ reg: UInt8, value: UInt8) -> UInt8 {
-        sub(reg, value: (value &- registers.flags.C.intValue))
+        let hadCarry = registers.flags.C
+        var res = sub(reg, value: value)
+        // C and H flags need to be updated for both operations - value and -1
+        if hadCarry {
+            let subC = registers.flags.C
+            let subH = registers.flags.H
+            res = sub(res, value: 1)
+            if subH == true { registers.flags.H = subH }
+            if subC == true { registers.flags.C = subC }
+        }
+        return res
     }
     
     func complement(_ reg: UInt8) -> UInt8 {
@@ -144,14 +169,21 @@ extension CPU {
     }
     
     func daa() {
-        if registers.A.lowerNibble > 9 || registers.flags.H {
-            registers.A += 6
+        // note: assumes a is a uint8_t and wraps from 0xff to 0
+        if registers.flags.N == false {  // after an addition, adjust if (half-)carry occurred or if result is out of bounds
+            if registers.flags.C || registers.A > 0x99 {
+                registers.A &+= 0x60
+                registers.flags.C = true
+            }
+            if registers.flags.H || (registers.A & 0x0F) > 0x09 { registers.A &+= 0x06; }
+        } else {  // after a subtraction, only adjust if (half-)carry occurred
+            if registers.flags.C { registers.A &-= 0x60; }
+            if registers.flags.H { registers.A &-= 0x6; }
         }
-        if registers.A.upperNibble > 9 || registers.flags.C {
-            registers.A += 60
-        }
-//        if the lower 4 bits form a number greater than 9 or H is set, add $06 to the accumulator
-//        if the upper 4 bits form a number greater than 9 or C is set, add $60 to the accumulator
+        // these flags are always updated
+        registers.flags.Z = (registers.A == 0) // the usual z flag
+        registers.flags.H = false // h flag is always cleared
+        
     }
     
     func rlc(_ reg:  UInt8) -> UInt8 {
@@ -194,7 +226,7 @@ extension CPU {
         let res = ((reg >> 4) & 0x0F) | ((reg << 4) & 0xF0)
         registers.flags.Z = (res == 0)
         registers.flags.N = false
-        registers.flags.Z = false
+        registers.flags.H = false
         registers.flags.C = false
         return res
     }
@@ -204,14 +236,14 @@ extension CPU {
         registers.flags.C = reg[0].boolValue
         registers.flags.Z = (res == 0)
         registers.flags.N = false
-        registers.flags.H = false
+        registers.flags.H = true
         return res
     }
     
     func bit(_ index: Int, of reg: UInt8) {
         assert(index >= 0 && index < 8, "Bit indexing out fo bounds")
         
-        registers.flags.Z = (reg[index] == 1)
+        registers.flags.Z = (reg[index] == 0)
         registers.flags.N = false
         registers.flags.H = true
     }
@@ -231,5 +263,4 @@ extension CPU {
         res[index] = 1
         return res
     }
-
 }

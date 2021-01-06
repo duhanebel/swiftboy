@@ -44,24 +44,34 @@ struct Flags {
         get { return byteValue[Locations.C].boolValue }
         set { byteValue[Locations.C] = newValue.intValue }
     }
+    
+    var description: String {
+        var description = ""
+        description += (Z == true) ? "Z" : "z"
+        description += (N == true) ? "N" : "n"
+        description += (H == true) ? "H" : "h"
+        description += (C == true) ? "C" : "c"
+        return description
+    }
 }
 
+// Registers are initialised to specific values at boot
 struct Registers {
-    var A: UInt8 = 0x0
-    var flags: Flags = Flags(values: 0x0)
+    var A: UInt8 = 0x01
+    var flags: Flags = Flags(values: 0xB0)
 
-    var BC: UInt16 = 0x0
-    var DE: UInt16 = 0x0
-    var HL: UInt16 = 0x0
+    var BC: UInt16 = 0x0013
+    var DE: UInt16 = 0x00D8
+    var HL: UInt16 = 0x014D
     
     var SP: UInt16 = 0xFFFE
-    var PC: UInt16 = 0x0 // 0x100
+    var PC: UInt16 = 0x0000
 
     var AF: UInt16 {
         get {
             var AF: UInt16 = 0
-            AF.lowerByte = A
-            AF.upperByte = flags.byteValue
+            AF.upperByte  = A
+            AF.lowerByte = flags.byteValue
             return AF
         }
         set {
@@ -101,6 +111,15 @@ struct Registers {
     
     mutating func incrementPC(bytes: Int = 1) {
         PC += UInt16(bytes)
+    }
+    
+    var description: String {
+        var description = "AF:\(AF) "
+        description += "BC:\(BC) "
+        description += "DE:\(DE) "
+        description += "HL:\(HL) "
+        description += "SP:\(SP)v"
+        return description
     }
 }
 
@@ -156,13 +175,13 @@ class CPU {
     func tic() -> Int {
         let interruptTics = processInterrupts()
         
-        switch(state){
+        switch(state) {
         case .running:
             return (interruptTics > 0) ? interruptTics : fetchExecute()
         case .halt:
             fallthrough
         case .stop:
-            return interruptTics
+            return interruptTics > 0 ? interruptTics : 1
         }
     }
     
@@ -175,8 +194,12 @@ class CPU {
         guard let ins = decode(code: rawOp) else { return 0 }
         let opCycles = run(ins, for: currentPC)
         cycles += opCycles
-        if enableInterrupts { interruptState = .enabled }
-        else if disableInterrupts { interruptState = .disabled }
+        if enableInterrupts {
+            interruptState = .enabled
+        }
+        else if disableInterrupts {
+            interruptState = .disabled
+        }
         return opCycles
     }
     
@@ -189,42 +212,60 @@ class CPU {
     }
     
     private func processInterrupts() -> Int {
-        guard interruptState == .enabled else { return 0 }
+        // See below re "state != .running"
+        guard interruptState == .enabled || state != .running else { return 0 }
 
+        // TODO: what's the priority of interrupts?
         var intVector: InterruptVectors? = nil
         if intEnabled.VBlank && intRegister.VBlank {
             intVector = .VBlank
-            intRegister.VBlank = false
-        }
-        if intEnabled.LCDStat && intRegister.LCDStat {
+        } else if intEnabled.LCDStat && intRegister.LCDStat {
             intVector = .LCDStat
-            intRegister.LCDStat = false
-        }
-        if intEnabled.timer && intRegister.timer {
+        } else if intEnabled.timer && intRegister.timer {
             intVector = .timer
-            intRegister.timer = false
-        }
-        if intEnabled.serial && intRegister.serial {
+        } else if intEnabled.serial && intRegister.serial {
             intVector = .serial
-            intRegister.serial = false
-        }
-        if intEnabled.joypad && intRegister.joypad {
+        } else if intEnabled.joypad && intRegister.joypad {
             intVector = .joypad
-            intRegister.joypad = false
         }
         
         if let intVector = intVector {
-            disableIntAndJumpTo(vector: intVector)
+            /*
+             The HALT state is left when an enabled interrupt occurs, no matter if the IME
+             is enabled or not. However, if the IME is disabled the program counter register
+             is frozen for one incrementation process upon leaving the HALT state.
+             TODO: implmenet halt bug!
+             */
+            if state != .running {
+                state = .running
+                return 0
+            }
+            
+            disableInterrupts()
+            call(intVector.rawValue)
+        
+            switch(intVector) {
+            case .VBlank:
+                intRegister.VBlank = false
+            case .LCDStat:
+                intRegister.LCDStat = false
+            case .timer:
+                intRegister.timer = false
+            case .serial:
+                intRegister.serial = false
+            case .joypad:
+                intRegister.joypad = false
+            }
             return 32 // TODO: uh? are we sure it's 32?
         }
         return 0
     }
     
-    private func disableIntAndJumpTo(vector: InterruptVectors) {
-        self.interruptState = .disabled
-        push(registers.PC)
-        jump(to: vector.rawValue)
-    }
+//    private func disableIntAndJumpTo(vector: InterruptVectors) {
+//        self.interruptState = .disabled
+//        push(registers.PC)
+//        jump(to: vector.rawValue)
+//    }
     
     func readByteAdvance() -> UInt8 {
         let byte = try! mmu.read(at: registers.PC)
@@ -266,12 +307,22 @@ class CPU {
         }
         return ins
     }
-    
+#if DEBUG
+    static var debug = false
+#endif
     func run(_ ins: Instruction, for currentPC: UInt16) -> Int {
         #if DEBUG
-        //print("\(currentPC): \(ins.disassembly) ; \(ins.opcode, prefix: "")")
+        
+        if(CPU.debug) {
+            print("\(currentPC): \(ins.disassembly) ; \(ins.opcode, prefix: "")")
+        }
         #endif
         let cycles = ins.run(on: self)
+        #if DEBUG
+        if(CPU.debug) {
+            print("        \(registers.flags.description) \(registers.description)")
+        }
+#endif
         return cycles
     }
     
@@ -398,10 +449,20 @@ extension CPU {
     }
     
     func stop() {
+        // Prevent stalling the CPU if there are no interrupts
+        if intEnabled.allOff {
+            registers.PC += 1
+            return
+        }
         state = .stop
     }
     
     func halt() {
+        // Prevent stalling the CPU if there are no interrupts
+        if intEnabled.allOff {
+            registers.PC += 1
+            return
+        }
         state = .halt
     }
     
@@ -413,7 +474,12 @@ extension CPU {
 // MARK: Address space
 extension CPU {
     func read(at address: UInt16) -> UInt8 {
-        return try! mmu.read(at: address)
+        do {
+            return try mmu.read(at: address)
+        } catch {
+            print("ERROR: Invalid read at: \(address)")
+            return 0x00
+        }
     }
     
     func readWord(at address: UInt16) -> UInt16 {
@@ -432,8 +498,7 @@ extension CPU {
             try mmu.write(byte: byte, at: address)
         }
         catch {
-            print("Write to bad ram \(address)")
-            return
+            print("ERROR: Invalid write at: \(address)")
         }
     }
     

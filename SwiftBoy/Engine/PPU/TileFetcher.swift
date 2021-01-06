@@ -87,7 +87,7 @@ class TileFetcher: Actor {
         self.tileLine = tileLine
     }
     
-    private var tics: Int = 0
+    /*private*/ var tics: Int = 0
     
     func tic() {
         // The fetcher runs at half the speed of the PPU
@@ -119,8 +119,8 @@ class TileFetcher: Actor {
         tics = (tics + 1) % 8
     }
  
-    func reset() {
-        buffer.clear()
+    func reset(clearBuffer: Bool = true) {
+        if clearBuffer { buffer.clear() }
         state = .readTile
         tics = 0
     }

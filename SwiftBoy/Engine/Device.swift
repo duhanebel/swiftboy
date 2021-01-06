@@ -25,185 +25,37 @@ protocol InterruptGenerator {
     var interruptHandler: InterruptHandler? { get set }
 }
 
-class Divider: Actor, MemoryMappable {
-    var rawdata: UInt8 = 0x0
-    private var tics: Int = 0
-
-    // The  DIV register is incremented 16384 times per second
-    // The CPU frequency is 4194304 Hz.
-    // The number of cycles requires for the DIV register to be incremented is then
-    // 4194304/16384=256 CPU cycles.
-    // NOTE: This timer doesn't include any interrupt mechanism
-    static let speed = 16384 // Hz
-    let cyclesPerTic: Int
-    
-    init(CPUSpeed: Int) {
-        self.cyclesPerTic = CPUSpeed / Divider.speed
-    }
-
-//    func compute(for tics: Int) {
-//        self.tics += tics
-//        rawdata &+= UInt8(truncatingIfNeeded: (tics / cyclesPerTic))
-//        self.tics = tics % cyclesPerTic
-//    }
-    
-    func tic() {
-        self.tics += 1
-        rawdata &+= UInt8(truncatingIfNeeded: (tics / cyclesPerTic))
-        self.tics = tics % cyclesPerTic
-    }
-    
-    func read(at address: UInt16) throws -> UInt8 {
-        return rawdata
-    }
-    
-    // Writing any value to this register will reset it
-    func write(byte: UInt8, at address: UInt16) throws {
-        rawdata = 0x0
-    }
-}
-
 enum RegisteError : Error {
     case invalidValue(String)
 }
 
-class Counter: Actor, MemoryMappable {
-    enum ClockSpeed: Int {
-        case mode00 = 4096
-        case mode01 = 262144
-        case mode10 = 65536
-        case mode11 = 16384
-    }
+class MemoryPrinter: MemoryMappable {
+    let size: Int = 2
+#if DEBUG
+    let direct = true
+#else
+    let direct = false
+#endif
     
-    private struct MemoryAddress {
-        static let counterData = UInt16(0xFF05)
-        static let moduloData = UInt16(0xFF06)
-        static let controlData = UInt16(0xFF07)
-        static let range = UInt16(0xFF05)..<UInt16(0xFF08)
-    }
-    
-    let CPUSpeed: Int
-    var cyclesPerTic: Int = 0
-    
-    private var running: Bool = false
-    
-    var counterData: UInt8 = 0x0
-    var moduloData: UInt8 = 0x0
-    
-    // Bit 2    - Timer Stop  (0=Stop, 1=Start)
-    // Bits 1-0 - Input Clock Select
-    //           00:   4096 Hz    (~4194 Hz SGB)
-    //           01: 262144 Hz  (~268400 Hz SGB)
-    //           10:  65536 Hz   (~67110 Hz SGB)
-    //           11:  16384 Hz   (~16780 Hz SGB)
-    var controlData: UInt8 = 0x0 {
-        didSet {
-            running = controlData[2].boolValue
-            
-            switch(controlData[1], controlData[0]) {
-            case (0, 0):
-                cyclesPerTic = CPUSpeed / ClockSpeed.mode00.rawValue
-            case (0, 1):
-                cyclesPerTic = CPUSpeed / ClockSpeed.mode01.rawValue
-            case (1, 0):
-                cyclesPerTic = CPUSpeed / ClockSpeed.mode10.rawValue
-            case (1, 1):
-                cyclesPerTic = CPUSpeed / ClockSpeed.mode11.rawValue
-            default:
-                running = false
-            }
-        }
-    }
-    
-    var intRegister: InterruptRegister
-    
-    private var tics = 0
-    
-    init(CPUSpeed: Int, intRegister: InterruptRegister) {
-        self.CPUSpeed = CPUSpeed
-        self.intRegister = intRegister
-    }
-    
-    // If the timer is started (bit 2 of the TAC), the Timer Counter (TIMA) gets incremented
-    // at a rate specified by the Timer Control (TAC).  When the Timer Counter gets to 0xFF
-    // and is incremented, it effectively overflows, and when this happens, it gets loaded with
-    // the value held at the Timer Modulo (TMA).
-//    func compute(for tics: Int) {
-//        guard running else { return }
-//        self.tics += tics
-//        let counterDelta = self.tics / cyclesPerTic
-//        let overflow = (Int(counterData) + counterDelta) / 0xFFFF
-//        counterData &+= UInt8(tics / counterDelta)
-//
-//        for _ in 0..<overflow {
-//            generateInterrupt()
-//            counterData = moduloData
-//        }
-//
-//        self.tics = self.tics % cyclesPerTic
-//
-//        // TODO: should check for overflow again here for completeness??
-//    }
-    
-    func tic() {
-        guard running else { return }
-        self.tics += 1
-        let counterDelta = self.tics / cyclesPerTic
-        let overflow = (Int(counterData) + counterDelta) / 0xFFFF
-        counterData &+= UInt8(tics / counterDelta)
-
-        for _ in 0..<overflow {
-            generateInterrupt()
-            counterData = moduloData
-        }
-        
-        self.tics = self.tics % cyclesPerTic
-        
-        // TODO: should check for overflow again here for completeness??
-    }
-    
-    func read(at address: UInt16) throws -> UInt8 {
-        switch(address) {
-        case MemoryAddress.counterData:
-            return counterData
-        case MemoryAddress.moduloData:
-            return moduloData
-        case MemoryAddress.controlData:
-            return controlData
-        default:
-            throw MemoryError.outOfBounds(address, MemoryAddress.range)
-        }
-    }
-    
-    func write(byte: UInt8, at address: UInt16) throws {
-        switch(address) {
-        case MemoryAddress.counterData:
-            counterData = byte
-        case MemoryAddress.moduloData:
-            moduloData = byte
-        case MemoryAddress.controlData:
-            controlData = byte
-        default:
-            throw MemoryError.outOfBounds(address, MemoryAddress.range)
-        }
-    }
-    
-    private func generateInterrupt() {
-        intRegister.timer = true
-    }
-}
-
-class Audio: Actor, MemoryMappable {
+    var buffer: String = ""
     func read(at address: UInt16) throws -> UInt8 {
         return 0
-
     }
     
     func write(byte: UInt8, at address: UInt16) throws {
-    }
-    
-    func tic() {
-        
+        guard address == 0 else { return }
+        let char = UnicodeScalar(byte)
+        guard char.isASCII else { return }
+        if direct {
+            print(String(char))
+            return
+        }
+        if char != "\n" {
+            buffer += String(char)
+        } else {
+            print("Serial output: \(buffer)")
+            buffer = ""
+        }
     }
 }
 
@@ -233,7 +85,7 @@ class Device {
         let joypad = Joypad(intRegister: intRegister)
         let divider = Divider(CPUSpeed: CPU.clockSpeed)
         let counter = Counter(CPUSpeed: CPU.clockSpeed, intRegister: intRegister)
-        let serial = RAM(size: 2) // unimplemented
+        let serial = MemoryPrinter() //RAM(size: 2) // unimplemented
         let audio = Audio()
         
         let io = IO(joypad: joypad,

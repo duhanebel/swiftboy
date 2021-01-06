@@ -57,7 +57,20 @@ class PPU : Actor {
     let vram = MemorySegment(size: 0x2000)
     let sram = OAM()
     let interruptRegister: InterruptRegister
-    var registers = MemorySegment(size: MemoryLocations.allCases.count)
+    var registers: MemorySegment = {
+        // Registers are initialised to specific values at boot
+        var mem = MemorySegment(size: MemoryLocations.allCases.count)
+        try! mem.write(byte: 0x91, at: MemoryLocations.lcdc.rawValue)
+        try! mem.write(byte: 0x00, at: MemoryLocations.scy.rawValue)
+        try! mem.write(byte: 0x00, at: MemoryLocations.scx.rawValue)
+        try! mem.write(byte: 0x00, at: MemoryLocations.lyc.rawValue)
+        try! mem.write(byte: 0xFC, at: MemoryLocations.bgp.rawValue)
+        try! mem.write(byte: 0xFF, at: MemoryLocations.obp0.rawValue)
+        try! mem.write(byte: 0xFF, at: MemoryLocations.obp1.rawValue)
+        try! mem.write(byte: 0x00, at: MemoryLocations.wy.rawValue)
+        try! mem.write(byte: 0x00, at: MemoryLocations.wx.rawValue)
+        return mem
+    }()
     
     let screen: Screen?
     
@@ -101,7 +114,9 @@ class PPU : Actor {
     */
     private struct Timing {
         static let OAMSearch = 20 * 4
-        static let pixelTransfer = (42 * 4 - 1) + 6 //6 3x2mhz pipeline warm up at the beginning
+        // TODO: why base is 168 instead of 167.5 (aka 167)? Is there an
+        // extra wasted tic  in the algo?
+        static let pixelTransfer = (42 * 4) + 6 //6 3x2mhz pipeline warm up at the beginning
         static let hBlank = 51 * 4
         static let vBlank = 1140 * 4
         static let fullLine = OAMSearch + pixelTransfer + hBlank
@@ -161,7 +176,7 @@ class PPU : Actor {
             case .OAMSearch:
                 return
             case .pixelTransfer:
-                if currentPixelX == 0 {
+                if currentPixelX == 0 { // not when coming back from sprite
                     let tileLine = currentLY
                     let tileMapOffset = (UInt16(tileLine / 8) * 32)
                     bgFetcher = TileFetcher(tileDataRam: vram,
@@ -180,12 +195,17 @@ class PPU : Actor {
         }
     }
     
-    var currentPixelX = 0
+    var currentPixelX = 0 {
+        didSet {
+            //This goes to bounds+1 because the last time it's set it's never read again
+            assert(currentPixelX <= screenWidth, "Line out of bounds: \(currentPixelX)")
+        }
+    }
     
     var activeSprites: [Sprite] = []
     
     private func hasActiveSprites(at x: Int) -> Bool {
-        activeSprites.first(where: { $0.x - 8 == x }) != nil
+        activeSprites.first(where: { $0.x == x + 8 }) != nil
     }
         
     func tic() {
@@ -207,14 +227,29 @@ class PPU : Actor {
                 return
             }
             
-            bgFetcher.tic()
+
             
-            // Wait until there are enough bytes to pop
+            if pixelTransferTics == 239 {
+                print("X/Y:\(currentPixelX)/\(currentLY) -T/FT:\(tics)/\(bgFetcher.tics) -FS: \(bgFetcher.state) -Busy?\(bgFetcher.isBusy) -buff:\(bgFetcher.buffer.storedCount)")
+            }
+            
+            // Wait until there are enough pixels to pop
+            // There need to be always at least 8 pixels on the queue otherwise
+            // if we encouter a sprite (fetched 8pixel at a time) we won't have
+            // enough background data to draw the sprite on top.
             if bgFetcher.buffer.storedCount > 8 {
                 if hasActiveSprites(at: currentPixelX) {
+                    // The PPU won't stop the fetcher if it's busy (first 5 cycles)
+                    // Why? No idea.
                     if bgFetcher.isBusy == false {
+                        // Stop the bf-fetcher and reset but keep the existing buffer
+                        // TODO: move the buffer to a shared class so that the fetcher
+                        // can be properly stopped and used for the sprites too (maybe?)
+                        bgFetcher.reset(clearBuffer: false)
                         mode = .pixelTransferSprite
                         fallthrough
+                    } else {
+                        let i = "busy"
                     }
                 } else {
                     let pixel = bgFetcher.buffer.pop()
@@ -222,6 +257,7 @@ class PPU : Actor {
                     currentPixelX += 1
                 }
             }
+            bgFetcher.tic()
         case .pixelTransferSprite:
             if spriteFetcher == nil {
                 if let sprite = activeSprites.first(where: { $0.isVisibleAt(x: currentPixelX) }) {
@@ -234,6 +270,11 @@ class PPU : Actor {
             }
             
             spriteFetcher?.tic()
+            
+            if pixelTransferTics == 239 {
+                print("SPRITE X/Y:\(currentPixelX)/\(currentLY) -T/FT:\(tics)/\(bgFetcher.tics) -FS: \(bgFetcher.state) -Busy?\(bgFetcher.isBusy) -buff:\(bgFetcher.buffer.storedCount)")
+            }
+            
             if spriteFetcher?.buffer.storedCount == 8 {
                 var mixer: [Pixel] = []
                 for _ in 0..<bgFetcher.buffer.storedCount {
@@ -284,7 +325,10 @@ class PPU : Actor {
     
     private var currentLY: UInt8 {
         get { try! registers.read(at: MemoryLocations.ly.rawValue) }
-        set { try! registers.write(byte: newValue, at: MemoryLocations.ly.rawValue) }
+        set {
+            assert(newValue < screenHeight + vblankLines, "Line out of bounds: \(newValue)")
+            try! registers.write(byte: newValue, at: MemoryLocations.ly.rawValue)
+        }
     }
     
     private func scrollY() -> Int {
@@ -297,6 +341,8 @@ class PPU : Actor {
     
     private func writeToBuffer(_ pixel: Pixel) {
         guard currentLY >= scrollY() else { return }
+        assert(currentLY < screenHeight)
+        assert(currentPixelX < screenWidth)
 
         let buffIndex = (Int(currentLY) - scrollY() % screenHeight) * screenWidth + currentPixelX
       //  guard buffIndex < buffer.count else { print("Out of bounds: \(buffIndex)"); return}
@@ -304,7 +350,6 @@ class PPU : Actor {
         buffer[buffIndex] = pixel.grayscaleValue
     }
     
-
     var buffer:[UInt8] = Array(repeating: 0, count: 160*144) //TODO delete
 
     var animationIndex = 0

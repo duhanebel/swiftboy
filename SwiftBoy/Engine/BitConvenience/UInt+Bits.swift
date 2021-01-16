@@ -21,7 +21,7 @@ extension UInt8 {
         get {
             var result = self
             for n in 0..<self.bitWidth {
-                result[n] = result[n] == 1 ? 0 : 1
+                result[n] = self[n] == 1 ? 0 : 1
             }
             return result
         }

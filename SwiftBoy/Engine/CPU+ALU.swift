@@ -236,7 +236,7 @@ extension CPU {
         registers.flags.C = reg[0].boolValue
         registers.flags.Z = (res == 0)
         registers.flags.N = false
-        registers.flags.H = true
+        registers.flags.H = false
         return res
     }
     

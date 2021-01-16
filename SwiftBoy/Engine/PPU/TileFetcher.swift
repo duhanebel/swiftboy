@@ -79,11 +79,11 @@ class TileFetcher: Actor {
     
     private(set) var state: State = .readTile
     
-    init(tileDataRam: MemoryMappable, tileMapRam: MemoryMappable? = nil, tileMapAddress: UInt16, tileDataAddress: UInt16, tileLine: UInt8) {
+    init(tileDataRam: MemoryMappable, tileMapRam: MemoryMappable? = nil, tileMapAddress: UInt16, signedTileMapAddress: Bool = false, tileDataAddress: UInt16, tileLine: UInt8) {
         self.tileDataRam = tileDataRam
         self.tileMapRam = tileMapRam ?? tileDataRam
         self.tileMapAddress = tileMapAddress
-        self.tileDataAddress = tileDataAddress
+        self.tileDataAddress = signedTileMapAddress ? tileDataAddress + 128 : tileDataAddress
         self.tileLine = tileLine
     }
     

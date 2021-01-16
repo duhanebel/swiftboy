@@ -216,7 +216,7 @@ struct ROMHeader {
     }
 }
 
-protocol MemoryController {
+protocol MemoryController: MemoryMappable {
     func addressFor(address: Address) -> Address
 }
 
@@ -251,7 +251,6 @@ class ROM: MemoryMappable {
     }
     
     func read(at address: UInt16) throws -> UInt8 {
-        
         var realAddress = address
         if address >= 0x4000,
            let mbc = mbc {
@@ -263,7 +262,11 @@ class ROM: MemoryMappable {
     }
     
     func write(byte: UInt8, at address: UInt16) throws {
-        throw MemoryError.readonly(address)
+        if let mbc = mbc {
+            try mbc.write(byte: byte, at: address)
+        } else {
+            throw MemoryError.readonly(address)
+        }
     }
     
     // The checksum is adding all the bytes of the ROM (except the checksum's ones)

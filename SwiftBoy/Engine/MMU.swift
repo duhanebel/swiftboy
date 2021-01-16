@@ -128,13 +128,6 @@ class MMU: MemoryMappable {
             biosROM = nil
             return
         }
-
-        // Writing to rom is fine if you have memory switch banks
-        // TODO: fix this up with real bank switchers
-        if MemoryRanges.rom.contains(address) ||
-            MemoryRanges.switchableRom.contains(address) {
-            return
-        }
         
         // TODO timing: this take 160ms - does it need to be accounted for anywhere?
         if(address == 0xFF46) {

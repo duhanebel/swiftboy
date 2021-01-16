@@ -74,6 +74,9 @@
 		D9E6F71425A209D900E5F0A9 /* cpu_op-rp.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9E6F70D25A209D900E5F0A9 /* cpu_op-rp.gb */; };
 		D9E6F71C25A2206200E5F0A9 /* instr_timing.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9E6F71B25A2206200E5F0A9 /* instr_timing.gb */; };
 		D9E6F72125A220C900E5F0A9 /* interrupt_time.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9E6F72025A220C900E5F0A9 /* interrupt_time.gb */; };
+		D9E6F73125AA2BB400E5F0A9 /* supermario_land.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9E6F73025AA2BB400E5F0A9 /* supermario_land.gb */; };
+		D9E6F73925AA2DEE00E5F0A9 /* kirby.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9E6F73825AA2DEE00E5F0A9 /* kirby.gb */; };
+		D9E6F74425AA2E4700E5F0A9 /* dr_mario.gb in Resources */ = {isa = PBXBuildFile; fileRef = D9E6F74325AA2E4700E5F0A9 /* dr_mario.gb */; };
 		D9FA218B258A016400F0393B /* VRAMViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FA218A258A016400F0393B /* VRAMViewController.swift */; };
 		D9FA21BE258F447E00F0393B /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = D9FA21BB258F447E00F0393B /* Shaders.metal */; };
 		D9FA21BF258F447E00F0393B /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9FA21BC258F447E00F0393B /* Renderer.swift */; };
@@ -174,6 +177,9 @@
 		D9E6F70D25A209D900E5F0A9 /* cpu_op-rp.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = "cpu_op-rp.gb"; sourceTree = "<group>"; };
 		D9E6F71B25A2206200E5F0A9 /* instr_timing.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = instr_timing.gb; sourceTree = "<group>"; };
 		D9E6F72025A220C900E5F0A9 /* interrupt_time.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = interrupt_time.gb; sourceTree = "<group>"; };
+		D9E6F73025AA2BB400E5F0A9 /* supermario_land.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = supermario_land.gb; sourceTree = "<group>"; };
+		D9E6F73825AA2DEE00E5F0A9 /* kirby.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = kirby.gb; sourceTree = "<group>"; };
+		D9E6F74325AA2E4700E5F0A9 /* dr_mario.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = dr_mario.gb; sourceTree = "<group>"; };
 		D9FA218A258A016400F0393B /* VRAMViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VRAMViewController.swift; sourceTree = "<group>"; };
 		D9FA21BB258F447E00F0393B /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		D9FA21BC258F447E00F0393B /* Renderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
@@ -290,6 +296,9 @@
 			children = (
 				D9723A1E2583DC3D00AFB3CF /* Test */,
 				B7FE880B2573EC5100695D33 /* boot.gb */,
+				D9E6F74325AA2E4700E5F0A9 /* dr_mario.gb */,
+				D9E6F73825AA2DEE00E5F0A9 /* kirby.gb */,
+				D9E6F73025AA2BB400E5F0A9 /* supermario_land.gb */,
 				B7387314257D218300C4CAC8 /* tetris.gb */,
 			);
 			path = Data;
@@ -497,11 +506,14 @@
 				B738731D257D5E8300C4CAC8 /* cpu_bits.gb in Resources */,
 				D9E6F71425A209D900E5F0A9 /* cpu_op-rp.gb in Resources */,
 				D9E6F70E25A209D900E5F0A9 /* cpu_misc-instrs.gb in Resources */,
+				D9E6F73125AA2BB400E5F0A9 /* supermario_land.gb in Resources */,
 				D9E6F71C25A2206200E5F0A9 /* instr_timing.gb in Resources */,
 				B733CE83256EC3930013E8D1 /* Assets.xcassets in Resources */,
 				D9723A1A2583DC2E00AFB3CF /* cpu_special.gb in Resources */,
+				D9E6F73925AA2DEE00E5F0A9 /* kirby.gb in Resources */,
 				D9E6F71325A209D900E5F0A9 /* cpu_op-a-hl.gb in Resources */,
 				D9E6F70325A1E38100E5F0A9 /* cpu_op-r-imm.gb in Resources */,
+				D9E6F74425AA2E4700E5F0A9 /* dr_mario.gb in Resources */,
 				B733CE86256EC3930013E8D1 /* Main.storyboard in Resources */,
 				D9723A182583DC2E00AFB3CF /* cpu_int.gb in Resources */,
 				D9E6F72125A220C900E5F0A9 /* interrupt_time.gb in Resources */,

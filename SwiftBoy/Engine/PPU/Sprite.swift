@@ -63,11 +63,12 @@ struct Sprite {
     var tileIndex: UInt8  { bytes[MemoryLayout.tileIndex] }
     var flags: Flags { Flags(bits: bytes[MemoryLayout.flags]) }
     
-    var height: UInt8 = 8
+    var height: UInt8
     
-    init(memOffset: UInt8, bytes: [UInt8]) {
+    init(memOffset: UInt8, bytes: [UInt8], height: UInt8) {
         self.memOffset = memOffset
         self.bytes = bytes
+        self.height = height
     }
     
     func isVisibleAt(x: Int) -> Bool {

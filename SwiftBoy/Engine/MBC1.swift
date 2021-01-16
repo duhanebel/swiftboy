@@ -7,7 +7,7 @@
 
 import Foundation
 
-class MBC1: MemoryController, MemoryMappable {
+class MBC1: MemoryController {
     struct MemoryAddresses {
         static let ROMBank: Range<UInt16> = 0x4000..<0x8000
         static let RAMBank: Range<UInt16> = 0xA000..<0xC000
@@ -33,21 +33,19 @@ class MBC1: MemoryController, MemoryMappable {
         case MemoryAddresses.ROMBankLow:
             // Writing to this range will specify the lower 5 bits of the bank
             let lowBank = (byte & 0b0001_1111)
+            
             if lowBank == 0 {
-                bankNumber |= 1
+                bankNumber = (bankNumber & 0b1110_0000) | 1
             } else {
-                bankNumber |= lowBank
+                bankNumber = (bankNumber & 0b1110_0000) | lowBank
             }
         case MemoryAddresses.ROMHiRamBank:
             let hiBank = (byte & 0b0000_0011)
-            if hiBank == 0 {
-                bankNumber &= 0b0001_1111
-            } else {
-                bankNumber |= (hiBank << 5)
-            }
+            bankNumber = (bankNumber & 0b0001_1111) | (hiBank << 5)
         default:
             break
         }
+        print("Switch to: \(bankNumber) raw: \(address)-\(byte)")
     }
     
     //let rom: ROM

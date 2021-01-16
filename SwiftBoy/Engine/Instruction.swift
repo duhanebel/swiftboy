@@ -213,7 +213,11 @@ extension Instruction {
 
             Instruction(asm: "LD L, d8",   opcode: 0x2E, cycles: 8, execute: { cpu, arg in cpu.registers.L = arg }),
 
-            Instruction(asm: "CPL",        opcode: 0x2F, cycles: 4, execute: { cpu in cpu.registers.A = cpu.registers.A.complement }),
+            Instruction(asm: "CPL",        opcode: 0x2F, cycles: 4, execute: { cpu in
+                            cpu.registers.A = cpu.registers.A.complement
+                            cpu.registers.flags.N = true
+                            cpu.registers.flags.H = true
+            }),
 
             Instruction(asm: "JR NC, r8",   opcode: 0x30, execute: { cpu, arg in cpu.jump(offset: arg, if: cpu.registers.flags.C, is: false) ? 12 : 8 }),
 

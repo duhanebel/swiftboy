@@ -24,7 +24,7 @@ class VRAMViewController: NSHostingController<EnvTilesView> {
     var tilesObservable = TilesObserver()
     
     required init?(coder: NSCoder) {
-        tilesObservable.tiles = Array<Tile>(repeating: Tile(width: 8, height: 8, bits:Array<UInt8>(repeating: 0, count: 64)), count: 256)
+        tilesObservable.tiles = Array<Tile>(repeating: Tile(width: 8, height: 8, bits:Array<UInt8>(repeating: 0, count: 64)), count: 256*2)
         super.init(coder: coder, rootView: TilesView(gridWidth: 16, scale: 2).environmentObject(tilesObservable) as! EnvTilesView)
     }
 
@@ -49,7 +49,7 @@ class VRAMViewController: NSHostingController<EnvTilesView> {
     func update(_ ram: MemoryMappable) {
         var tiles: [Tile] = []
         
-        for i in 0..<16 {
+        for i in 0..<16*2 {
             for j in 0..<16 {
                 let address = UInt16((i * 16 + j) * 16) + 0x8000
                 tiles.append(readTile(from: ram, at: address))

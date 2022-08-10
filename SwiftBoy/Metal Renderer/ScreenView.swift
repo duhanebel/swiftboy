@@ -8,7 +8,7 @@
 import Foundation
 import MetalKit
 
-protocol InputDelegate: class {
+protocol InputDelegate: AnyObject {
     func keyUp(with event: NSEvent)
     func keyDown(with event: NSEvent)
 }

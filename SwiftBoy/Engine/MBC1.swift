@@ -45,7 +45,7 @@ class MBC1: MemoryController {
         default:
             break
         }
-        print("Switch to: \(bankNumber) raw: \(address)-\(byte)")
+       // print("Switch to: \(bankNumber) raw: \(address)-\(byte)")
     }
     
     //let rom: ROM

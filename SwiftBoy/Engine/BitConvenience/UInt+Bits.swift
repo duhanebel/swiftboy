@@ -45,6 +45,14 @@ extension UInt8 {
             return res
         }
     }
+    
+    // TODO needed?
+    var bitReversed: UInt8 {
+        // See "Reverse the bits in a byte with 4 operations (64-bit multiply, no division)"
+        // at http://graphics.stanford.edu/%7Eseander/bithacks.html#ReverseByteWith64BitsDiv
+        let v = ((UInt64(self) * UInt64(0x8020_0802)) & UInt64(0x08_8442_2110) &* UInt64(0x01_0101_0101)) >> 32
+        return UInt8(v & 0xFF)
+    }
 }
 
 extension UInt16 {

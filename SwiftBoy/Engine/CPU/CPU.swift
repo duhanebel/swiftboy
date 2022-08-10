@@ -498,7 +498,7 @@ extension CPU {
             try mmu.write(byte: byte, at: address)
         }
         catch {
-            print("ERROR: Invalid write at: \(address)")
+            //print("ERROR: Invalid write at: \(address)")
         }
     }
     

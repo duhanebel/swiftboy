@@ -8,24 +8,13 @@
 import AppKit
 import SwiftUI
 
-protocol MemoryObserver {
-    var observedRange: Range<UInt16> { get }
-    func memoryChanged(sender: MemoryMappable) 
-}
-
-class TilesObserver: ObservableObject {
-    @Published var tiles: [Tile] = []
-}
-
-typealias EnvTilesView = SwiftUI.ModifiedContent<SwiftBoy.TilesView, SwiftUI._EnvironmentKeyWritingModifier<Swift.Optional<SwiftBoy.TilesObserver>>>
-
-class VRAMViewController: NSHostingController<EnvTilesView> {
+class TilemapViewController: NSHostingController<EnvTilesView> {
     
     var tilesObservable = TilesObserver()
     
     required init?(coder: NSCoder) {
-        tilesObservable.tiles = Array<Tile>(repeating: Tile(width: 8, height: 8, bits:Array<UInt8>(repeating: 0, count: 64)), count: 256+128)
-        super.init(coder: coder, rootView: TilesView(gridWidth: 16, scale: 2).environmentObject(tilesObservable) as! EnvTilesView)
+        tilesObservable.tiles = Array<Tile>(repeating: Tile(width: 8, height: 8, bits:Array<UInt8>(repeating: 0, count: 64)), count: 256*4)
+        super.init(coder: coder, rootView: TilesView(gridWidth: 32, scale: 2).environmentObject(tilesObservable) as! EnvTilesView)
     }
 
     override func viewDidLoad() {
@@ -42,21 +31,27 @@ class VRAMViewController: NSHostingController<EnvTilesView> {
     
     func startMonitoring(_ device: Device) {
         Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { timer in
-            self.update(device.mmu)
+            self.update(device.mmu, ppu: device.ppu)
         }
     }
     
-    func update(_ ram: MemoryMappable) {
+    func update(_ ram: MemoryMappable, ppu: PPU) {
         var tiles: [Tile] = []
-        
-        for i in 0..<16+8 {
-            for j in 0..<16 {
-                let address = UInt16((i * 16 + j) * 16) + 0x8000
-                tiles.append(readTile(from: ram, at: address))
-            }
+        let tileMapAddress = ppu.registers.lcdc.bgTileMapStartAddress
+        let tileDataStartAddress = ppu.registers.lcdc.tileDataStartAddress
+
+        for i in 0..<256*4 {
+            let signedAddressingMode = (tileDataStartAddress == 0x8800)
+            var tileAddressOffset = UInt8(try! ram.read(at: tileMapAddress + UInt16(i)))
+            if (signedAddressingMode) { tileAddressOffset = tileAddressOffset &- 128 }
+            
+            let tileAddress = tileDataStartAddress + UInt16(tileAddressOffset) * 16
+            
+            tiles.append(readTile(from: ram, at: tileAddress))
         }
         DispatchQueue.main.async { self.tilesObservable.tiles = tiles }
     }
+
     
     private func readTile(from memory: MemoryMappable, at address: UInt16) -> Tile {
         var bytes: [UInt8] = []

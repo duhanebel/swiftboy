@@ -96,10 +96,10 @@
             filePath = "SwiftBoy/Engine/PPU/PPU.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "589"
-            endingLineNumber = "589"
-            landmarkName = "tic()"
-            landmarkType = "7">
+            startingLineNumber = "281"
+            endingLineNumber = "281"
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -112,8 +112,8 @@
             filePath = "SwiftBoy/Engine/PPU/TileFetcher.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "106"
-            endingLineNumber = "106"
+            startingLineNumber = "111"
+            endingLineNumber = "111"
             landmarkName = "tic()"
             landmarkType = "7">
          </BreakpointContent>
@@ -128,26 +128,10 @@
             filePath = "SwiftBoy/Engine/PPU/PPU.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "557"
-            endingLineNumber = "557"
-            landmarkName = "tic()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "C4F23578-7529-4AD1-9C7E-E4C4CAD07B85"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "SwiftBoy/Engine/PPU/PPU.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "572"
-            endingLineNumber = "572"
-            landmarkName = "tic()"
-            landmarkType = "7">
+            startingLineNumber = "239"
+            endingLineNumber = "239"
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -242,17 +226,17 @@
             filePath = "SwiftBoy/Engine/PPU/PPU.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "539"
-            endingLineNumber = "539"
-            landmarkName = "tic()"
-            landmarkType = "7">
+            startingLineNumber = "217"
+            endingLineNumber = "217"
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "EC509ABB-C520-43B0-9DAC-97E60FB74F79"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SwiftBoy/Engine/MBC1.swift"
@@ -268,7 +252,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "48686D16-0E93-43F1-B593-7D52C6A87CAA"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SwiftBoy/Engine/MBC1.swift"
@@ -281,7 +265,7 @@
             <Locations>
                <Location
                   uuid = "48686D16-0E93-43F1-B593-7D52C6A87CAA - 837d8498a7d62758"
-                  shouldBeEnabled = "Yes"
+                  shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "SwiftBoy.MBC1.write(byte: Swift.UInt8, at: Swift.UInt16) throws -&gt; ()"
@@ -296,7 +280,7 @@
                </Location>
                <Location
                   uuid = "48686D16-0E93-43F1-B593-7D52C6A87CAA - 837d8498a7d62758"
-                  shouldBeEnabled = "Yes"
+                  shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "SwiftBoy.MBC1.write(byte: Swift.UInt8, at: Swift.UInt16) throws -&gt; ()"
@@ -311,7 +295,7 @@
                </Location>
                <Location
                   uuid = "48686D16-0E93-43F1-B593-7D52C6A87CAA - 837d8498a7d62758"
-                  shouldBeEnabled = "Yes"
+                  shouldBeEnabled = "No"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
                   symbolName = "SwiftBoy.MBC1.write(byte: Swift.UInt8, at: Swift.UInt16) throws -&gt; ()"
@@ -330,23 +314,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "F24F7BAA-BACC-4972-A906-FA8204C6CBE8"
-            shouldBeEnabled = "No"
-            condition = "signedTileMapAddress == true"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "SwiftBoy/Engine/PPU/TileFetcher.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "87"
-            endingLineNumber = "87"
-            landmarkName = "init(tileDataRam:tileMapRam:tileMapAddress:signedTileMapAddress:tileDataAddress:tileLine:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "27D87151-C7A1-4DDB-AD60-F99FB2754189"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -354,8 +321,8 @@
             filePath = "SwiftBoy/Engine/PPU/TileFetcher.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "98"
-            endingLineNumber = "98"
+            startingLineNumber = "103"
+            endingLineNumber = "103"
             landmarkName = "tic()"
             landmarkType = "7">
          </BreakpointContent>
@@ -370,73 +337,25 @@
             filePath = "SwiftBoy/Engine/PPU/PPU.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "463"
-            endingLineNumber = "463"
-            landmarkName = "mode"
-            landmarkType = "24">
+            startingLineNumber = "139"
+            endingLineNumber = "139"
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "69FFEC7A-35A6-43FF-913C-0E7738D406A9"
-            shouldBeEnabled = "Yes"
+            uuid = "82E2612A-B8B5-4E76-8990-D222D784785F"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "SwiftBoy/Engine/PPU/PPU.swift"
+            filePath = "SwiftBoy/Engine/PPU/ColorPalette.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "182"
-            endingLineNumber = "182"
-            landmarkName = "spriteDisplayEnabled"
-            landmarkType = "24">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "C2C7213F-1511-4E9D-A52E-E16065F8645D"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "SwiftBoy/Engine/PPU/PPU.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "543"
-            endingLineNumber = "543"
-            landmarkName = "tic()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "FE17DA04-5D6C-421C-993C-3203D8CC767A"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "SwiftBoy/Engine/PPU/PPU.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "510"
-            endingLineNumber = "510"
-            landmarkName = "tic()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "DAF47AD0-B717-4243-962F-D2F0E31CB370"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "SwiftBoy/Engine/PPU/Sprite.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "82"
-            endingLineNumber = "82"
-            landmarkName = "isVisibleAt(y:)"
+            startingLineNumber = "48"
+            endingLineNumber = "48"
+            landmarkName = "init(color0:color1:color2:color3:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

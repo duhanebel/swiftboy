@@ -122,7 +122,7 @@ class IO: MemoryMappable {
         self.video = AddressTranslator(memory: video, offset: MemoryLocations.video.lowerBound)
         // bit 7-1 Unimplemented: Read as 1
         // bit 0 BOOT_OFF: Boot ROM lock bit
-        self.bootROMRegister = RAM(size: 1)
+        self.bootROMRegister = MemorySegment(from: 0xFF50, size: 1)
         try! self.bootROMRegister.write(byte: 0xFE, at: 0x0)
         
         self.interruptEnabled = interruptEnabled
@@ -143,7 +143,7 @@ class IO: MemoryMappable {
         case MemoryLocations.divider:
             return (divider, 0x00)
         case MemoryLocations.timer:
-            return (timer, address )//- MemoryLocations.timer.lowerBound)
+            return (timer, address)//- MemoryLocations.timer.lowerBound)
         case MemoryLocations.interruptFlag:
             return (interruptFlag, 0x00)
         case MemoryLocations.audio:

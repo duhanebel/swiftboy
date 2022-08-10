@@ -19,7 +19,9 @@ protocol MemoryMappableR {
 protocol MemoryMappableW {
     func write(byte: UInt8, at address: UInt16) throws
 }
-protocol MemoryMappable: MemoryMappableR, MemoryMappableW {}
+protocol MemoryMappable: MemoryMappableR, MemoryMappableW {
+    
+}
 
 //protocol Interceptor {
 //    static var affectedRange: Range<Address> { get }
@@ -75,10 +77,9 @@ class MMU: MemoryMappable {
     var rom: MemoryMappable! = ROM()
     var biosROM: MemoryMappable?
     var switchableRom: MemoryMappable! = ROM()
-    let ram: MemoryMappable = RAM(size: 0x2000)
-    let extRam: MemoryMappable = RAM(size: 0x2000)
-
-    let hram: MemoryMappable = RAM(size: 0x80)
+    let ram: MemoryMappable = MemorySegment(from: 0xC000, size: 0x2000)
+    let extRam: MemoryMappable = MemorySegment(from: 0xA000, size: 0x2000)
+    let hram: MemoryMappable = MemorySegment(from: 0xFF80, size: 0x7F)
 
     let vram: MemoryMappable
     let sram: MemoryMappable

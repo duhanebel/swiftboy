@@ -64,10 +64,11 @@ class TileFetcher: Actor {
     private var tileMapRam: MemoryMappable
     
     private let tileLine: UInt8
-    private var tileMapAddress: UInt16
+    private var tileMapBaseAddress: Address
     private var tileDataAddress: UInt16
-    
     private var currentTileID: UInt8 = 0
+    
+    private var currentTileMapOffset: UInt8
     private var tileData: TileData = TileData(t0: 0, t1: 0)
     
     enum State {
@@ -78,12 +79,14 @@ class TileFetcher: Actor {
     }
     
     private(set) var state: State = .readTile
-    
-    init(tileDataRam: MemoryMappable, tileMapRam: MemoryMappable? = nil, tileMapAddress: UInt16, signedTileMapAddress: Bool = false, tileDataAddress: UInt16, tileLine: UInt8) {
+        
+    init(tileDataRam: MemoryMappable, tileMapRam: MemoryMappable? = nil, tileMapBaseAddress: Address, tileMapOffset: UInt8, tileDataAddress: UInt16, tileLine: UInt8) {
         self.tileDataRam = tileDataRam
         self.tileMapRam = tileMapRam ?? tileDataRam
-        self.tileMapAddress = tileMapAddress
-        self.tileDataAddress = signedTileMapAddress ? tileDataAddress + 128 : tileDataAddress
+        self.tileMapBaseAddress = tileMapBaseAddress
+        self.tileDataAddress = tileDataAddress
+        self.currentTileMapOffset = tileMapOffset
+
         self.tileLine = tileLine
     }
     
@@ -94,6 +97,7 @@ class TileFetcher: Actor {
         if tics % 2 == 1 {
             switch(state) {
             case .readTile:  // 0-1
+                let tileMapAddress = tileMapBaseAddress + UInt16(currentTileMapOffset)
                 currentTileID = try! tileMapRam.read(at: tileMapAddress)
                 state = .readData0
             case .readData0: // 2-3
@@ -111,7 +115,7 @@ class TileFetcher: Actor {
             case .writeTile: // 6-7
                 if buffer.hasSpaceForOneTile {
                     tileData.pixels.forEach { buffer.push(value:$0) }
-                    tileMapAddress += 1
+                    currentTileMapOffset = (currentTileMapOffset &+ 1) & 0x1F // manage wrap-around for scx
                     state = .readTile
                 }
             }
@@ -143,13 +147,13 @@ class TileFetcher: Actor {
         for i in 0..<8 {
             for j in 0..<8 {
                 switch(pixels[i*8+j]) {
-                case .black:
+                case .c3:
                     string += "■"
-                case .darkGray:
+                case .c2:
                     string += "▨"
-                case .lightGray:
+                case .c1:
                     string += "▥"
-                case .white:
+                case .c0:
                     string += "□"
                 }
             }
@@ -158,10 +162,22 @@ class TileFetcher: Actor {
         return string
     }
     // Tile are store sequentially in tileDataRam.
+    // A tile is 8x8 pixels big.
     // A tile's graphical data takes 16 bytes (2 bytes per row of 8 pixels).
-    // Each line (0f 8 pixels) is 2 bytes
+    // Each line (of 8 pixels) is 2 bytes so each tile data is 16bytes apart
     private func memoryAddressFor(tile: UInt8, line: UInt8) -> UInt16 {
-        let baseTileAddress = tileDataAddress + (UInt16(tile) * 16)
+        // There are two indexing modes for the tiles: 0x8000 or 0x8800.
+        // In 0x8000 the index is an uint8, in 0x8800 is a int8!
+        let signedAddressingMode = (tileDataAddress == 0x8800)
+        
+        // The tileID is an offset from the initial section of the allocated vram
+        // in the range 8000-8FFF it's an unsigned int8,
+        // in the range 8800-97FF it's a signed int8 with base at 0x9000. In order not to
+        // do signed math here, we set the base at 0x9000 - (128 * 16) = 0x8800 so
+        // we can just add the tile index after converting it to unsigned.
+        // NOTE: the tile regions overlap
+        let tileID = signedAddressingMode ? UInt16(tile &- 128) : UInt16(tile)
+        let baseTileAddress = tileDataAddress + UInt16(tileID) * 16
         let tileLineAddress = baseTileAddress + UInt16(line) * 2
         return tileLineAddress
     }

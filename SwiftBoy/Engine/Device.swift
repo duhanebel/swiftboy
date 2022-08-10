@@ -148,26 +148,32 @@ class Device {
     var didExecute: (()->Void)? = nil
     
     private func compute(at startTime: DispatchTime = DispatchTime.now()) {
-        let cycles = cpu.tic()
-        for _ in 0..<cycles {
-            timer.tic()
-            divider.tic()
-            ppu.tic()
-            audio.tic()
+        var totalCycles = 0
+
+        while (totalCycles < 10_000) {
+            let cycles = cpu.tic()
+            for _ in 0..<cycles {
+                timer.tic()
+                divider.tic()
+                ppu.tic()
+                audio.tic()
+            }
+            didExecute?()
+            totalCycles += cycles
         }
-        didExecute?()
 
         if running {
-            let nextCycleDeadline = adjustRuntimeAfter(cycles: cycles, since: startTime)
+            let nextCycleDeadline = adjustRuntimeAfter(cycles: totalCycles, since: startTime)
             queue.asyncAfter(deadline: nextCycleDeadline, execute: { self.compute(at: nextCycleDeadline) })
+//            let time = DispatchTime.now() +
+//                Double(Int64(Double(NSEC_PER_SEC) * (Double(1/CPU.clockSpeed) * Double(totalCycles) - elapsed))) / Double(NSEC_PER_SEC)
+//            queue.asyncAfter(deadline: time, execute: compute)
         }
     }
     
     private func adjustRuntimeAfter(cycles: Int, since: DispatchTime) -> DispatchTime {
         let cpuExpectedRunTimeInterval = (Double(cycles) / Double(CPU.clockSpeed))
         let expectedCPURunTime = since + cpuExpectedRunTimeInterval
-        
-        let elapsedTime = since.distance(to: DispatchTime.now())
-        return expectedCPURunTime - elapsedTime
+        return expectedCPURunTime //- elapsedTime //don't need elapsed time as expectedCPURunTime IS the expected time when the cpu should finish running, so no sum is required!
     }
 }

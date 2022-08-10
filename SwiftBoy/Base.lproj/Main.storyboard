@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="17701" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
+<document type="com.apple.InterfaceBuilder3.Cocoa.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" initialViewController="B8D-0N-5wS">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="17701"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="20037"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
+        <!--Tilemap View Controller-->
+        <scene sceneID="FgL-mh-6Zc">
+            <objects>
+                <viewController id="QTR-An-uH6" customClass="TilemapViewController" customModule="SwiftBoy" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" id="NUT-9Y-0nO" userLabel="Maptiles View" customClass="TilesView" customModule="Swiftboy">
+                        <rect key="frame" x="0.0" y="0.0" width="450" height="300"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </view>
+                </viewController>
+                <customObject id="SXO-1I-7El" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="83" y="-182"/>
+        </scene>
         <!--Application-->
         <scene sceneID="JPo-4y-FX3">
             <objects>
@@ -767,7 +780,7 @@
                         <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
                         <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
                         <rect key="contentRect" x="683" y="459" width="270" height="270"/>
-                        <rect key="screenRect" x="0.0" y="0.0" width="1680" height="1025"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
                         <value key="minSize" type="size" width="270" height="270"/>
                         <view key="contentView" id="rW8-j4-6qE">
                             <rect key="frame" x="0.0" y="0.0" width="270" height="270"/>
@@ -783,7 +796,7 @@
                 </windowController>
                 <customObject id="9zu-mo-CcI" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="74" y="-710"/>
+            <point key="canvasLocation" x="572" y="-839"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="n7e-bh-Dgu">
@@ -799,7 +812,33 @@
                 </viewController>
                 <customObject id="8Jy-tC-3Q4" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="84" y="-280"/>
+            <point key="canvasLocation" x="580" y="-356"/>
+        </scene>
+        <!--Window Controller-->
+        <scene sceneID="E1w-ZP-pSL">
+            <objects>
+                <windowController storyboardIdentifier="tilemapController" id="vKz-RN-bBe" sceneMemberID="viewController">
+                    <window key="window" title="Tilemap Explorer" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" restorable="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="tt4tr" animationBehavior="default" id="fcQ-fa-hAq" userLabel="VRAM Explorer">
+                        <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
+                        <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+                        <rect key="contentRect" x="665" y="817" width="540" height="540"/>
+                        <rect key="screenRect" x="0.0" y="0.0" width="2560" height="1415"/>
+                        <value key="minSize" type="size" width="540" height="540"/>
+                        <view key="contentView" id="PaD-ad-9Fh">
+                            <rect key="frame" x="0.0" y="0.0" width="540" height="540"/>
+                            <autoresizingMask key="autoresizingMask"/>
+                        </view>
+                        <connections>
+                            <outlet property="delegate" destination="vKz-RN-bBe" id="e7e-9W-bJz"/>
+                        </connections>
+                    </window>
+                    <connections>
+                        <segue destination="QTR-An-uH6" kind="relationship" relationship="window.shadowedContentViewController" id="bqx-gF-7dw"/>
+                    </connections>
+                </windowController>
+                <customObject id="l18-HG-ZB9" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="74" y="-710"/>
         </scene>
     </scenes>
 </document>

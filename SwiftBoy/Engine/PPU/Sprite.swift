@@ -8,7 +8,7 @@
 import Foundation
 
 /*
- The Sprite RAM (OAM) is A0 bytes long and contains 40 sprites of 4bytes each.
+ The Sprite RAM (OAM) is 0xA0 bytes long and contains 40 sprites of 4bytes each.
  Each sprite looks like this:
  
    Byte | Description
@@ -34,8 +34,8 @@ import Foundation
 
 struct Sprite {
     enum MemoryLayout {
-        static let yFlip = 0
-        static let xFlip = 1
+        static let y = 0
+        static let x = 1
         static let tileIndex = 2
         static let flags = 3
         enum Flags {
@@ -58,12 +58,13 @@ struct Sprite {
     private let bytes: [UInt8]
     var memOffset: UInt8
     var tileIndexMemOffset: UInt8 { memOffset + UInt8(MemoryLayout.tileIndex) }
-    var x: UInt8 { bytes[MemoryLayout.xFlip] }
-    var y: UInt8 { bytes[MemoryLayout.yFlip] }
+    var x: UInt8 { bytes[MemoryLayout.x] }
+    var y: UInt8 { bytes[MemoryLayout.y] }
     var tileIndex: UInt8  { bytes[MemoryLayout.tileIndex] }
     var flags: Flags { Flags(bits: bytes[MemoryLayout.flags]) }
     
     var height: UInt8
+    let width = 8
     
     init(memOffset: UInt8, bytes: [UInt8], height: UInt8) {
         self.memOffset = memOffset
@@ -79,7 +80,7 @@ struct Sprite {
     }
     
     func isVisibleAt(y: Int) -> Bool {
-        return (y + 16 >= self.y && y + 16 < self.y + self.height)
+        return (self.y <= y + 16 && y + 16 < self.y + self.height)
         //self.y - 16 < y < self.y - 16 + self.height
     }
 }

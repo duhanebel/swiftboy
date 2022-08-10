@@ -52,6 +52,14 @@ class GameViewController: NSViewController {
         mtkView.inputDelegate = self
         
         screenBuff = Array<UInt8>(repeating: 0, count: renderer.width*renderer.height*4)
+        /*
+         screenBuff = ContiguousArray<UInt8>(unsafeUninitializedCapacity: renderer.width*renderer.height*4, initializingWith: { buffer, initializedCount in
+             for i in 0..<renderer.width*renderer.height*4 {
+                 buffer[i] = 255
+             }
+             initializedCount = renderer.width*renderer.height*4
+         })
+         */
     }
 }
 
@@ -67,7 +75,7 @@ extension GameViewController: Screen {
             screenBuff[bufferIndex] = hue
             screenBuff[bufferIndex + 1] = hue
             screenBuff[bufferIndex + 2] = hue
-            screenBuff[bufferIndex + 3] = 255
+          //  screenBuff[bufferIndex + 3] = 255
           }
         }
         self.renderer.updateTexture(bytes: screenBuff)

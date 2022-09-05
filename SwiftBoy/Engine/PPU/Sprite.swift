@@ -81,6 +81,6 @@ struct Sprite {
     
     func isVisibleAt(y: Int) -> Bool {
         return (self.y <= y + 16 && y + 16 < self.y + self.height)
-        //self.y - 16 < y < self.y - 16 + self.height
+        //self.y - 16 <= y < self.y - 16 + self.height
     }
 }

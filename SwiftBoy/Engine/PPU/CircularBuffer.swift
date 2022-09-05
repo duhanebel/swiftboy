@@ -50,4 +50,31 @@ struct CircularBuffer<T: ExpressibleByNilLiteral> {
         storedCount -= 1
         return val
     }
+    
+    mutating func pop(count popCount: Int) -> [T] {
+        assert(!isEmpty, "Cannot pop from an empty buffer")
+        assert(popCount<=count, "Not enough items to pop")
+        var val: Array<T>
+        if readIndex + popCount < count {
+            val = Array(storage[readIndex..<readIndex+popCount])
+        } else {
+            let rangeUntilEndOfArray = readIndex..<count
+            let remainingWrappedAroundRange = 0..<(popCount-(count-readIndex))
+            val = Array(storage[rangeUntilEndOfArray] + storage[remainingWrappedAroundRange])
+        }
+        readIndex = (readIndex + popCount) % count
+        storedCount -= popCount
+        return val
+    }
+}
+
+extension CircularBuffer {
+    mutating func mixWith(_ buffer: [T?]) {
+        assert(buffer.count <= storage.count)
+        for (idx, item) in buffer.enumerated() {
+            if let item = item {
+                storage[(readIndex + idx) % count] = item
+            }
+        }
+    }
 }

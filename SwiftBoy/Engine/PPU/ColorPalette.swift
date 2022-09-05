@@ -28,9 +28,9 @@ struct ColorPalette {
             switch(self) {
             case .black:
                 return 0xFF
-            case .darkGray:
-                return 0xAA
             case .lightGray:
+                return 0xAA
+            case .darkGray:
                 return 0x55
             case .white:
                 return 0x00

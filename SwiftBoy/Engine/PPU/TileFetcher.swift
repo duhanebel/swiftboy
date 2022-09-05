@@ -33,6 +33,7 @@ class TileFetcher: Actor {
     
         var pixels: [Pixel] {
             var pixels: [Pixel] = []
+            pixels.reserveCapacity(8)
             
             // Pixels are ordered from right to left and not from left to right.
             // So the first one is actually the one on the right side of the tile.
@@ -54,6 +55,7 @@ class TileFetcher: Actor {
     }
     
     // The fetcher is considered busy during the first 5 T-cycles of its period
+    // Since the fetcher i
     var isBusy: Bool {
         tics < 5
     }

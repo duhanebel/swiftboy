@@ -150,7 +150,7 @@ class Device {
     private func compute(at startTime: DispatchTime = DispatchTime.now()) {
         var totalCycles = 0
 
-        while (totalCycles < 10_000) {
+        while (totalCycles < 1000) {
             let cycles = cpu.tic()
             for _ in 0..<cycles {
                 timer.tic()

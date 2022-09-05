@@ -41,6 +41,7 @@ class OAM: MemoryMappable {
 extension OAM {
     func sprites(of height: Int, at line: Int) -> [Sprite] {
         var sprites: [Sprite] = []
+        sprites.reserveCapacity(spritesCount)
         for s in 0..<spritesCount {
             let sprite = self.sprite(of: height, at: s)
             // TODO: x 0 is just off screen on the left, y 0 is just off screen on the top

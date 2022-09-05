@@ -48,6 +48,7 @@ class VRAMViewController: NSHostingController<EnvTilesView> {
     
     func update(_ ram: MemoryMappable) {
         var tiles: [Tile] = []
+        tiles.reserveCapacity(16*(16+8))
         
         for i in 0..<16+8 {
             for j in 0..<16 {
@@ -60,6 +61,7 @@ class VRAMViewController: NSHostingController<EnvTilesView> {
     
     private func readTile(from memory: MemoryMappable, at address: UInt16) -> Tile {
         var bytes: [UInt8] = []
+        bytes.reserveCapacity(8)
         for i in 0..<8 {
             let t0 = try! memory.read(at: (address + UInt16(i*2)))
             let t1 = try! memory.read(at: (address + UInt16(i*2 + 1)))

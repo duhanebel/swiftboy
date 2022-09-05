@@ -9,6 +9,9 @@ import Foundation
 
 protocol Screen {
     func copyBuffer(_ screenBuffer: [UInt8])
+    func drawBuffer()
+    func setBuffer(value: UInt8, forPixelAt: Int)
+    
 }
 
 class PPU : Actor {
@@ -70,9 +73,9 @@ class PPU : Actor {
     */
     private struct Timing {
         static let OAMSearch = 20 * 4
-        // TODO: why base is 168 instead of 167.5 (aka 167)? Is there an
-        // extra wasted tic  in the algo?
-        static let pixelTransfer = (42 * 4) + 6 //6 3x2mhz pipeline warm up at the beginning
+        // base tics is 167.5 (aka 167)
+        // below was: (42 × 4) + 6 − 1
+        static let pixelTransfer = 6 + (20*8) + (8-1+1) //6 3x2mhz pipeline warm up at the beginning, 1 incomplete cycle at the end (7)
         static let hBlank = 51 * 4
         static let vBlank = 1140 * 4
         static let fullLine = OAMSearch + pixelTransfer + hBlank
@@ -81,16 +84,33 @@ class PPU : Actor {
     func calculatePixelTransferTics() -> Int {
         var timing: Int = Timing.pixelTransfer + (6 * activeSprites.count) + (Int(registers.scx) % 8)
         var buckets: [Int:Int] = [:]
-        activeSprites.forEach { s in
-            let bucket = Int(s.x / 8)
-            let bucketPos = Int(s.x % 8)
-            buckets[bucket] = max((buckets[bucket] ?? 0), (5 - bucketPos))
+        // keeps track of where the fetcher hits zero. This is on tic zero by default, but can be
+        // changed depending on when a sprite resets the fetcher.
+        // For example a sprite at x = 33 would reset the fetcher on tic #1, moving all the other
+        // tic zero from tics/8 to tics/8 + 1
+        var fetcherTicZero: UInt8 = 0
+        activeSprites.sorted(by: { $0.x < $1.x }).forEach { s in
+            // TODO: this crashes if x < 8 ofc.. Need to find a way to remove the - and convert into + or
+            // threat the x < 8 case separately
+            let spriteFirstTic = (s.x - 8) + (registers.scx % 8) - fetcherTicZero// scx wastes fetcher's ticks
+            let bucket = Int(spriteFirstTic / 8)
+            let bucketPos = Int(spriteFirstTic % 8)
+            // Each sprite will incur in wait penality on the first 5 ticks of the bg-fetcher as it's
+            // considered busy up to cpu-tick 5. There's no penalty if there are two sprits in the same
+            // tile space as the bg-fetcher only needs to be stopped once
+            let penalty = 5 - bucketPos
+            buckets[bucket] = max((buckets[bucket] ?? 0), penalty)
+
+            fetcherTicZero = fetcherTicZero + UInt8(bucketPos)
+    
         }
+
         timing += buckets.values.reduce(0) { acc, val in acc + val}
         return timing
     }
     
     private var pixelTransferTics: Int = 0
+    private var hblankTics: Int = 0
     
     private var hBlankTicks: Int {
         Timing.fullLine - Timing.OAMSearch - pixelTransferTics
@@ -133,7 +153,7 @@ class PPU : Actor {
             case .OAMSearch:
                 registers.stat.PPUModeFlag = .OAMSearch
             case .pixelTransfer:
-                if currentPixelX == 0 { // not when coming back from sprite
+                if oldValue != .pixelTransferSprite { // not when coming back from sprite
                     let tileLine = registers.ly % 8
                     let scxTileOffset = (registers.scx / 8) & 0x1F // If we scroll more than 8px, no need to fetch that tile
                     let scyTileOffset = 32 * ((UInt16(registers.ly) + UInt16(registers.scy) & 0xFF) / 8)
@@ -167,19 +187,21 @@ class PPU : Actor {
         }
     }
     
-    var currentPixelX = 0 {
+    // Current pixel being drawn by the GPU, doesn't account for scx
+    var currentPixelX: Int = 0 {
         didSet {
             //This goes to bounds+1 because the last time it's set it's never read again
-            assert(currentPixelX - Int(registers.scx) <= screenWidth + 1, "Line out of bounds: \(currentPixelX)")
+            assert(currentPixelX - Int(registers.scx) % 8 < screenWidth + 1, "Line out of bounds: \(currentPixelX)")
         }
     }
     
-    var activeSprites: [Sprite] = []
-    
-    private func hasActiveSprites(at x: Int) -> Bool {
-        activeSprites.first(where: { $0.x == x + 8 }) != nil
+    // Actual position on screen of pixel being drawn, accounts for scx
+    var screenPositionX: Int {
+        currentPixelX - Int(registers.scx & 0x7)
     }
-        
+    
+    var activeSprites: [Sprite] = []
+            
     func tic() {
         switch(mode) {
         case .OAMSearch:
@@ -190,59 +212,73 @@ class PPU : Actor {
                     let lineSprites = sram.sprites(of: registers.lcdc.spriteSize.height, at: Int(registers.ly))
                     // Remove the ones that are beyond the 160x144 space (taking into consideration scx)
                     activeSprites = lineSprites.filter {
-                        $0.x < 160 + $0.width - (Int(registers.scx)) % 8
+                        //TODO: move to isVisibleatX
+                        $0.x < $0.width + screenWidth + (Int(registers.scx)) % 8
                     }
                 }
-                pixelTransferTics = calculatePixelTransferTics()
+               // pixelTransferTics = calculatePixelTransferTics()
                 
                 tics = 0
                 mode = .pixelTransfer
                 return
             }
         case .pixelTransfer:
-            // TODO this needs fixing! why >= ?????
-            if tics >= pixelTransferTics {
+            if screenPositionX == 160 {
+                // HBlank is w/e remains after oam and pixel transfer. Total has to be 456
+                hblankTics = 456 - 80 - tics
                 tics = 0
                 mode = .hBlank
                 return
             }
-
-//            if pixelTransferTics == 239 {
-//                print("X/Y:\(currentPixelX)/\(registers.ly) -T/FT:\(tics)/\(bgFetcher.tics) -FS: \(bgFetcher.state) -Busy?\(bgFetcher.isBusy) -buff:\(bgFetcher.buffer.storedCount)")
+//            if tics == pixelTransferTics {
+//                if currentPixelX != 160 + (Int(registers.scx) % 8) {
+//                    var i = 0
+//                    i += 1
+//                }
+//                tics = 0
+//                mode = .hBlank
+//                return
 //            }
+
+            
             
             // Wait until there are enough pixels to pop
             // There need to be always at least 8 pixels on the queue otherwise
             // if we encouter a sprite (fetched 8pixel at a time) we won't have
             // enough background data to draw the sprite on top.
             if bgFetcher.buffer.storedCount > 8 {
-                if hasActiveSprites(at: currentPixelX - (Int(registers.scx)) % 8) {
+                // TODO: to avoid clipping at x < 8, need to consider the case only part of the sprite is visible and mix in only those bytes (no more hardcoded '8')
+                //if hasActiveSpritesStarting(at: screenPositionX) {
+                if activeSprites.firstIndex(where: { $0.isVisibleAt(x: screenPositionX) }) != nil {
                     // The PPU won't stop the fetcher if it's busy (first 5 cycles)
-                    // Why? No idea.
                     if bgFetcher.isBusy == false {
                         // Stop the bg-fetcher and reset but keep the existing buffer
                         // TODO: move the buffer to a shared class so that the fetcher
                         // can be properly stopped and used for the sprites too (maybe?)
+                        // ??????????????????
+                        
                         bgFetcher.reset(clearBuffer: false)
                         mode = .pixelTransferSprite
                         fallthrough
                     }
                 } else {
                     let pixel = bgFetcher.buffer.pop()
-                    if (currentPixelX >= Int(registers.scx) % 8) { // discard pixels that are past the x-scroll within the current tile
-                      writeToBuffer(pixel)
+                    // Only write pixels past the current x-scroll, discard the others
+                    if (currentPixelX >= Int(registers.scx) % 8) {
+                        writeToBuffer(pixel)
                     }
                     currentPixelX += 1
                 }
             }
             bgFetcher.tic()
+            
+            
         case .pixelTransferSprite:
             if spriteFetcher == nil {
-                if let spriteIndex = activeSprites.firstIndex(where: { $0.isVisibleAt(x: currentPixelX - (Int(registers.scx)) % 8) }) {
+                if let spriteIndex = activeSprites.firstIndex(where: { $0.isVisibleAt(x: screenPositionX) }) {
                     activeSpriteIndex = spriteIndex
                     let sprite = activeSprites[spriteIndex]
-                    let tileLine = sprite.flags.yFlip ? (sprite.height - (registers.ly - (sprite.y - 16))) :
-                    UInt8((Int(registers.ly) - (Int(sprite.y) - 16)))
+                    let tileLine = sprite.flags.yFlip ? (sprite.height - (registers.ly - (sprite.y - 16))) : UInt8((Int(registers.ly) - (Int(sprite.y) - 16)))
                     spriteFetcher = TileFetcher(tileDataRam: AddressTranslator(memory: vram, offset: 0x8000),
                                                 tileMapRam: sram,
                                                 tileMapBaseAddress: Address(sprite.tileIndexMemOffset),
@@ -254,39 +290,41 @@ class PPU : Actor {
             
             spriteFetcher?.tic()
             
-//            if pixelTransferTics == 239 {
-//                print("SPRITE X/Y:\(currentPixelX)/\(registers.ly) -T/FT:\(tics)/\(bgFetcher.tics) -FS: \(bgFetcher.state) -Busy?\(bgFetcher.isBusy) -buff:\(bgFetcher.buffer.storedCount)")
-//            }
-            
             if spriteFetcher?.buffer.storedCount == 8 {
-                var mixer: [Pixel] = []
-                for _ in 0..<bgFetcher.buffer.storedCount {
-                    mixer.append(bgFetcher.buffer.pop())
-                }
                 let sprite = activeSprites[activeSpriteIndex!]
-                for i in 0..<8 {
-                    let pixel = spriteFetcher!.buffer.pop()
-                    if pixel.isTransparentColor == false { // .black is transparent
-                        if sprite.flags.xFlip {
-                            mixer[8-i] = pixel
-                        } else {
-                            mixer[i] = pixel
-                        }
+                
+                var spritePixels: [Pixel?] = spriteFetcher!.buffer.pop(count: 8).map {
+                    // .black is transparent - nil Pixel is transparent as it doesn't mix with mixWith
+                    // Same if background has priority TODO: fix the case background should be transparent
+                    if ($0.isTransparentColor == true || sprite.flags.backgroundPriority == true) {
+                        return nil
+                    } else {
+                        return $0
                     }
                 }
-                mixer.forEach { bgFetcher.buffer.push(value: $0) }
+
+                if sprite.flags.xFlip == true {
+                    spritePixels.reverse()
+                }
+                
+                if sprite.x < 8 {
+                    let spriteOffscreenPixels = Int(8 - sprite.x)
+                    spritePixels = Array<Pixel?>(spritePixels.suffix(from: spriteOffscreenPixels))
+                }
+                bgFetcher.buffer.mixWith(spritePixels)
                 
                 activeSprites.remove(at: activeSpriteIndex!)
                 spriteFetcher = nil
                 activeSpriteIndex = nil
                 // If there's another sprite overlapping, restart the loop without going back to
                 // pixelTransfer
-                if(activeSprites.contains(where: { $0.isVisibleAt(x: currentPixelX - (Int(registers.scx)) % 8) }) == false) {
+                if(activeSprites.contains(where: { $0.isVisibleAt(x: screenPositionX) }) == false) {
                     mode = .pixelTransfer
+                    //return //TODO: ????????? should I pop the pixel right here instead of going through another tic?
                 }
             }
         case .hBlank:
-            if tics == Timing.hBlank {
+            if tics == hblankTics { //Timing.hBlank {
                 tics = 0
                 let isLastLine = (registers.ly == (screenHeight - 1))
                 if isLastLine {
@@ -322,12 +360,10 @@ class PPU : Actor {
     }
     
     private func writeToBuffer(_ pixel: Pixel) {
-       // guard registers.ly >= registers.scy else { return } TODO: why?
         assert(registers.ly < screenHeight)
       //  assert(currentPixelX - Int(registers.scx) < screenWidth)
 
-        let buffIndex = (Int(registers.ly) - Int(registers.scy) % screenHeight) * screenWidth +
-                        (currentPixelX - Int(registers.scx) % 8)
+        let buffIndex = (Int(registers.ly) - Int(registers.scy) % screenHeight) * screenWidth + screenPositionX
         guard buffIndex < buffer.count else { print("Out of bounds: \(buffIndex)"); return}
 
         buffer[buffIndex] = registers.bgp.rgbValue(for: pixel)
@@ -337,10 +373,11 @@ class PPU : Actor {
 
     var animationIndex = 0
 
-        var stopwatch = Stopwatch()
-        var refresh: Int = 0
+    var stopwatch = Stopwatch()
+    var refresh: Int = 0
     private func draw() {
         screen?.copyBuffer(self.buffer)
+        //screen?.draw()
         refresh += 1
         if refresh == 300 {
             print("****************** RPS: \(1/(stopwatch.elapsedTimeInterval()/300))")

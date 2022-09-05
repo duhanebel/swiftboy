@@ -51,7 +51,7 @@ class GameViewController: NSViewController {
         mtkView.delegate = renderer
         mtkView.inputDelegate = self
         
-        screenBuff = Array<UInt8>(repeating: 0, count: renderer.width*renderer.height*4)
+        screenBuff = Array<UInt8>(repeating: 255, count: renderer.width*renderer.height*4)
         /*
          screenBuff = ContiguousArray<UInt8>(unsafeUninitializedCapacity: renderer.width*renderer.height*4, initializingWith: { buffer, initializedCount in
              for i in 0..<renderer.width*renderer.height*4 {
@@ -64,8 +64,19 @@ class GameViewController: NSViewController {
 }
 
 extension GameViewController: Screen {
+    func drawBuffer() {
+        self.renderer.updateTexture(bytes: screenBuff)
+    }
+    
+    func setBuffer(value: UInt8, forPixelAt pixelIndex: Int) {
+        let rgbBuffIndex = pixelIndex * 4
+        screenBuff[rgbBuffIndex] = 255 - value
+        screenBuff[rgbBuffIndex + 1] = 255 - value
+        screenBuff[rgbBuffIndex + 2] = 255 - value
+    }
+    
     func copyBuffer(_ screenBuffer: [UInt8]) {
-        
+        screenBuff = Array<UInt8>(repeating: 128, count: renderer.width*renderer.height*4)
         for j in 0 ..< self.renderer.height {
           for i in 0 ..< self.renderer.width {
             let pixelIndex = j * self.renderer.width + i
@@ -75,7 +86,7 @@ extension GameViewController: Screen {
             screenBuff[bufferIndex] = hue
             screenBuff[bufferIndex + 1] = hue
             screenBuff[bufferIndex + 2] = hue
-          //  screenBuff[bufferIndex + 3] = 255
+            screenBuff[bufferIndex + 3] = 255
           }
         }
         self.renderer.updateTexture(bytes: screenBuff)

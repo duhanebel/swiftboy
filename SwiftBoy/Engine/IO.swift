@@ -33,7 +33,7 @@ import Foundation
    XXXX | IME  | -- | Interrupt master enable
  */
 
-class InterruptRegister: MemoryMappable {
+final class InterruptRegister: MemoryMappable {
     private var rawmem: UInt8
     
     var VBlank: Bool {
@@ -78,7 +78,7 @@ class InterruptRegister: MemoryMappable {
     }
 }
 
-class IO: MemoryMappable {
+final class IO: MemoryMappable {
     struct MemoryLocations {
         static let joypad = UInt16(0xFF00)
         static let serial = UInt16(0xFF01)...UInt16(0xFF02)

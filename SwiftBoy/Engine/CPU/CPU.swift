@@ -125,7 +125,7 @@ struct Registers {
 
 typealias OpCode = UInt8
 
-class CPU {
+final class CPU {
     static let clockSpeed = 4194304
     
     enum State {

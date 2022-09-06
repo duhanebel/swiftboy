@@ -7,7 +7,7 @@
 
 import Foundation
 
-class OAM: MemoryMappable {
+final class OAM: MemoryMappable {
     private var data: [UInt8]
     
     var spritesCount: Int {

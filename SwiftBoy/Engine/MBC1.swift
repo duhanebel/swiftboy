@@ -7,7 +7,8 @@
 
 import Foundation
 
-class MBC1: MemoryController {
+//TODO: class or struct?
+final class MBC1: MemoryController {
     struct MemoryAddresses {
         static let ROMBank: Range<UInt16> = 0x4000..<0x8000
         static let RAMBank: Range<UInt16> = 0xA000..<0xC000

@@ -220,7 +220,7 @@ protocol MemoryController: MemoryMappable {
     func addressFor(address: Address) -> Address
 }
 
-class ROM: MemoryMappable {
+final class ROM: MemoryMappable {
     private var rawmem: [UInt8] = []
     var header: ROMHeader? = nil
     var mbc: MemoryController? = nil

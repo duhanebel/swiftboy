@@ -14,7 +14,7 @@ protocol Screen {
     
 }
 
-class PPU : Actor {
+final class PPU : Actor {
 
     let screenWidth = 160
     let screenHeight = 144
@@ -212,7 +212,7 @@ class PPU : Actor {
                     let lineSprites = sram.sprites(of: registers.lcdc.spriteSize.height, at: Int(registers.ly))
                     // Remove the ones that are beyond the 160x144 space (taking into consideration scx)
                     activeSprites = lineSprites.filter {
-                        //TODO: move to isVisibleatX
+                        //TODO: move to isVisibleatX ?
                         $0.x < $0.width + screenWidth + (Int(registers.scx)) % 8
                     }
                 }

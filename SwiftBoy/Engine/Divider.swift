@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Divider: Actor, MemoryMappable {
+final class Divider: Actor, MemoryMappable {
     var rawdata: UInt8 = 0x00
     private var tics: Int = 0
 

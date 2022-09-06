@@ -7,7 +7,7 @@
 
 import Foundation
 
-class MemorySegment: MemoryMappable {
+final class MemorySegment: MemoryMappable {
     private var data: ContiguousArray<UInt8>
     
     var size: Int  { data.count }
@@ -59,7 +59,7 @@ class MemorySegment: MemoryMappable {
 //    }
 //}
 
-class AddressTranslator: MemoryMappable {
+final class AddressTranslator: MemoryMappable {
     private var memory: MemoryMappable
     private var offset: UInt16
     

@@ -7,7 +7,7 @@
 
 import Foundation
 
-class Counter: Actor, MemoryMappable {
+final class Counter: Actor, MemoryMappable {
     enum ClockSpeed: Int {
         case mode00 = 4096
         case mode01 = 262144

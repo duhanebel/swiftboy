@@ -26,7 +26,7 @@ private extension CircularBuffer {
                       Color
  */
 
-class TileFetcher: Actor {
+final class TileFetcher: Actor {
     struct TileData {
         var t0: UInt8
         var t1: UInt8

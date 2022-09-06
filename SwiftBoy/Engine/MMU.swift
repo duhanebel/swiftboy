@@ -59,7 +59,7 @@ protocol MemoryMappable: MemoryMappableR, MemoryMappableW {
     FFFF | FFFF | Interrupts Enable Register (IE) |
  */
 
-class MMU: MemoryMappable {
+final class MMU: MemoryMappable {
     struct MemoryRanges {
         static let biosROM = UInt16(0x0000)..<UInt16(0x0100)
         static let rom = UInt16(0x0000)..<UInt16(0x4000)

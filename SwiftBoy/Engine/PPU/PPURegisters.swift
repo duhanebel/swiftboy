@@ -25,7 +25,7 @@ import Foundation
    FF4B | WX   | RW | WX - Window X Position minus 7
     ..  | Below this only CGB registers (unimplemented)
  */
-class PPURegister: MemoryMappable {
+final class PPURegister: MemoryMappable {
     enum MemoryLocations: UInt16, CaseIterable {
         //static let baseAddress: Address = 0xFF40
          
@@ -98,7 +98,7 @@ class PPURegister: MemoryMappable {
          0  | BG display enabled             | 0=Off, 1=On
      */
     //TODO: One of the important aspects of LCDC is that unlike VRAM, the PPU never locks it. It's thus possible to modify it mid-scanline!
-    class LCDCRegister: MemoryMappable {
+    final class LCDCRegister: MemoryMappable {
         enum MemoryLayout: Int {
             case displayEnabled = 7
             case windowTileMapDisplaySelect = 6
@@ -205,7 +205,7 @@ class PPURegister: MemoryMappable {
             |    |                                | b11: During Transfering Data to LCD Driver
                                                     
      */
-    class STATRegister: MemoryMappable {
+    final class STATRegister: MemoryMappable {
         enum MemoryLayout: Int {
             case lycCoincidenceIntEnabled = 6
             case OAMIntEnabled = 5

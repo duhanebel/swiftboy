@@ -38,7 +38,7 @@ private extension Bool {
     }
 }
 
-class Joypad: MemoryMappable {
+final class Joypad: MemoryMappable {
     // First two bit unimplemented, read as 1
     private var reg: Byte = 0xF0
     

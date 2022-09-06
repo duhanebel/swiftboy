@@ -29,7 +29,7 @@ enum RegisteError : Error {
     case invalidValue(String)
 }
 
-class MemoryPrinter: MemoryMappable {
+final class MemoryPrinter: MemoryMappable {
     let size: Int = 2
 #if DEBUG
     let direct = true
@@ -60,7 +60,7 @@ class MemoryPrinter: MemoryMappable {
 }
 
 
-class Device {
+final class Device {
     let cpu: CPU
     let mmu: MMU
     let ppu: PPU

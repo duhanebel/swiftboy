@@ -70,7 +70,7 @@ struct Registers {
     var AF: UInt16 {
         get {
             var AF: UInt16 = 0
-            AF.upperByte  = A
+            AF.upperByte = A
             AF.lowerByte = flags.byteValue
             return AF
         }

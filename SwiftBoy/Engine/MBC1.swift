@@ -20,9 +20,9 @@ final class MBC1: MemoryController {
     
     var bankNumber: Byte = 1
     
-    func addressFor(address: Address) -> Address {
+    func addressFor(address: Address) -> UInt32 {
         assert(address >= 0x4000, "Trying to switch a non switchable bank")
-        return (address - 0x4000) + (0x4000 * UInt16(bankNumber))
+        return (UInt32(address) - 0x4000) + (0x4000 * UInt32(bankNumber))
     }
     
     func read(at address: UInt16) throws -> UInt8 {

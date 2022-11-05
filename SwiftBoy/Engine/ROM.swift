@@ -217,7 +217,7 @@ struct ROMHeader {
 }
 
 protocol MemoryController: MemoryMappable {
-    func addressFor(address: Address) -> Address
+    func addressFor(address: Address) -> UInt32
 }
 
 final class ROM: MemoryMappable {
@@ -236,6 +236,8 @@ final class ROM: MemoryMappable {
         
         if self.header?.cartrigeType == .MBC1 {
             self.mbc = MBC1()
+        } else if self.header?.cartrigeType == .MBC1RamBattery {
+            self.mbc = MBC1()
         }
         
         _ = self.validate()
@@ -251,13 +253,14 @@ final class ROM: MemoryMappable {
     }
     
     func read(at address: UInt16) throws -> UInt8 {
-        var realAddress = address
+        var realAddress = UInt32(address)
         if address >= 0x4000,
            let mbc = mbc {
             realAddress = mbc.addressFor(address: address)
         }
         
-        guard realAddress < rawmem.count else { throw MemoryError.outOfBounds(realAddress, 0x00..<UInt16(rawmem.count)) }
+        //TODO: remove guard and use assert instead perhaps?
+        guard realAddress < rawmem.count else { throw MemoryError.outOfBounds(UInt16(realAddress), 0x00..<UInt16(rawmem.count)) }
         return rawmem[Int(realAddress)]
     }
     

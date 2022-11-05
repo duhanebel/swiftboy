@@ -27,6 +27,7 @@
 		B738731D257D5E8300C4CAC8 /* cpu_bits.gb in Resources */ = {isa = PBXBuildFile; fileRef = B738731C257D5E8300C4CAC8 /* cpu_bits.gb */; };
 		B7BFED0A28A261EA007E387E /* TilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BFED0928A261E9007E387E /* TilesView.swift */; };
 		B7BFED0C28A26200007E387E /* TilemapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BFED0B28A26200007E387E /* TilemapViewController.swift */; };
+		B7FD707228C793CA00644DA5 /* supermario_land_2.gb in Resources */ = {isa = PBXBuildFile; fileRef = B7FD707128C7938B00644DA5 /* supermario_land_2.gb */; };
 		B7FE880D2573EC7A00695D33 /* ROM.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7FE880C2573EC7A00695D33 /* ROM.swift */; };
 		B7FE88142573F2D400695D33 /* boot.gb in Resources */ = {isa = PBXBuildFile; fileRef = B7FE880B2573EC5100695D33 /* boot.gb */; };
 		B7FE88192574E48300695D33 /* UInt8+Bool.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7FE88182574E48300695D33 /* UInt8+Bool.swift */; };
@@ -133,6 +134,7 @@
 		B738731C257D5E8300C4CAC8 /* cpu_bits.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = cpu_bits.gb; sourceTree = "<group>"; };
 		B7BFED0928A261E9007E387E /* TilesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TilesView.swift; sourceTree = "<group>"; };
 		B7BFED0B28A26200007E387E /* TilemapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TilemapViewController.swift; sourceTree = "<group>"; };
+		B7FD707128C7938B00644DA5 /* supermario_land_2.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = supermario_land_2.gb; sourceTree = "<group>"; };
 		B7FE880B2573EC5100695D33 /* boot.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = boot.gb; sourceTree = "<group>"; };
 		B7FE880C2573EC7A00695D33 /* ROM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROM.swift; sourceTree = "<group>"; };
 		B7FE88182574E48300695D33 /* UInt8+Bool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UInt8+Bool.swift"; sourceTree = "<group>"; };
@@ -301,6 +303,7 @@
 			children = (
 				D9723A1E2583DC3D00AFB3CF /* Test */,
 				B7FE880B2573EC5100695D33 /* boot.gb */,
+				B7FD707128C7938B00644DA5 /* supermario_land_2.gb */,
 				D9E6F74325AA2E4700E5F0A9 /* dr_mario.gb */,
 				D9E6F73825AA2DEE00E5F0A9 /* kirby.gb */,
 				D9E6F73025AA2BB400E5F0A9 /* supermario_land.gb */,
@@ -532,6 +535,7 @@
 				D9723A1A2583DC2E00AFB3CF /* cpu_special.gb in Resources */,
 				D9E6F73925AA2DEE00E5F0A9 /* kirby.gb in Resources */,
 				D9E6F71325A209D900E5F0A9 /* cpu_op-a-hl.gb in Resources */,
+				B7FD707228C793CA00644DA5 /* supermario_land_2.gb in Resources */,
 				D9E6F70325A1E38100E5F0A9 /* cpu_op-r-imm.gb in Resources */,
 				D9E6F74425AA2E4700E5F0A9 /* dr_mario.gb in Resources */,
 				B733CE86256EC3930013E8D1 /* Main.storyboard in Resources */,

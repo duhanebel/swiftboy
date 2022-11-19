@@ -159,7 +159,7 @@ final class PPU : Actor {
                     let scyTileOffset = 32 * ((UInt16(registers.ly) + UInt16(registers.scy) & 0xFF) / 8)
                     //let tileMapOffset = (scyTileOffset + scxTileOffset) & 0x3ff //TODO: this last bit is not needed if fetching window (as there is no scx for windows)
                     // TODO: Note: The sum of both the X-POS+SCX and LY+SCY offsets is ANDed with 0x3ff in order to ensure that the address stays within the Tilemap memory regions.
-                    bgFetcher = TileFetcher(tileDataRam: AddressTranslator(memory: vram, offset: 0x8000),
+                    bgFetcher = TileFetcher(tileDataRam: vram,
                                             tileMapBaseAddress: registers.lcdc.bgTileMapStartAddress + scyTileOffset,
                                             tileMapOffset: scxTileOffset,
                                             tileDataAddress: registers.lcdc.tileDataStartAddress,
@@ -279,7 +279,7 @@ final class PPU : Actor {
                     activeSpriteIndex = spriteIndex
                     let sprite = activeSprites[spriteIndex]
                     let tileLine = sprite.flags.yFlip ? (sprite.height - (registers.ly - (sprite.y - 16))) : UInt8((Int(registers.ly) - (Int(sprite.y) - 16)))
-                    spriteFetcher = TileFetcher(tileDataRam: AddressTranslator(memory: vram, offset: 0x8000),
+                    spriteFetcher = TileFetcher(tileDataRam: vram,
                                                 tileMapRam: sram,
                                                 tileMapBaseAddress: Address(sprite.tileIndexMemOffset),
                                                 tileMapOffset: 0,

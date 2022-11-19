@@ -68,23 +68,6 @@ final class Counter: Actor, MemoryMappable {
     // at a rate specified by the Timer Control (TAC).  When the Timer Counter gets to 0xFF
     // and is incremented, it effectively overflows, and when this happens, it gets loaded with
     // the value held at the Timer Modulo (TMA).
-//    func compute(for tics: Int) {
-//        guard running else { return }
-//        self.tics += tics
-//        let counterDelta = self.tics / cyclesPerTic
-//        let overflow = (Int(counterData) + counterDelta) / 0xFFFF
-//        counterData &+= UInt8(tics / counterDelta)
-//
-//        for _ in 0..<overflow {
-//            generateInterrupt()
-//            counterData = moduloData
-//        }
-//
-//        self.tics = self.tics % cyclesPerTic
-//
-//        // TODO: should check for overflow again here for completeness??
-//    }
-    
     func tic() {
         guard running else { return }
         self.tics += 1

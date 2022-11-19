@@ -119,53 +119,47 @@ final class IO: MemoryMappable {
         self.timer = timer
         self.interruptFlag = interruptFlag
         self.audio = audio
-        self.video = AddressTranslator(memory: video, offset: MemoryLocations.video.lowerBound)
+        self.video = video
         // bit 7-1 Unimplemented: Read as 1
         // bit 0 BOOT_OFF: Boot ROM lock bit
-        self.bootROMRegister = MemorySegment(from: 0xFF50, size: 1)
-        try! self.bootROMRegister.write(byte: 0xFE, at: 0x0)
+        self.bootROMRegister = MemorySegment(from: IO.MemoryLocations.bootROMRegister, size: 1)
+        try! self.bootROMRegister.write(byte: 0xFE, at: IO.MemoryLocations.bootROMRegister)
         
         self.interruptEnabled = interruptEnabled
-        
     }
     
-//    private var handlers: [UInt16:MemoryMappable] = [:]
-//    private func register(_ handler: MemoryMappable, for address: MemoryLocations) {
-//        handler[address.rawValue] = handler
-//    }
-    
-    private func map(address: UInt16) throws -> (MemoryMappable, Word) {
+    private func map(address: UInt16) throws -> MemoryMappable {
         switch(address) {
         case MemoryLocations.joypad:
-            return (joypad, 0x00)
+            return joypad
         case MemoryLocations.serial:
-            return (serial, 0x00)
+            return serial
         case MemoryLocations.divider:
-            return (divider, 0x00)
+            return divider
         case MemoryLocations.timer:
-            return (timer, address)//- MemoryLocations.timer.lowerBound)
+            return timer
         case MemoryLocations.interruptFlag:
-            return (interruptFlag, 0x00)
+            return interruptFlag
         case MemoryLocations.audio:
-            return (audio, address - MemoryLocations.audio.lowerBound)
+            return audio
         case MemoryLocations.video:
-            return (video, address)
+            return video
         case MemoryLocations.bootROMRegister:
-            return (bootROMRegister, 0x00)
+            return bootROMRegister
         case MemoryLocations.interruptEnabled:
-            return (interruptEnabled, 0x00)
+            return interruptEnabled
         default:
             throw MemoryError.invalidAddress(address)
         }
     }
     
     func read(at address: UInt16) throws -> UInt8 {
-        let (dest, localAddress) = try map(address: address)
-        return try dest.read(at: localAddress)
+        let dest = try map(address: address)
+        return try dest.read(at: address)
     }
     
     func write(byte: UInt8, at address: UInt16) throws {
-        let (dest, localAddress) = try map(address: address)
-        try dest.write(byte: byte, at: localAddress)
+        let dest = try map(address: address)
+        try dest.write(byte: byte, at: address)
     }
 }

@@ -23,7 +23,6 @@
 		B733CF002572CCFA0013E8D1 /* CPU+ALU.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CEFF2572CCFA0013E8D1 /* CPU+ALU.swift */; };
 		B733CF082572CD360013E8D1 /* CPU+ALUTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CF072572CD360013E8D1 /* CPU+ALUTests.swift */; };
 		B733CF0D2572F4E90013E8D1 /* MMU.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CF0C2572F4E90013E8D1 /* MMU.swift */; };
-		B7387318257D21CC00C4CAC8 /* tetris.gb in Resources */ = {isa = PBXBuildFile; fileRef = B7387314257D218300C4CAC8 /* tetris.gb */; };
 		B738731D257D5E8300C4CAC8 /* cpu_bits.gb in Resources */ = {isa = PBXBuildFile; fileRef = B738731C257D5E8300C4CAC8 /* cpu_bits.gb */; };
 		B7BFED0A28A261EA007E387E /* TilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BFED0928A261E9007E387E /* TilesView.swift */; };
 		B7BFED0C28A26200007E387E /* TilemapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BFED0B28A26200007E387E /* TilemapViewController.swift */; };
@@ -130,7 +129,6 @@
 		B733CF072572CD360013E8D1 /* CPU+ALUTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CPU+ALUTests.swift"; sourceTree = "<group>"; };
 		B733CF0C2572F4E90013E8D1 /* MMU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MMU.swift; sourceTree = "<group>"; };
 		B733CF1F2573A3E10013E8D1 /* ScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenView.swift; sourceTree = "<group>"; };
-		B7387314257D218300C4CAC8 /* tetris.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = tetris.gb; sourceTree = "<group>"; };
 		B738731C257D5E8300C4CAC8 /* cpu_bits.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = cpu_bits.gb; sourceTree = "<group>"; };
 		B7BFED0928A261E9007E387E /* TilesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TilesView.swift; sourceTree = "<group>"; };
 		B7BFED0B28A26200007E387E /* TilemapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TilemapViewController.swift; sourceTree = "<group>"; };
@@ -307,7 +305,6 @@
 				D9E6F74325AA2E4700E5F0A9 /* dr_mario.gb */,
 				D9E6F73825AA2DEE00E5F0A9 /* kirby.gb */,
 				D9E6F73025AA2BB400E5F0A9 /* supermario_land.gb */,
-				B7387314257D218300C4CAC8 /* tetris.gb */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -542,7 +539,6 @@
 				D9723A182583DC2E00AFB3CF /* cpu_int.gb in Resources */,
 				D9E6F72125A220C900E5F0A9 /* interrupt_time.gb in Resources */,
 				D9E6F71125A209D900E5F0A9 /* cpu_bit-ops.gb in Resources */,
-				B7387318257D21CC00C4CAC8 /* tetris.gb in Resources */,
 				D9E6F71025A209D900E5F0A9 /* cpu_op-r-r.gb in Resources */,
 				D9E6F70F25A209D900E5F0A9 /* cpu_ld-r-r.gb in Resources */,
 				D9E6F71225A209D900E5F0A9 /* cpu_jr-jp-call-ret-rst.gb in Resources */,
@@ -821,9 +817,15 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_OPTIMIZATION_LEVEL = default;
 				PRODUCT_BUNDLE_IDENTIFIER = com.duhanebel.SwiftBoy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_COMPILATION_MODE = singlefile;
+				SWIFT_DISABLE_SAFETY_CHECKS = YES;
+				SWIFT_ENFORCE_EXCLUSIVE_ACCESS = off;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(TARGET_NAME)/Metal Renderer/ShaderTypes.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -841,9 +843,13 @@
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MTL_OPTIMIZATION_LEVEL = default;
 				PRODUCT_BUNDLE_IDENTIFIER = com.duhanebel.SwiftBoy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_DISABLE_SAFETY_CHECKS = YES;
+				SWIFT_ENFORCE_EXCLUSIVE_ACCESS = off;
 				SWIFT_OBJC_BRIDGING_HEADER = "$(TARGET_NAME)/Metal Renderer/ShaderTypes.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;

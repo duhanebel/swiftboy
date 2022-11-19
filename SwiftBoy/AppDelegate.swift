@@ -43,7 +43,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func setupGame() {
         let bootURL = Bundle.main.url(forResource: "boot", withExtension: "gb")!
-        let tetrisURL = Bundle.main.url(forResource: "supermario_land_2", withExtension: "gb")!
+        let tetrisURL = Bundle.main.url(forResource: "supermario_land", withExtension: "gb")!
        // let tetrisURL = Bundle.main.url(forResource: "interrupt_time", withExtension: "gb")!
       // let tetrisURL = Bundle.main.url(forResource: "cpu_op-a-hl", withExtension: "gb")!
 

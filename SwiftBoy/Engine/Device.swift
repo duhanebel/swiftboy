@@ -43,7 +43,7 @@ final class MemoryPrinter: MemoryMappable {
     }
     
     func write(byte: UInt8, at address: UInt16) throws {
-        guard address == 0 else { return }
+        guard address == 0xFF01 else { return }
         let char = UnicodeScalar(byte)
         guard char.isASCII else { return }
         if direct {
@@ -150,7 +150,7 @@ final class Device {
     private func compute(at startTime: DispatchTime = DispatchTime.now()) {
         var totalCycles = 0
 
-        while (totalCycles < 1000) {
+        while (totalCycles < 456) {
             let cycles = cpu.tic()
             for _ in 0..<cycles {
                 timer.tic()

@@ -36,11 +36,13 @@ final class Divider: Actor, MemoryMappable {
     }
     
     func read(at address: UInt16) throws -> UInt8 {
+        assert(address == 0xFF04, "Invalid address for a byte register")
         return rawdata
     }
     
     // Writing any value to this register will reset it
     func write(byte: UInt8, at address: UInt16) throws {
+        assert(address == 0xFF04, "Invalid address for a byte register")
         rawdata = 0x0
     }
 }

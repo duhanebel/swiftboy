@@ -64,7 +64,7 @@ final class Joypad: MemoryMappable {
     }
     
     func write(byte: Byte, at address: Address) {
-        assert(address == 0x0, "Invalid address for a byte register")
+        assert(address == 0xFF00, "Invalid address for a byte register")
         assert(address.lowerByte == 0x0, "First 4 bits are read only")
         // first two bits not implemented, return 1
         reg = registerForRequest(byte | 0xC0)

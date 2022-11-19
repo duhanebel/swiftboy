@@ -117,8 +117,8 @@ final class MMU: MemoryMappable {
     }
     
     func read(at address: UInt16) throws -> UInt8 {
-        let (dest, localAddress) = try map(address: address)
-        return try dest.read(at: localAddress)
+        let dest = try map(address: address)
+        return try dest.read(at: address)
     }
     
     //private var writeInterceptors: [Range<UInt16>:Interceptor] = [:]
@@ -130,15 +130,15 @@ final class MMU: MemoryMappable {
             return
         }
         
-        // TODO timing: this take 160ms - does it need to be accounted for anywhere?
-        if(address == 0xFF46) {
+        // TODO timing: this take 160ms - it should go to the ppu, which should stop doing w/e and block access to memory
+        if(address == PPURegister.MemoryLocations.dma.rawValue) {
             // The source address written to 0xFF46 is divided by 0x100 (256)
             let sourceAddress = UInt16(byte) << 8
             try performDmaTransfer(from: sourceAddress)
             return
         }
-        let (dest, localAddress) = try map(address: address)
-        try dest.write(byte: byte, at: localAddress)
+        let dest = try map(address: address)
+        try dest.write(byte: byte, at: address)
         
         notifyObservers(for: address)
     }
@@ -152,33 +152,33 @@ final class MMU: MemoryMappable {
         }
     }
     
-    private func map(address: UInt16) throws -> (MemoryMappable, Word) {
+    private func map(address: UInt16) throws -> MemoryMappable {
         switch(address) {
         case MemoryRanges.biosROM:
             guard let biosROM = biosROM else { fallthrough }
-            return (biosROM, address)
+            return biosROM
         case MemoryRanges.rom:
-            return (rom, address)
+            return rom
         case MemoryRanges.switchableRom:
-            return (switchableRom, address)
+            return switchableRom
         case MemoryRanges.vram:
-            return (vram, address - MemoryRanges.vram.lowerBound)
+            return vram
         case MemoryRanges.extRam:
-            return (extRam, address - MemoryRanges.extRam.lowerBound)
+            return extRam
         case MemoryRanges.workRam:
-            return (ram, address - MemoryRanges.workRam.lowerBound)
+            return ram
         case MemoryRanges.workRamEcho: // ram mirror
-            return (ram, address - MemoryRanges.workRamEcho.lowerBound)
+            return ram
         case MemoryRanges.sram:
-            return (sram, address - MemoryRanges.sram.lowerBound)
+            return sram
         case MemoryRanges.unusable:
             throw MemoryError.invalidAddress(address)
         case MemoryRanges.io:
-            return (io, address) //TODO: this is inconsistent - move bounds to destination
+            return io
         case MemoryRanges.hram:
-            return (hram, address - MemoryRanges.hram.lowerBound)
+            return hram
         case 0xFFFF: //TODO: do better
-            return(io, 0xFFFF)
+            return io
         default:
             throw MemoryError.invalidAddress(address)
         }

@@ -29,18 +29,18 @@ final class PPURegister: MemoryMappable {
     enum MemoryLocations: UInt16, CaseIterable {
         //static let baseAddress: Address = 0xFF40
          
-        case lcdc = 0 //0xFF40
-        case stat //= 0xFF41
-        case scy  //= 0xFF42
-        case scx  //= 0xFF43
-        case ly   //= 0xFF44
-        case lyc  //= 0xFF45
-        case dma  //= 0xFF46
-        case bgp  //= 0xFF47
-        case obp0 //= 0xFF48
-        case obp1 //= 0xFF49
-        case wy   //= 0xFF4A
-        case wx   //= 0xFF4B
+        case lcdc = 0xFF40
+        case stat = 0xFF41
+        case scy  = 0xFF42
+        case scx  = 0xFF43
+        case ly   = 0xFF44
+        case lyc  = 0xFF45
+        case dma  = 0xFF46
+        case bgp  = 0xFF47
+        case obp0 = 0xFF48
+        case obp1 = 0xFF49
+        case wy   = 0xFF4A
+        case wx   = 0xFF4B
         
 //            var relativeAddress: Address {
 //                return rawValue - PPU.PPURegister.MemoryLocations.baseAddress
@@ -67,7 +67,7 @@ final class PPURegister: MemoryMappable {
         case MemoryLocations.lcdc.rawValue:
             return try! lcdc.read(at: address)
         case MemoryLocations.stat.rawValue:
-            return try! stat.read(at: 0)
+            return try! stat.read(at: address)
         default:
             return try! rawmem.read(at: address)
         }
@@ -78,7 +78,7 @@ final class PPURegister: MemoryMappable {
         case MemoryLocations.lcdc.rawValue:
             return try! lcdc.write(byte: byte, at: address)
         case MemoryLocations.stat.rawValue:
-            return try! stat.write(byte: byte, at: 0)
+            return try! stat.write(byte: byte, at: address)
         default:
             return try! rawmem.write(byte: byte, at: address)
         }
@@ -131,12 +131,12 @@ final class PPURegister: MemoryMappable {
         }
         
         func read(at address: UInt16) throws -> UInt8 {
-            assert(address == 0)
+            assert(address == MemoryLocations.lcdc.rawValue)
             return rawmem
         }
         
         func write(byte: UInt8, at address: UInt16) throws {
-            assert(address == 0)
+            assert(address == MemoryLocations.lcdc.rawValue)
             rawmem = byte
         }
         
@@ -222,12 +222,12 @@ final class PPURegister: MemoryMappable {
         }
         
         func read(at address: UInt16) throws -> UInt8 {
-            assert(address == 0)
+            assert(address == MemoryLocations.stat.rawValue)
             return rawmem
         }
         
         func write(byte: UInt8, at address: UInt16) throws {
-            assert(address == 0)
+            assert(address == MemoryLocations.stat.rawValue)
             rawmem = byte
         }
         

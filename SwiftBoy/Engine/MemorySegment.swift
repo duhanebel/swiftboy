@@ -22,7 +22,7 @@ final class MemorySegment: MemoryMappable {
     }
     
     private func absoluteToRelativeAddress(absolute address: Address) throws -> Address {
-        return address
+       // return address
         // TODO: decide where we do the transaltion
         assert(mappedTo.upperBound > address && mappedTo.lowerBound <= address)
         return address - mappedTo.lowerBound
@@ -59,27 +59,28 @@ final class MemorySegment: MemoryMappable {
 //    }
 //}
 
-final class AddressTranslator: MemoryMappable {
-    private var memory: MemoryMappable
-    private var offset: UInt16
-    
-    init(memory: MemoryMappable, offset: UInt16) {
-        self.memory = memory
-        self.offset = offset
-    }
-    
-    func read(at address: UInt16) throws -> UInt8 {
-        let localAddress = relativeAddress(for: address)
-        return try memory.read(at: localAddress)
-    }
-    
-    func write(byte: UInt8, at address: UInt16) throws {
-        let localAddress = relativeAddress(for: address)
-        try memory.write(byte: byte, at: localAddress)
-    }
-    
-    private func relativeAddress(for address: UInt16) -> UInt16 {
-        assert(address >= offset, "Address out of bounds")
-        return address - offset
-    }
-}
+// TODO: Good idea for later maybe?
+//final class AddressTranslator: MemoryMappable {
+//    private var memory: MemoryMappable
+//    private var offset: UInt16
+//
+//    init(memory: MemoryMappable, offset: UInt16) {
+//        self.memory = memory
+//        self.offset = offset
+//    }
+//
+//    func read(at address: UInt16) throws -> UInt8 {
+//        let localAddress = relativeAddress(for: address)
+//        return try memory.read(at: localAddress)
+//    }
+//
+//    func write(byte: UInt8, at address: UInt16) throws {
+//        let localAddress = relativeAddress(for: address)
+//        try memory.write(byte: byte, at: localAddress)
+//    }
+//
+//    private func relativeAddress(for address: UInt16) -> UInt16 {
+//        assert(address >= offset, "Address out of bounds")
+//        return address - offset
+//    }
+//}

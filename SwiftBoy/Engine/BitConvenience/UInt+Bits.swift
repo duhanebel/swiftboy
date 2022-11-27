@@ -17,6 +17,26 @@ extension UInt8 {
         }
     }
     
+    subscript(_ idx: (Int, Int)) -> UInt8 {
+        get { return self[idx.0, idx.1] }
+        set { self[idx.0, idx.1] = newValue }
+    }
+    
+    subscript(_ startIdx: Int, _ endIdx: Int) -> UInt8 {
+        get {
+            let endIndexBitmask: UInt8 = (1 << (endIdx+1)) - 1
+            return (self & endIndexBitmask) >> startIdx
+        }
+        set {
+            
+            let endIndexBitmask: UInt8 = (1 << (endIdx+1)) - 1
+            let startIndexBitmask: UInt8 = (1 << (startIdx)) - 1
+            let bitmask: UInt8 = endIndexBitmask ^ startIndexBitmask
+            
+            self = (self & ~bitmask) | ((newValue << startIdx) & bitmask)
+        }
+    }
+    
     var complement: Self {
         get {
             var result = self

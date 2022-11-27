@@ -27,8 +27,6 @@ import Foundation
  */
 final class PPURegister: MemoryMappable {
     enum MemoryLocations: UInt16, CaseIterable {
-        //static let baseAddress: Address = 0xFF40
-         
         case lcdc = 0xFF40
         case stat = 0xFF41
         case scy  = 0xFF42
@@ -41,10 +39,6 @@ final class PPURegister: MemoryMappable {
         case obp1 = 0xFF49
         case wy   = 0xFF4A
         case wx   = 0xFF4B
-        
-//            var relativeAddress: Address {
-//                return rawValue - PPU.PPURegister.MemoryLocations.baseAddress
-//            }
     }
     var rawmem = MemorySegment(from: 0xFF40, size: MemoryLocations.allCases.count)
     

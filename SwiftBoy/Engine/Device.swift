@@ -93,7 +93,7 @@ final class Device {
                     divider: divider,
                     timer: counter,
                     interruptFlag: intRegister,
-                    audio: audio,
+                    audio: audio.registers,
                     video: ppu.registers,
                     interruptEnabled: intEnabledRegister)
         

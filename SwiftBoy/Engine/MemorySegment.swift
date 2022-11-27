@@ -23,7 +23,6 @@ final class MemorySegment: MemoryMappable {
     
     private func absoluteToRelativeAddress(absolute address: Address) throws -> Address {
        // return address
-        // TODO: decide where we do the transaltion
         assert(mappedTo.upperBound > address && mappedTo.lowerBound <= address)
         return address - mappedTo.lowerBound
     }

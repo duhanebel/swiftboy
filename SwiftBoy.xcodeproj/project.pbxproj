@@ -23,7 +23,10 @@
 		B733CF002572CCFA0013E8D1 /* CPU+ALU.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CEFF2572CCFA0013E8D1 /* CPU+ALU.swift */; };
 		B733CF082572CD360013E8D1 /* CPU+ALUTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CF072572CD360013E8D1 /* CPU+ALUTests.swift */; };
 		B733CF0D2572F4E90013E8D1 /* MMU.swift in Sources */ = {isa = PBXBuildFile; fileRef = B733CF0C2572F4E90013E8D1 /* MMU.swift */; };
+		B736015629325DFF00279FF4 /* FrameSequencer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B736015529325DFF00279FF4 /* FrameSequencer.swift */; };
+		B73601592933CA4200279FF4 /* FMSynthesizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B73601582933CA4200279FF4 /* FMSynthesizer.swift */; };
 		B738731D257D5E8300C4CAC8 /* cpu_bits.gb in Resources */ = {isa = PBXBuildFile; fileRef = B738731C257D5E8300C4CAC8 /* cpu_bits.gb */; };
+		B7900E33292D48E4003D1CD2 /* APURegisters.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7900E32292D48E4003D1CD2 /* APURegisters.swift */; };
 		B7BFED0A28A261EA007E387E /* TilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BFED0928A261E9007E387E /* TilesView.swift */; };
 		B7BFED0C28A26200007E387E /* TilemapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BFED0B28A26200007E387E /* TilemapViewController.swift */; };
 		B7FD707228C793CA00644DA5 /* supermario_land_2.gb in Resources */ = {isa = PBXBuildFile; fileRef = B7FD707128C7938B00644DA5 /* supermario_land_2.gb */; };
@@ -129,7 +132,10 @@
 		B733CF072572CD360013E8D1 /* CPU+ALUTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CPU+ALUTests.swift"; sourceTree = "<group>"; };
 		B733CF0C2572F4E90013E8D1 /* MMU.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MMU.swift; sourceTree = "<group>"; };
 		B733CF1F2573A3E10013E8D1 /* ScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenView.swift; sourceTree = "<group>"; };
+		B736015529325DFF00279FF4 /* FrameSequencer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameSequencer.swift; sourceTree = "<group>"; };
+		B73601582933CA4200279FF4 /* FMSynthesizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FMSynthesizer.swift; sourceTree = "<group>"; };
 		B738731C257D5E8300C4CAC8 /* cpu_bits.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = cpu_bits.gb; sourceTree = "<group>"; };
+		B7900E32292D48E4003D1CD2 /* APURegisters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APURegisters.swift; sourceTree = "<group>"; };
 		B7BFED0928A261E9007E387E /* TilesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TilesView.swift; sourceTree = "<group>"; };
 		B7BFED0B28A26200007E387E /* TilemapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TilemapViewController.swift; sourceTree = "<group>"; };
 		B7FD707128C7938B00644DA5 /* supermario_land_2.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = supermario_land_2.gb; sourceTree = "<group>"; };
@@ -245,6 +251,7 @@
 			children = (
 				D9723A3E2588BB3800AFB3CF /* Debugger */,
 				B733CEAD256EC4540013E8D1 /* Engine */,
+				B73601572933CA0600279FF4 /* CoreAudioRenderer */,
 				D99B05B0258FCA1A00A1C5B1 /* OpenGL renderer (legacy) */,
 				D9FA21BA258F446A00F0393B /* Metal Renderer */,
 				B733CE79256EC3910013E8D1 /* AppDelegate.swift */,
@@ -277,6 +284,7 @@
 		B733CEAD256EC4540013E8D1 /* Engine */ = {
 			isa = PBXGroup;
 			children = (
+				B7900E31292D48D0003D1CD2 /* APU */,
 				B7FE88222574EF4A00695D33 /* CPUTypes.swift */,
 				D9E6F74E25B3323100E5F0A9 /* CPU */,
 				B7FE886B257CCAB300695D33 /* PPU */,
@@ -289,11 +297,28 @@
 				B7FE882E25752DAE00695D33 /* IO.swift */,
 				B7FE884C2577739600695D33 /* Device.swift */,
 				B7FE885C257B7B0100695D33 /* Stopwatch.swift */,
-				D9E6F6ED25A0ECC100E5F0A9 /* APU.swift */,
 				D9E6F6F225A0ECEC00E5F0A9 /* Timer.swift */,
 				D9E6F6F725A0ED0000E5F0A9 /* Divider.swift */,
 			);
 			path = Engine;
+			sourceTree = "<group>";
+		};
+		B73601572933CA0600279FF4 /* CoreAudioRenderer */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = CoreAudioRenderer;
+			sourceTree = "<group>";
+		};
+		B7900E31292D48D0003D1CD2 /* APU */ = {
+			isa = PBXGroup;
+			children = (
+				D9E6F6ED25A0ECC100E5F0A9 /* APU.swift */,
+				B7900E32292D48E4003D1CD2 /* APURegisters.swift */,
+				B736015529325DFF00279FF4 /* FrameSequencer.swift */,
+				B73601582933CA4200279FF4 /* FMSynthesizer.swift */,
+			);
+			path = APU;
 			sourceTree = "<group>";
 		};
 		B7FE880A2573EC4500695D33 /* Data */ = {
@@ -600,12 +625,15 @@
 				B733CEB7256ECFCF0013E8D1 /* UInt16+Bytes.swift in Sources */,
 				D9E6F6EE25A0ECC100E5F0A9 /* APU.swift in Sources */,
 				B7BFED0A28A261EA007E387E /* TilesView.swift in Sources */,
+				B7900E33292D48E4003D1CD2 /* APURegisters.swift in Sources */,
 				D9E6F75025B3329B00E5F0A9 /* PPURegisters.swift in Sources */,
 				D9E6F6F325A0ECEC00E5F0A9 /* Timer.swift in Sources */,
 				B7BFED0C28A26200007E387E /* TilemapViewController.swift in Sources */,
 				B7FE881E2574EF2F00695D33 /* Joypad.swift in Sources */,
 				B733CEDC257141000013E8D1 /* CPU.swift in Sources */,
 				D9FA218B258A016400F0393B /* VRAMViewController.swift in Sources */,
+				B736015629325DFF00279FF4 /* FrameSequencer.swift in Sources */,
+				B73601592933CA4200279FF4 /* FMSynthesizer.swift in Sources */,
 				B7FE882F25752DAE00695D33 /* IO.swift in Sources */,
 				D91DEAFA257F7AC500590CD5 /* Debugger.swift in Sources */,
 				D94155DB25922839005576B3 /* OAM.swift in Sources */,

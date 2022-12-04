@@ -152,21 +152,19 @@ final class PPU : Actor {
             switch(mode) {
             case .OAMSearch:
                 registers.stat.PPUModeFlag = .OAMSearch
-            case .pixelTransfer:
-                if oldValue != .pixelTransferSprite { // not when coming back from sprite
-                    let tileLine = registers.ly % 8
-                    let scxTileOffset = (registers.scx / 8) & 0x1F // If we scroll more than 8px, no need to fetch that tile
-                    let scyTileOffset = 32 * ((UInt16(registers.ly) + UInt16(registers.scy) & 0xFF) / 8)
-                    //let tileMapOffset = (scyTileOffset + scxTileOffset) & 0x3ff //TODO: this last bit is not needed if fetching window (as there is no scx for windows)
-                    // TODO: Note: The sum of both the X-POS+SCX and LY+SCY offsets is ANDed with 0x3ff in order to ensure that the address stays within the Tilemap memory regions.
-                    bgFetcher = TileFetcher(tileDataRam: vram,
-                                            tileMapBaseAddress: registers.lcdc.bgTileMapStartAddress + scyTileOffset,
-                                            tileMapOffset: scxTileOffset,
-                                            tileDataAddress: registers.lcdc.tileDataStartAddress,
-                                            tileLine: tileLine)
-                    
-                    registers.stat.PPUModeFlag = .pixelTransfer
-                }
+            case .pixelTransfer where oldValue != .pixelTransferSprite:
+                let tileLine = (registers.ly + registers.scy) % 8
+                let scxTileOffset = (registers.scx / 8) & 0x1F // If we scroll more than 8px, no need to fetch that tile
+                let scyTileOffset = 32 * ((UInt16(registers.ly) + UInt16(registers.scy) & 0xFF) / 8)
+                //let tileMapOffset = (scyTileOffset + scxTileOffset) & 0x3ff //TODO: this last bit is not needed if fetching window (as there is no scx for windows)
+                // TODO: Note: The sum of both the X-POS+SCX and LY+SCY offsets is ANDed with 0x3ff in order to ensure that the address stays within the Tilemap memory regions.
+                bgFetcher = TileFetcher(tileDataRam: vram,
+                                        tileMapBaseAddress: registers.lcdc.bgTileMapStartAddress + scyTileOffset,
+                                        tileMapOffset: scxTileOffset,
+                                        tileDataAddress: registers.lcdc.tileDataStartAddress,
+                                        tileLine: tileLine)
+                
+                registers.stat.PPUModeFlag = .pixelTransfer
             case .pixelTransferSprite:
                 return
             case .hBlank:
@@ -183,7 +181,11 @@ final class PPU : Actor {
                     interruptRegister.LCDStat = true
                 }
                 interruptRegister.VBlank = true
+            default:
+                //case .pixelTransfer where oldValue == .pixelTransferSprite:
+                ()
             }
+        
         }
     }
     
@@ -271,7 +273,6 @@ final class PPU : Actor {
                 }
             }
             bgFetcher.tic()
-            
             
         case .pixelTransferSprite:
             if spriteFetcher == nil {
@@ -363,8 +364,9 @@ final class PPU : Actor {
         assert(registers.ly < screenHeight)
       //  assert(currentPixelX - Int(registers.scx) < screenWidth)
 
-        let buffIndex = (Int(registers.ly) - Int(registers.scy) % screenHeight) * screenWidth + screenPositionX
-        guard buffIndex < buffer.count else { print("Out of bounds: \(buffIndex)"); return}
+        let buffIndex = Int(registers.ly) * screenWidth + screenPositionX
+        guard buffIndex < buffer.count else {
+            print("Out of bounds: \(buffIndex)"); return}
 
         buffer[buffIndex] = registers.bgp.rgbValue(for: pixel)
     }

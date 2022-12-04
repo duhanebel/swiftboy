@@ -52,7 +52,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         try! bootROM.load(url: bootURL)
         try! rom.load(url: tetrisURL)
         device = Device.gameBoy(biosROM: bootROM, rom: rom, screen: gameController)
-        device.fastBoot = true
+       // device.fastBoot = true
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {

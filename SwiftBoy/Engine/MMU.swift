@@ -91,10 +91,10 @@ final class MMU: MemoryMappable {
         memoryObservers.append(observer)
     }
     
-    func notifyObservers(for address: Address) {
+    func notifyObservers(for address: Address, value: Byte) {
         for observer in memoryObservers {
             if observer.observedRange.contains(address) {
-                observer.memoryChanged(sender: self)
+                observer.memoryChanged(sender: self, at: address, with: value)
             }
         }
     }
@@ -140,7 +140,7 @@ final class MMU: MemoryMappable {
         let dest = try map(address: address)
         try dest.write(byte: byte, at: address)
         
-        notifyObservers(for: address)
+        notifyObservers(for: address, value: byte)
     }
     
     private func performDmaTransfer(from address: Address) throws {

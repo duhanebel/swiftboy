@@ -16,7 +16,7 @@ private let kInFlightAudioBuffers: Int = 2
 // changes but requires more processing but increases the risk of being unable
 // to fill the buffers in time. A setting of 1024 represents about 23ms of
 // samples.
-private let kSamplesPerBuffer: AVAudioFrameCount = 1024
+ let kSamplesPerBuffer: AVAudioFrameCount = 1024 
 
 final class FMSynthesizer: Synthetizer {
 
@@ -49,18 +49,22 @@ final class FMSynthesizer: Synthetizer {
         }
     }
     
-    func play(buffer: [Byte]) {
+    func play(buffer: [Float]) {
         let audioBuffer = self.audioBuffers[self.bufferIndex]
         let leftChannel = audioBuffer.floatChannelData![0]
         let rightChannel = audioBuffer.floatChannelData![1]
         
         for (index, value) in buffer.enumerated() {
-            leftChannel[index] = Float(value)
-            rightChannel[index] = Float(value)
+            leftChannel[index] = value
+            rightChannel[index] = value
         }
         audioBuffer.frameLength = AVAudioFrameCount(buffer.count)
 
-        self.playerNode.scheduleBuffer(audioBuffer) { }
+        let playingIdx = self.bufferIndex
+        self.playerNode.scheduleBuffer(audioBuffer) {
+            
+            if self.bufferIndex != playingIdx { print("A: Buffer underrun")} else { print("A: OK")}
+        }
         
         self.bufferIndex = (self.bufferIndex + 1) % self.audioBuffers.count
         playerNode.play()

@@ -10,7 +10,7 @@ import SwiftUI
 
 protocol MemoryObserver {
     var observedRange: Range<UInt16> { get }
-    func memoryChanged(sender: MemoryMappable) 
+    func memoryChanged(sender: MemoryMappable, at: Address, with: Byte)
 }
 
 class TilesObserver: ObservableObject {

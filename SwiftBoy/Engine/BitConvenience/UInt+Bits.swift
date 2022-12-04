@@ -24,12 +24,12 @@ extension UInt8 {
     
     subscript(_ startIdx: Int, _ endIdx: Int) -> UInt8 {
         get {
-            let endIndexBitmask: UInt8 = (1 << (endIdx+1)) - 1
+            let endIndexBitmask: UInt8 = (1 << (endIdx+1)) &- 1
             return (self & endIndexBitmask) >> startIdx
         }
         set {
             
-            let endIndexBitmask: UInt8 = (1 << (endIdx+1)) - 1
+            let endIndexBitmask: UInt8 = (1 << (endIdx+1)) &- 1
             let startIndexBitmask: UInt8 = (1 << (startIdx)) - 1
             let bitmask: UInt8 = endIndexBitmask ^ startIndexBitmask
             

@@ -12,18 +12,19 @@ final class MemorySegment: MemoryMappable {
     
     var size: Int  { data.count }
     
-    var mappedTo: Range<Address>
+    private var mappedTo: Range<Address>
     
     init(from: Address, size: Int) {
-//        assert(size < UInt16.max, "Can't map more than 2^16 bytes")
-//        assert(from+UInt16(size) < UInt16.max, "Mapping outside of total addressable space (2^16 bytes)")
+        assert(size < UInt16.max, "Can't map more than 2^16 bytes")
+        assert(from+UInt16(size) <= UInt16.max, "Mapping outside of total addressable space (2^16 bytes)")
         self.data = ContiguousArray<UInt8>(repeating: 0x0, count: size)
         self.mappedTo = from..<(from+UInt16(size))
     }
     
     private func absoluteToRelativeAddress(absolute address: Address) throws -> Address {
-       // return address
-        assert(mappedTo.upperBound > address && mappedTo.lowerBound <= address)
+        guard mappedTo.upperBound > address && mappedTo.lowerBound <= address else {
+            throw MemoryError.outOfBounds(address, mappedTo)
+        }
         return address - mappedTo.lowerBound
     }
     
@@ -37,26 +38,6 @@ final class MemorySegment: MemoryMappable {
         data[Int(relAddress)] = byte
     }
 }
-
-//class Register: MemoryMappable {
-//    private var data: UInt8
-//    
-//    var size = 1
-//    
-//    init(data: UInt8) {
-//        self.data = data
-//    }
-//    
-//    func read(at address: UInt16) throws -> UInt8 {
-//        guard address == 0 else { throw MemoryError.outOfBounds(address, 0x00..0x00) }
-//        return data
-//    }
-//    
-//    func write(byte: UInt8, at address: UInt16) throws {
-//        guard address < data.count else { throw MemoryError.outOfBounds(address, 0x00..0x00) }
-//        data = byte
-//    }
-//}
 
 // TODO: Good idea for later maybe?
 //final class AddressTranslator: MemoryMappable {

@@ -16,15 +16,15 @@ private let kInFlightAudioBuffers: Int = 2
 // changes but requires more processing but increases the risk of being unable
 // to fill the buffers in time. A setting of 1024 represents about 23ms of
 // samples.
- let kSamplesPerBuffer: AVAudioFrameCount = 1024 
+ let kSamplesPerBuffer: AVAudioFrameCount = 4096//1024 
 
 final class FMSynthesizer: Synthetizer {
 
     private let engine: AVAudioEngine = AVAudioEngine()
     private let playerNode: AVAudioPlayerNode = AVAudioPlayerNode()
     let audioFormat = AVAudioFormat(standardFormatWithSampleRate: 44100.0, channels: 2)!
-
     private let audioBuffers: [AVAudioPCMBuffer]
+    //private var stopWatches: [Stopwatch]
 
     // The index of the next buffer to fill.
     private var bufferIndex: Int = 0
@@ -36,6 +36,7 @@ final class FMSynthesizer: Synthetizer {
     init() {
         audioBuffers = Array<AVAudioPCMBuffer>(repeating: AVAudioPCMBuffer(pcmFormat: audioFormat, frameCapacity: kSamplesPerBuffer)!,
                                                count: kInFlightAudioBuffers)
+      //  stopWatches = Array<Stopwatch>(repeating: Stopwatch(), count: kInFlightAudioBuffers)
 
         // Attach and connect the player node.
         engine.attach(playerNode)
@@ -43,6 +44,7 @@ final class FMSynthesizer: Synthetizer {
 
         do {
             try engine.start()
+            playerNode.play()
         } catch {
             // TODO: move this up and put it in a better place
             print("ERROR: initializing audio")
@@ -61,13 +63,16 @@ final class FMSynthesizer: Synthetizer {
         audioBuffer.frameLength = AVAudioFrameCount(buffer.count)
 
         let playingIdx = self.bufferIndex
+        //var stopwatch = stopWatches[self.bufferIndex]
+        //stopwatch.reset()
+        
         self.playerNode.scheduleBuffer(audioBuffer) {
-            
-            if self.bufferIndex != playingIdx { print("A: Buffer underrun")} else { print("A: OK")}
+          //  print("*** APS: \(stopwatch.elapsedTimeInterval())")
+         //   if self.bufferIndex != playingIdx { print("UNDERRUN: ", terminator: "")}
         }
         
         self.bufferIndex = (self.bufferIndex + 1) % self.audioBuffers.count
-        playerNode.play()
+        
         
     }
 }

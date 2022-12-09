@@ -23,6 +23,14 @@ protocol MemoryMappable: MemoryMappableR, MemoryMappableW {
     
 }
 
+protocol MemoryObserver {
+    func memoryChanged(sender: MemoryMappable, at: Address, with: Byte)
+}
+
+protocol MemoryObservable {
+    var observer: MemoryObserver? { get }
+}
+
 //protocol Interceptor {
 //    static var affectedRange: Range<Address> { get }
 //    var allowWrite: Bool { get }
@@ -91,13 +99,13 @@ final class MMU: MemoryMappable {
         memoryObservers.append(observer)
     }
     
-    func notifyObservers(for address: Address, value: Byte) {
-        for observer in memoryObservers {
-            if observer.observedRange.contains(address) {
-                observer.memoryChanged(sender: self, at: address, with: value)
-            }
-        }
-    }
+//    func notifyObservers(for address: Address, value: Byte) {
+//        for observer in memoryObservers {
+//            if observer.observedRange.contains(address) {
+//                observer.memoryChanged(sender: self, at: address, with: value)
+//            }
+//        }
+//    }
     
     init(rom: MemoryMappable?, biosROM: MemoryMappable?, switchableRom: MemoryMappable?,
          vram: MemoryMappable, sram: MemoryMappable, io: MemoryMappable) {
@@ -140,7 +148,7 @@ final class MMU: MemoryMappable {
         let dest = try map(address: address)
         try dest.write(byte: byte, at: address)
         
-        notifyObservers(for: address, value: byte)
+    //    notifyObservers(for: address, value: byte)
     }
     
     private func performDmaTransfer(from address: Address) throws {

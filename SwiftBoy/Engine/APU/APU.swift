@@ -41,6 +41,7 @@ final class Pulse: Actor {
     private var currentTic = 0
     
     private var currentVolumeEnvelopeTic: Int = 0
+    private var currentSweepTic: Int = 0
     
     private let register: APURegisters.Pulse
     
@@ -110,6 +111,21 @@ final class Pulse: Actor {
         }
     }
     
+    func sweepDidTic() {
+        guard isEnabled == true else { return }
+//        guard currentSweepTic == register.sweep.pace else { currentSweepTic += 1; return}
+//       
+//        // final frenquecy is +/- current_frequency / 2^slope
+//        // remember that dividing by a power of two is a bitshift!
+//        let freqDelta = frequency >> register.sweep.slope
+//        if register.sweep.direction == .add {
+//            frequency += freqDelta
+//        } else if volume > 0 {
+//            frequency -= freqDelta
+//        }
+//        if frequency == 0 { isEnabled = false }
+//        currentSweepTic = 0
+    }
    
 }
 
@@ -141,13 +157,124 @@ extension Pulse: MemoryObserver {
     
 }
 
+final class Wave: Actor {
+    
+    private var dutyIndex = 0
+    private var length: Byte
+    var frequency: UInt16
+    var volume: Byte
+    var isEnabled: Bool
+    
+    private var pulseTics: Int
+    private var currentTic = 0
+    
+    private var currentSweepTic: Int = 0
+    
+    private let register: APURegisters.Wave
+    
+    
+    
+    
+    init(with register: APURegisters.Wave) {
+        self.register = register
+        
+        self.length = register.lengthLoad
+        self.frequency = register.frequency
+        self.volume = register.volume.rawValue
+        
+        self.isEnabled = register.freqHIAndTrigger.trigger
+        self.pulseTics = (2048 - Int(frequency)) * 2
+        
+        register.observer = self
+    }
+    
+    deinit {
+        register.observer = nil
+    }
+    
+    func reset() {
+        self.length = register.lengthLoad
+        self.frequency = register.frequency
+        self.volume = register.volume.rawValue
+        
+        self.isEnabled = register.freqHIAndTrigger.trigger
+        
+        /*
+         The actual signal frequency is 65536 / (2048 - freq) Hz.
+         This is the whole wave’s frequency; the rate at which the channel steps
+         through the 32 “steps”.
+         The frequency of each step would be 32 times that, which is 2097152 / (2048 - freq) Hz.
+         Note that 2097152 is 2Mhz, if we divide the CPU freq (to get the number of tics, we end up with: 2 * (2048 - freq)
+         */
+        self.pulseTics = (2048 - Int(frequency)) * 2
+        self.currentTic = 0
+    }
+    
+    func tic() {
+        guard currentTic == pulseTics else { currentTic += 1; return }
+        
+        dutyIndex = (dutyIndex + 1) % 32
+        currentTic = 0
+    }
+    
+    // As CH3 plays, it reads wave RAM left to right, upper nibble first.
+    // That is, $FF30’s upper nibble, $FF30’s lower nibble, $FF31’s upper nibble, and so on.
+    func currentValue() -> Byte {
+        let byteIndex = UInt16(dutyIndex / 2)
+        let byteAddress = APURegisters.MemoryLocations.wavePattern.lowerBound + byteIndex
+        let nibbleIndex = dutyIndex % 2
+        let waveByte = try! register.wavePattern.read(at: byteAddress)
+        let waveValue = (nibbleIndex == 0) ? waveByte.upperNibble : waveByte.lowerNibble
+        
+        switch(register.volume) {
+        case .mute:
+            return 0
+        case .full:
+            return waveValue
+        case .half:
+            return waveValue / 2
+        case .quarter:
+            return waveValue / 4
+        }
+    }
+}
 
+extension Wave: MemoryObserver {
+    var observedRange: Range<UInt16> {
+        APURegisters.MemoryLocations.wave.lowerBound..<APURegisters.MemoryLocations.wave.upperBound
+    }
+    
+    func memoryChanged(sender: MemoryMappable, at address: Address, with: Byte) {
+        switch(address) {
+        case APURegisters.MemoryLocations.NR30:
+            self.isEnabled = register.power
+            if register.power { reset() }
+        case APURegisters.MemoryLocations.NR31:
+            self.length = register.lengthLoad
+        case APURegisters.MemoryLocations.NR32:
+            ()
+        case APURegisters.MemoryLocations.NR33:
+            frequency = register.frequency
+        case APURegisters.MemoryLocations.NR44:
+            frequency = register.frequency
+            if register.freqHIAndTrigger.trigger == true {
+                reset()
+            }
+        default:
+            ()
+        }
+    }
+    
+    
+}
 
 final class Audio: Actor {
     
     var registers: APURegisters
     
-    var pulseChannel: Pulse
+    var pulseChannel1: Pulse
+    var pulseChannel2: Pulse
+    var waveChannel: Wave
     
     private var currentTic = 0
     
@@ -164,21 +291,32 @@ final class Audio: Actor {
     
     // Volume of each channel is described by 4bits so the range is 0-15, 16 steps.
     private let volumeSteps = 16
+    
+    var stopwatch = Stopwatch()
 
     init(output: Synthetizer) {
         registers = APURegisters()
         
-        self.pulseChannel = Pulse(with: registers.pulse1)
+        self.pulseChannel1 = Pulse(with: registers.pulse1)
+        self.pulseChannel2 = Pulse(with: registers.pulse2)
+        self.waveChannel = Wave(with: registers.wave)
         
         self.output = output
         audioSampleRateCPUTics = CPU.clockSpeed / output.sampleRate
         
         sequencer = FrameSequencer()
         sequencer.envelopeHandler = self.volumeEnvelopeDidTic
+        sequencer.sweepHandler = self.sweepDidTic
     }
     
     func volumeEnvelopeDidTic() {
-        self.pulseChannel.volumeEnvelopeDidTic()
+        self.pulseChannel1.volumeEnvelopeDidTic()
+        self.pulseChannel2.volumeEnvelopeDidTic()
+    }
+    
+    func sweepDidTic() {
+        self.pulseChannel1.sweepDidTic()
+        
     }
     
     convenience init() {
@@ -188,11 +326,17 @@ final class Audio: Actor {
     func tic() {
         sequencer.tic()
         guard registers.conf.powerControl.powerControl == true else { return }
-      //  guard registers.pulse1.freqHIAndTrigger.trigger == true else { return }
         
-        if currentTic ==  audioSampleRateCPUTics {
-            buff.append(Float(pulseChannel.currentValue())/Float(volumeSteps))
+        if currentTic == audioSampleRateCPUTics {
+            let sample = Float(pulseChannel1.currentValue()) / Float(volumeSteps) +
+                         Float(pulseChannel2.currentValue()) / Float(volumeSteps) +
+                         Float(waveChannel.currentValue()) / Float(volumeSteps)
+            buff.append(sample)
             if buff.count == Int(kSamplesPerBuffer) {
+                let timeString = String(format: "%.4f", stopwatch.elapsedTimeInterval())
+                let deltaTimeString = String(format: "%.6f", stopwatch.elapsedTimeInterval() - Double(buff.count)/Double(output.sampleRate))
+                print("Elapsed: \(timeString) | \(deltaTimeString)")
+                stopwatch.reset()
                 output.play(buffer: buff)
                 buff = Array<Float>()
                 buff.reserveCapacity(Int(kSamplesPerBuffer))
@@ -201,7 +345,9 @@ final class Audio: Actor {
         } else {
             currentTic += 1
         }
-        pulseChannel.tic()
+        pulseChannel1.tic()
+        pulseChannel2.tic()
+        waveChannel.tic()
     }
 }
 

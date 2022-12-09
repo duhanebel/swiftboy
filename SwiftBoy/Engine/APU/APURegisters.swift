@@ -68,7 +68,9 @@ class Register: MemoryMappable {
  NR50 | FF24 | ALLL BRRR | 0x77 | Vin L enable, Left vol, Vin R enable, Right vol
  NR51 | FF25 | 4321 4321 | 0xF3 | Left enables, Right enables
  NR52 | FF26 | P--- 4321 | 0xF1 | Power control/status, Channel length statuses
- 
+
+ Wave pattern ram:
+ FF30–FF3F   | 111122222 | ---- | Wave RAM is 16 bytes long; each byte holds two                                   “samples”, each 4 bits.
  */
 
 class APURegisters: MemoryMappable {
@@ -132,6 +134,8 @@ class APURegisters: MemoryMappable {
             return try pulse2.read(at: address)
         case MemoryLocations.wave:
             return try wave.read(at: address)
+        case MemoryLocations.wavePattern:
+            return try wave.read(at: address)
         case MemoryLocations.noise:
             return try noise.read(at: address)
         case MemoryLocations.conf:
@@ -148,6 +152,8 @@ class APURegisters: MemoryMappable {
         case MemoryLocations.pulse2:
             return try pulse2.write(byte: byte, at: address)
         case MemoryLocations.wave:
+            return try wave.write(byte: byte, at: address)
+        case MemoryLocations.wavePattern:
             return try wave.write(byte: byte, at: address)
         case MemoryLocations.noise:
             return try noise.write(byte: byte, at: address)
@@ -286,7 +292,7 @@ class APURegisters: MemoryMappable {
         }
     }
     
-    final class Pulse: MemoryMappable {
+    final class Pulse: MemoryMappable, MemoryObservable {
         
         enum MemoryLocationOffsets: UInt16, CaseIterable {
             case sweep = 0
@@ -297,6 +303,7 @@ class APURegisters: MemoryMappable {
         }
         
         var baseAddress: Address
+        
         var observer: MemoryObserver?
 
         
@@ -357,7 +364,7 @@ class APURegisters: MemoryMappable {
         }
     }
     
-    final class Wave: MemoryMappable {
+    final class Wave: MemoryMappable, MemoryObservable {
         
         enum MemoryLocations: UInt16, CaseIterable {
             case dacPower = 0xFF1A
@@ -365,6 +372,7 @@ class APURegisters: MemoryMappable {
             case volume   = 0xFF1C
             case freqLow  = 0xFF1D
             case freqHighTrigger = 0xFF1E
+            static let wavePattern = Address(0xFF30)...Address(0xFF3F)
         }
         
         enum Volume: UInt8 {
@@ -373,6 +381,8 @@ class APURegisters: MemoryMappable {
             case half    = 0b0100_0000
             case quarter = 0b0110_0000
         }
+        
+        var observer: MemoryObserver?
         
         // Only the 6-5th bits are in use for the volume
         let volumeBitmask: Byte = 0b0110_0000
@@ -383,14 +393,16 @@ class APURegisters: MemoryMappable {
         var frequencyLow: Byte = 0
         var freqHIAndTrigger = FrequencyHIAndTriggerRegister(mappedTo: MemoryLocations.freqHighTrigger.rawValue)
         
+        var wavePattern: MemorySegment = MemorySegment(from: MemoryLocations.wavePattern.lowerBound, size: MemoryLocations.wavePattern.count)
+        
         var frequency: UInt16 {
             get { (UInt16(freqHIAndTrigger.frequencyHigh) << 8) | UInt16(frequencyLow) }
         }
         
-        // Only 7th bit is used
+        // Only the 7th bit is used
         var power: Bool {
-            get { return DACPower == 0b1000_000 }
-            set { DACPower = (newValue ? 0b1000_000 : 0) }
+            get { return DACPower == 0b1000_0000 }
+            set { DACPower = (newValue ? 0b1000_0000 : 0) }
         }
         
         var volume: Volume {
@@ -410,6 +422,8 @@ class APURegisters: MemoryMappable {
                 return frequencyLow
             case MemoryLocations.freqHighTrigger.rawValue:
                 return try freqHIAndTrigger.read(at: address)
+            case MemoryLocations.wavePattern:
+                return try wavePattern.read(at: address)
             default:
                 throw MemoryError.invalidAddress(address)
             }
@@ -418,7 +432,6 @@ class APURegisters: MemoryMappable {
         func write(byte: UInt8, at address: UInt16) throws {
             switch(address) {
             case MemoryLocations.dacPower.rawValue:
-                // Writes if sweep is not availabe are ignored
                 DACPower = byte
             case MemoryLocations.length.rawValue:
                 lengthLoad = byte
@@ -428,9 +441,12 @@ class APURegisters: MemoryMappable {
                 frequencyLow = byte
             case MemoryLocations.freqHighTrigger.rawValue:
                 try freqHIAndTrigger.write(byte: byte, at: address)
+            case MemoryLocations.wavePattern:
+                return try wavePattern.write(byte: byte, at: address)
             default:
                 throw MemoryError.invalidAddress(address)
             }
+            observer?.memoryChanged(sender: self, at: address, with: byte)
         }
     }
     

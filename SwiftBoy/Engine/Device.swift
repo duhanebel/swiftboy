@@ -145,7 +145,7 @@ final class Device {
         joypad.keyUp(key: key)
     }
     
-    var didExecute: (()->Void)? = nil
+   // var didExecute: (()->Void)? = nil
     
     private func compute(at startTime: DispatchTime = DispatchTime.now()) {
         var totalCycles = 0
@@ -155,25 +155,26 @@ final class Device {
             for _ in 0..<cycles {
                 timer.tic()
                 divider.tic()
-                ppu.tic()
                 audio.tic()
+                ppu.tic()
             }
-            didExecute?()
+            //didExecute?()
             totalCycles += cycles
         }
 
         if running {
             let nextCycleDeadline = adjustRuntimeAfter(cycles: totalCycles, since: startTime)
-            queue.asyncAfter(deadline: nextCycleDeadline, execute: { self.compute(at: nextCycleDeadline) })
-//            let time = DispatchTime.now() +
-//                Double(Int64(Double(NSEC_PER_SEC) * (Double(1/CPU.clockSpeed) * Double(totalCycles) - elapsed))) / Double(NSEC_PER_SEC)
-//            queue.asyncAfter(deadline: time, execute: compute)
+                queue.asyncAfter(deadline: nextCycleDeadline,
+                                 qos: .userInteractive,
+                                 execute: { self.compute(at: nextCycleDeadline) })
         }
     }
     
     private func adjustRuntimeAfter(cycles: Int, since: DispatchTime) -> DispatchTime {
+
         let cpuExpectedRunTimeInterval = (Double(cycles) / Double(CPU.clockSpeed))
         let expectedCPURunTime = since + cpuExpectedRunTimeInterval
-        return expectedCPURunTime //- elapsedTime //don't need elapsed time as expectedCPURunTime IS the expected time when the cpu should finish running, so no sum is required!
+
+        return expectedCPURunTime
     }
 }

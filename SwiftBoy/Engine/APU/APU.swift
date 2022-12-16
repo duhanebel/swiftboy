@@ -19,6 +19,7 @@ final class Audio: Actor {
     var pulseChannel1: Pulse
     var pulseChannel2: Pulse
     var waveChannel: Wave
+    var noiseChannel: Noise
     
     private var currentTic = 0
     
@@ -44,6 +45,7 @@ final class Audio: Actor {
         self.pulseChannel1 = Pulse(with: registers.pulse1)
         self.pulseChannel2 = Pulse(with: registers.pulse2)
         self.waveChannel = Wave(with: registers.wave)
+        self.noiseChannel = Noise(with: registers.noise)
         
         self.output = output
         audioSampleRateCPUTics = CPU.clockSpeed / output.sampleRate
@@ -57,6 +59,7 @@ final class Audio: Actor {
     func volumeEnvelopeDidTic() {
         self.pulseChannel1.volumeEnvelopeDidTic()
         self.pulseChannel2.volumeEnvelopeDidTic()
+        self.noiseChannel.volumeEnvelopeDidTic()
     }
     
     func sweepDidTic() {
@@ -67,6 +70,7 @@ final class Audio: Actor {
         self.pulseChannel1.lengthDidTic()
         self.pulseChannel2.lengthDidTic()
         self.waveChannel.lengthDidTic()
+        self.noiseChannel.lengthDidTic()
     }
     
     convenience init() {
@@ -74,29 +78,49 @@ final class Audio: Actor {
     }
     
     func tic() {
-        sequencer.tic()
         guard registers.conf.powerControl.powerControl == true else { return }
+        sequencer.tic()
+        
+        pulseChannel1.tic()
+        pulseChannel2.tic()
+        waveChannel.tic()
+        noiseChannel.tic()
         
         if currentTic == audioSampleRateCPUTics {
-            let sample = Float(pulseChannel1.currentValue()) / Float(volumeSteps) +
-                         Float(pulseChannel2.currentValue()) / Float(volumeSteps) +
-                         Float(waveChannel.currentValue()) / Float(volumeSteps)
-            buff.append(sample)
+            
             if buff.count == Int(kSamplesPerBuffer) {
-                let timeString = String(format: "%.4f", stopwatch.elapsedTimeInterval())
-                let deltaTimeString = String(format: "%.6f", stopwatch.elapsedTimeInterval() - Double(buff.count)/Double(output.sampleRate))
-                print("Elapsed: \(timeString) | \(deltaTimeString)")
-                stopwatch.reset()
+                printDebugLogTiming()
+                
                 output.play(buffer: buff)
-                buff = Array<Float>()
-                buff.reserveCapacity(Int(kSamplesPerBuffer))
+                resetBuffer()
+            } else {
+                buff.append(mixedSample())
             }
             currentTic = 0
         } else {
             currentTic += 1
         }
-        pulseChannel1.tic()
-        pulseChannel2.tic()
-        waveChannel.tic()
+    }
+    
+    private func printDebugLogTiming() {
+        let timeString = String(format: "%.4f", stopwatch.elapsedTimeInterval())
+        let deltaTimeString = String(format: "%.6f", stopwatch.elapsedTimeInterval() - Double(buff.count)/Double(output.sampleRate))
+        print("Elapsed: \(timeString) | \(deltaTimeString)")
+        stopwatch.reset()
+    }
+    
+    private func resetBuffer() {
+        buff = Array<Float>()
+        buff.reserveCapacity(Int(kSamplesPerBuffer))
+    }
+    
+    private func mixedSample() -> Float {
+        let sample = (
+                     Float(pulseChannel1.currentValue()) +
+                      Float(pulseChannel2.currentValue()) +
+                      Float(waveChannel.currentValue())
+                     // Float(noiseChannel.currentValue())
+                     ) / Float(volumeSteps)
+        return sample
     }
 }

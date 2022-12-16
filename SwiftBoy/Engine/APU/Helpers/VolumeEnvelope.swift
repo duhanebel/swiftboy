@@ -37,3 +37,11 @@ final class VolumeEnvelope: Actor {
         }
     }
 }
+
+extension VolumeEnvelope {
+    convenience init(withRegister register: APURegisters.VolumeAndEnvelopeRegister) {
+        self.init(initialVolume: register.initialVolume,
+                  direction: register.direction,
+                  pace: register.sweepPace)
+    }
+}

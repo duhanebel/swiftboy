@@ -32,9 +32,14 @@
 		B76A50702945E0E9006A2F16 /* VolumeEnvelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = B76A506F2945E0E9006A2F16 /* VolumeEnvelope.swift */; };
 		B76A50722945E2A8006A2F16 /* FrequencyEnvelope.swift in Sources */ = {isa = PBXBuildFile; fileRef = B76A50712945E2A8006A2F16 /* FrequencyEnvelope.swift */; };
 		B76A50742945E6B6006A2F16 /* LengthTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B76A50732945E6B6006A2F16 /* LengthTimer.swift */; };
+		B76A507629463DA4006A2F16 /* LFSR.swift in Sources */ = {isa = PBXBuildFile; fileRef = B76A507529463DA4006A2F16 /* LFSR.swift */; };
+		B76A507829463FD4006A2F16 /* NoiseChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B76A507729463FD4006A2F16 /* NoiseChannel.swift */; };
 		B7900E33292D48E4003D1CD2 /* APURegisters.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7900E32292D48E4003D1CD2 /* APURegisters.swift */; };
 		B7BFED0A28A261EA007E387E /* TilesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BFED0928A261E9007E387E /* TilesView.swift */; };
 		B7BFED0C28A26200007E387E /* TilemapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7BFED0B28A26200007E387E /* TilemapViewController.swift */; };
+		B7DD5F99294C84C30045C9B3 /* ChannelRegisters.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7DD5F98294C84C30045C9B3 /* ChannelRegisters.swift */; };
+		B7DD5F9B294C84D20045C9B3 /* ByteRegisters.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7DD5F9A294C84D20045C9B3 /* ByteRegisters.swift */; };
+		B7DD5F9D294C84F70045C9B3 /* Register.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7DD5F9C294C84F70045C9B3 /* Register.swift */; };
 		B7FD707228C793CA00644DA5 /* supermario_land_2.gb in Resources */ = {isa = PBXBuildFile; fileRef = B7FD707128C7938B00644DA5 /* supermario_land_2.gb */; };
 		B7FE880D2573EC7A00695D33 /* ROM.swift in Sources */ = {isa = PBXBuildFile; fileRef = B7FE880C2573EC7A00695D33 /* ROM.swift */; };
 		B7FE88142573F2D400695D33 /* boot.gb in Resources */ = {isa = PBXBuildFile; fileRef = B7FE880B2573EC5100695D33 /* boot.gb */; };
@@ -147,9 +152,14 @@
 		B76A506F2945E0E9006A2F16 /* VolumeEnvelope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeEnvelope.swift; sourceTree = "<group>"; };
 		B76A50712945E2A8006A2F16 /* FrequencyEnvelope.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrequencyEnvelope.swift; sourceTree = "<group>"; };
 		B76A50732945E6B6006A2F16 /* LengthTimer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LengthTimer.swift; sourceTree = "<group>"; };
+		B76A507529463DA4006A2F16 /* LFSR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LFSR.swift; sourceTree = "<group>"; };
+		B76A507729463FD4006A2F16 /* NoiseChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoiseChannel.swift; sourceTree = "<group>"; };
 		B7900E32292D48E4003D1CD2 /* APURegisters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APURegisters.swift; sourceTree = "<group>"; };
 		B7BFED0928A261E9007E387E /* TilesView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TilesView.swift; sourceTree = "<group>"; };
 		B7BFED0B28A26200007E387E /* TilemapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TilemapViewController.swift; sourceTree = "<group>"; };
+		B7DD5F98294C84C30045C9B3 /* ChannelRegisters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChannelRegisters.swift; sourceTree = "<group>"; };
+		B7DD5F9A294C84D20045C9B3 /* ByteRegisters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ByteRegisters.swift; sourceTree = "<group>"; };
+		B7DD5F9C294C84F70045C9B3 /* Register.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Register.swift; sourceTree = "<group>"; };
 		B7FD707128C7938B00644DA5 /* supermario_land_2.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = supermario_land_2.gb; sourceTree = "<group>"; };
 		B7FE880B2573EC5100695D33 /* boot.gb */ = {isa = PBXFileReference; lastKnownFileType = file; path = boot.gb; sourceTree = "<group>"; };
 		B7FE880C2573EC7A00695D33 /* ROM.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ROM.swift; sourceTree = "<group>"; };
@@ -302,6 +312,7 @@
 				B7FE886B257CCAB300695D33 /* PPU */,
 				B7FE882A2574F54200695D33 /* BitConvenience */,
 				B733CEF52572C9350013E8D1 /* MemorySegment.swift */,
+				B7DD5F9C294C84F70045C9B3 /* Register.swift */,
 				B7FE880C2573EC7A00695D33 /* ROM.swift */,
 				D94155FE259CD91D005576B3 /* MBC1.swift */,
 				B733CF0C2572F4E90013E8D1 /* MMU.swift */,
@@ -329,6 +340,7 @@
 				B76A506F2945E0E9006A2F16 /* VolumeEnvelope.swift */,
 				B76A50712945E2A8006A2F16 /* FrequencyEnvelope.swift */,
 				B76A50732945E6B6006A2F16 /* LengthTimer.swift */,
+				B76A507529463DA4006A2F16 /* LFSR.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -336,15 +348,26 @@
 		B7900E31292D48D0003D1CD2 /* APU */ = {
 			isa = PBXGroup;
 			children = (
+				B7DD5F97294C84980045C9B3 /* Registers */,
 				B76A506E2945E0BA006A2F16 /* Helpers */,
-				B7900E32292D48E4003D1CD2 /* APURegisters.swift */,
 				D9E6F6ED25A0ECC100E5F0A9 /* APU.swift */,
 				B736015529325DFF00279FF4 /* FrameSequencer.swift */,
 				B73601582933CA4200279FF4 /* FMSynthesizer.swift */,
 				B76A50682944CD6A006A2F16 /* PulseChannel.swift */,
 				B76A506A2944CD71006A2F16 /* WaveChannel.swift */,
+				B76A507729463FD4006A2F16 /* NoiseChannel.swift */,
 			);
 			path = APU;
+			sourceTree = "<group>";
+		};
+		B7DD5F97294C84980045C9B3 /* Registers */ = {
+			isa = PBXGroup;
+			children = (
+				B7900E32292D48E4003D1CD2 /* APURegisters.swift */,
+				B7DD5F98294C84C30045C9B3 /* ChannelRegisters.swift */,
+				B7DD5F9A294C84D20045C9B3 /* ByteRegisters.swift */,
+			);
+			path = Registers;
 			sourceTree = "<group>";
 		};
 		B7FE880A2573EC4500695D33 /* Data */ = {
@@ -642,15 +665,19 @@
 			files = (
 				D9723A5525891C3600AFB3CF /* TilesView.swift in Sources */,
 				D9E6F6F825A0ED0000E5F0A9 /* Divider.swift in Sources */,
+				B7DD5F9B294C84D20045C9B3 /* ByteRegisters.swift in Sources */,
 				B733CEF62572C9350013E8D1 /* MemorySegment.swift in Sources */,
 				B733CF002572CCFA0013E8D1 /* CPU+ALU.swift in Sources */,
 				B76A506B2944CD71006A2F16 /* WaveChannel.swift in Sources */,
 				D9723A5A25891DDA00AFB3CF /* CGImage+BitImage.swift in Sources */,
+				B7DD5F99294C84C30045C9B3 /* ChannelRegisters.swift in Sources */,
 				D9FA21BF258F447E00F0393B /* Renderer.swift in Sources */,
+				B76A507629463DA4006A2F16 /* LFSR.swift in Sources */,
 				D91DEAFF2580EDA400590CD5 /* UInt16+String.swift in Sources */,
 				D99B05A9258F534900A1C5B1 /* GameViewController.swift in Sources */,
 				B733CEB7256ECFCF0013E8D1 /* UInt16+Bytes.swift in Sources */,
 				D9E6F6EE25A0ECC100E5F0A9 /* APU.swift in Sources */,
+				B76A507829463FD4006A2F16 /* NoiseChannel.swift in Sources */,
 				B7BFED0A28A261EA007E387E /* TilesView.swift in Sources */,
 				B7900E33292D48E4003D1CD2 /* APURegisters.swift in Sources */,
 				D9E6F75025B3329B00E5F0A9 /* PPURegisters.swift in Sources */,
@@ -671,6 +698,7 @@
 				B7FE88192574E48300695D33 /* UInt8+Bool.swift in Sources */,
 				D9723A402588BBD300AFB3CF /* DisassemblyView.swift in Sources */,
 				B733CEC425704F370013E8D1 /* UInt+Bits.swift in Sources */,
+				B7DD5F9D294C84F70045C9B3 /* Register.swift in Sources */,
 				B733CEFB2572C9D90013E8D1 /* Bool+Int.swift in Sources */,
 				D91DEB042580EDDE00590CD5 /* UInt8+String.swift in Sources */,
 				B7FE880D2573EC7A00695D33 /* ROM.swift in Sources */,

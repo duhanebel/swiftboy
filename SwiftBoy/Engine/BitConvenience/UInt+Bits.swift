@@ -16,7 +16,7 @@ extension UInt8 {
             self ^= (1 << index)
         }
     }
-    
+
     subscript(_ idx: (Int, Int)) -> UInt8 {
         get { return self[idx.0, idx.1] }
         set { self[idx.0, idx.1] = newValue }

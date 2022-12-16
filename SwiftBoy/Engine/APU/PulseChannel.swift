@@ -47,14 +47,10 @@ final class Pulse: Actor {
     init(with register: APURegisters.Pulse) {
         self.register = register
         
-        self.volumeEnvelope = VolumeEnvelope(initialVolume: register.volumeEnvelope.initialVolume,
-                                             direction: register.volumeEnvelope.direction,
-                                             pace: register.volumeEnvelope.sweepPace)
+        self.volumeEnvelope = VolumeEnvelope(withRegister: register.volumeEnvelope)
         self.frequencySweep = FrequencyEnvelope(initialFrequency: register.frequency,
-                                                direction: register.sweep.direction,
-                                                pace: register.sweep.pace,
-                                                slope: register.sweep.slope)
-        self.lengthTimer = LengthTimer(initialLength: register.dutyLength.lengthTimer)
+                                                register: register.sweep)
+        self.lengthTimer = LengthTimer(withRegister: register.dutyLength)
         self.isEnabled = register.freqHIAndTrigger.trigger
         
         self.wave = WaveDuty(wave: register.dutyLength.waveDuty.waveValues,
@@ -67,28 +63,21 @@ final class Pulse: Actor {
         register.observer = nil
     }
     
-    func reset() {
-        self.volumeEnvelope = VolumeEnvelope(initialVolume: register.volumeEnvelope.initialVolume,
-                                             direction: register.volumeEnvelope.direction,
-                                             pace: register.volumeEnvelope.sweepPace)
+    private func reset() {
+        self.volumeEnvelope = VolumeEnvelope(withRegister: register.volumeEnvelope)
         self.frequencySweep = FrequencyEnvelope(initialFrequency: register.frequency,
-                                                direction: register.sweep.direction,
-                                                pace: register.sweep.pace,
-                                                slope: register.sweep.slope)
-        self.lengthTimer = LengthTimer(initialLength: register.dutyLength.lengthTimer)
+                                                register: register.sweep)
+        self.lengthTimer = LengthTimer(withRegister: register.dutyLength)
         self.isEnabled = register.freqHIAndTrigger.trigger
         
-
         self.wave = WaveDuty(wave: register.dutyLength.waveDuty.waveValues,
                              frequency: frequencyToTics(register.frequency))
     }
     
     func tic() {
         wave.tic()
-        
     }
 
-    
     func volumeEnvelopeDidTic() {
         guard isEnabled == true else { return }
         volumeEnvelope.tic()
@@ -123,32 +112,25 @@ extension Pulse: MemoryObserver {
     }
     
     func memoryChanged(sender: MemoryMappable, at address: Address, with: Byte) {
-        switch(address) {
-        case (register.baseAddress + APURegisters.Pulse.MemoryLocationOffsets.sweep.rawValue):
+        let registryAddressOffset = address - register.baseAddress
+        
+        switch(registryAddressOffset) {
+        case APURegisters.Pulse.MemoryLocationOffsets.sweep.rawValue:
             self.frequencySweep = FrequencyEnvelope(initialFrequency: register.frequency,
-                                                    direction: register.sweep.direction,
-                                                    pace: register.sweep.pace,
-                                                    slope: register.sweep.slope)
-        case (register.baseAddress + APURegisters.Pulse.MemoryLocationOffsets.dutyLength.rawValue):
+                                                    register: register.sweep)
+        case APURegisters.Pulse.MemoryLocationOffsets.dutyLength.rawValue:
             self.wave.waveTable = register.dutyLength.waveDuty.waveValues
             
-            self.lengthTimer = LengthTimer(initialLength: register.dutyLength.lengthTimer)
-        case (register.baseAddress + APURegisters.Pulse.MemoryLocationOffsets.volumeEnvelope.rawValue):
-            self.volumeEnvelope = VolumeEnvelope(initialVolume: register.volumeEnvelope.initialVolume,
-                                                 direction: register.volumeEnvelope.direction,
-                                                 pace: register.volumeEnvelope.sweepPace)
-        case (register.baseAddress + APURegisters.Pulse.MemoryLocationOffsets.freqLow.rawValue):
+            self.lengthTimer = LengthTimer(withRegister: register.dutyLength)
+        case APURegisters.Pulse.MemoryLocationOffsets.volumeEnvelope.rawValue:
+            self.volumeEnvelope = VolumeEnvelope(withRegister: register.volumeEnvelope)
+        case APURegisters.Pulse.MemoryLocationOffsets.freqLow.rawValue:
             wave.ticFrequency = frequencyToTics(register.frequency)
-        case (register.baseAddress + APURegisters.Pulse.MemoryLocationOffsets.freqHighTrigger.rawValue):
-            if register.freqHIAndTrigger.trigger == true {
-                reset()
-            } else {
-                wave.ticFrequency = frequencyToTics(register.frequency)
-            }
+        case APURegisters.Pulse.MemoryLocationOffsets.freqHighTrigger.rawValue:
+            wave.ticFrequency = frequencyToTics(register.frequency)
+            if register.freqHIAndTrigger.trigger == true { reset() }
         default:
             ()
         }
     }
-    
-    
 }

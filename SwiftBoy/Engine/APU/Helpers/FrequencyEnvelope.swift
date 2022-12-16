@@ -50,3 +50,12 @@ final class FrequencyEnvelope: Actor {
         }
     }
 }
+
+extension FrequencyEnvelope {
+    convenience init(initialFrequency: UInt16, register: APURegisters.SweepRegister) {
+        self.init(initialFrequency: initialFrequency,
+                         direction: register.direction,
+                              pace: register.pace,
+                             slope: register.slope)
+    }
+}

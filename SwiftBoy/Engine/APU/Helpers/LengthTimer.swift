@@ -25,3 +25,9 @@ final class LengthTimer: Actor {
         length -= 1
     }
 }
+
+extension LengthTimer {
+    convenience init(withRegister register: APURegisters.DutyAndLengthRegister) {
+        self.init(initialLength: register.lengthTimer)
+    }
+}

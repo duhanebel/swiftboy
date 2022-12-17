@@ -16,7 +16,7 @@ private let kInFlightAudioBuffers: Int = 2
 // changes but requires more processing but increases the risk of being unable
 // to fill the buffers in time. A setting of 1024 represents about 23ms of
 // samples.
- let kSamplesPerBuffer: AVAudioFrameCount = 4096//1024 
+ let kSamplesPerBuffer: AVAudioFrameCount = 4 * 1024
 
 final class FMSynthesizer: Synthetizer {
 

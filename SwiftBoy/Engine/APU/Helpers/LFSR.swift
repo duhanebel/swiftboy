@@ -16,16 +16,18 @@ final class LinearFeedbackShiftRegister: Actor {
     let mode: Mode
     
     var value: Byte {
-        get { buffer[0] }
+        // The value of the Shift Register is reversed
+        get { (buffer[0] == 0) ? 1 : 0 }
     }
     
     init(mode: Mode) {
-        self.buffer = UInt16.random(in: UInt16.min...UInt16.max)
+        // On a trigger event, all the bits of LFSR are set to 1.
+        self.buffer =  0xFFFF //UInt16.random(in: UInt16.min...UInt16.max)
         self.mode = mode
     }
     
     func tic() {
-        let res = value[0] ^ value[1]
+        let res = buffer[0] ^ buffer[1]
         buffer[15] = res
         if mode == .short {
             buffer[7] = res

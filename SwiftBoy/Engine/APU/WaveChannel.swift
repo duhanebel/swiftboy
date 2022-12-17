@@ -67,18 +67,19 @@ final class Wave: Actor {
     func reset() {
         self.volume = register.volume.rawValue
         
-        self.isEnabled = register.freqHIAndTrigger.trigger
+        self.isEnabled = register.freqHIAndTrigger.trigger && register.isDACEnabled
         
         /* When CH3 is started, the first sample read is the one at index 1, i.e. the lower nibble of the first byte, NOT the upper nibble.
          */
         self.wave = WaveDuty(wave: register.getDutyValues(),
                              frequency: frequencyToTics(register.frequency),
                              startFrom: 1)
-        self.lengthTimer = LengthTimer(initialLength: register.lengthLoad)
+        self.lengthTimer = LengthTimer(withRegister: register)
 
     }
     
     func tic() {
+        guard self.isEnabled else { return }
         wave.tic()
     }
     
@@ -91,6 +92,8 @@ final class Wave: Actor {
     }
    
     func currentValue() -> Byte {
+        guard self.isEnabled else { return 0 }
+        
         switch(register.volume) {
         case .mute:
             return 0
@@ -102,6 +105,9 @@ final class Wave: Actor {
             return wave.currentValue / 4
         }
     }
+    
+    var isDACEnabled: Bool { get { return register.isDACEnabled } }
+    
 }
 
 extension Wave: MemoryObserver {
@@ -111,9 +117,10 @@ extension Wave: MemoryObserver {
     
     func memoryChanged(sender: MemoryMappable, at address: Address, with: Byte) {
         switch(address) {
+            // Any time the DAC is off the channel is kept disabled (but turning the DAC
+            // back on does NOT enable the channel).
         case APURegisters.MemoryLocations.NR30:
-            self.isEnabled = register.power
-            if register.power { reset() }
+            if register.isDACEnabled == false { self.isEnabled = false }
         case APURegisters.MemoryLocations.NR31:
             self.lengthTimer = LengthTimer(initialLength: register.lengthLoad)
         case APURegisters.MemoryLocations.NR32:

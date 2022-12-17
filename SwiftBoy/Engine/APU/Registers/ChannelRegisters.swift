@@ -75,7 +75,6 @@ extension APURegisters {
                 throw MemoryError.invalidAddress(address)
             }
             observer?.memoryChanged(sender: self, at: address, with: byte)
-
         }
     }
     
@@ -116,7 +115,7 @@ extension APURegisters {
         }
         
         // Only the 7th bit is used
-        var power: Bool {
+        var isDACEnabled: Bool {
             get { return DACPower == 0b1000_0000 }
             set { DACPower = (newValue ? 0b1000_0000 : 0) }
         }

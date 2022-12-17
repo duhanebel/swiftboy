@@ -28,24 +28,32 @@ final class Noise: Actor {
     
     var isEnabled: Bool
     
-    private var frequencyTics: UInt16 = 0
+    private var ticFrequency: UInt16 = 0
+    private var currentTic = 0
+    
     
     func tic() {
-
-      //  lfsr.tic()// freuqenc!
+        guard isEnabled == true else { return }
+        
+        if currentTic != ticFrequency {
+            currentTic += 1
+        } else {
+            lfsr.tic()
+        }
     }
     
     func volumeEnvelopeDidTic() {
         guard isEnabled == true else { return }
         volumeEnvelope.tic()
-        if volumeEnvelope.volume == 0 { isEnabled = false }
+        // The envelope reaching a volume of 0 does NOT turn the channel off!
+        // if volumeEnvelope.volume == 0 { isEnabled = false }
     }
     
     func lengthDidTic() {
         guard isEnabled == true else { return }
         if register.trigger.lengthEnabled {
             lengthTimer.tic()
-            if lengthTimer.hasFired { self.isEnabled = false }
+            if lengthTimer.hasFired { isEnabled = false }
         }
     }
     
@@ -54,10 +62,8 @@ final class Noise: Actor {
         
         self.lfsr = LinearFeedbackShiftRegister(mode: (register.shiftDivisor.width == .narrow) ? .short : .long)
         
-        self.lengthTimer = LengthTimer(initialLength: register.length.lengthTimer)
-        self.volumeEnvelope = VolumeEnvelope(initialVolume: register.volumeEnvelope.initialVolume,
-                                             direction: register.volumeEnvelope.direction,
-                                             pace: register.volumeEnvelope.sweepPace)
+        self.lengthTimer = LengthTimer(withRegister: register.length)
+        self.volumeEnvelope = VolumeEnvelope(withRegister: register.volumeEnvelope)
         self.isEnabled = register.trigger.trigger
         register.observer = self
     }
@@ -65,16 +71,23 @@ final class Noise: Actor {
     private func reset() {
         self.lfsr = LinearFeedbackShiftRegister(mode: (register.shiftDivisor.width == .narrow) ? .short : .long)
         
-        self.lengthTimer = LengthTimer(initialLength: register.length.lengthTimer)
-        self.volumeEnvelope = VolumeEnvelope(initialVolume: register.volumeEnvelope.initialVolume,
-                                             direction: register.volumeEnvelope.direction,
-                                             pace: register.volumeEnvelope.sweepPace)
-        self.isEnabled = register.trigger.trigger
+        self.lengthTimer = LengthTimer(withRegister: register.length)
+        self.volumeEnvelope = VolumeEnvelope(withRegister: register.volumeEnvelope)
+        self.isEnabled = register.trigger.trigger && register.volumeEnvelope.isDACEnabled
+        
+        let shiftedDivisor = UInt16(register.shiftDivisor.divisor) << 4
+        self.ticFrequency = (shiftedDivisor > 0 ? shiftedDivisor : 8) << register.shiftDivisor.clockShift
+      //  self.ticFrequency = UInt16(CPU.clockSpeed) / self.ticFrequency
+        self.currentTic = 0
     }
     
     func currentValue() -> Byte {
-        volumeEnvelope.volume * lfsr.value
+        guard self.isEnabled else { return 0 }
+        
+        return volumeEnvelope.volume * lfsr.value
     }
+    
+    var isDACEnabled: Bool { get { return register.volumeEnvelope.isDACEnabled } }
 }
 
 extension Noise: MemoryObserver {
@@ -85,18 +98,22 @@ extension Noise: MemoryObserver {
     func memoryChanged(sender: MemoryMappable, at address: Address, with: Byte) {
         switch(address) {
         case APURegisters.MemoryLocations.NR41:
-            self.lengthTimer = LengthTimer(initialLength: register.length.lengthTimer)
+            self.lengthTimer = LengthTimer(withRegister: register.length)
+            
         case APURegisters.MemoryLocations.NR42:
-            self.volumeEnvelope = VolumeEnvelope(initialVolume: register.volumeEnvelope.initialVolume,
-                                                 direction: register.volumeEnvelope.direction,
-                                                 pace: register.volumeEnvelope.sweepPace)
+            self.isEnabled = register.volumeEnvelope.isDACEnabled
+            // Writes to this register while the channel is on require retriggering it afterwards.
+            //self.volumeEnvelope = VolumeEnvelope(withRegister: register.volumeEnvelope)
         case APURegisters.MemoryLocations.NR43:
             self.lfsr = LinearFeedbackShiftRegister(mode: (register.shiftDivisor.width == .narrow) ? .short : .long)
+            let shiftedDivisor = UInt16(register.shiftDivisor.divisor) << 4
+            self.ticFrequency = (shiftedDivisor > 0 ? shiftedDivisor : 8) << register.shiftDivisor.clockShift
+          //  self.ticFrequency = UInt16(CPU.clockSpeed) / self.ticFrequency
+
         case APURegisters.MemoryLocations.NR44:
             if register.trigger.trigger == true { reset() }
         default:
             ()
         }
     }
-    
 }

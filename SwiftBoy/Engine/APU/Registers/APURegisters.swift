@@ -48,7 +48,7 @@ import Foundation
  NR52 | FF26 | P--- 4321 | 0xF1 | Power control/status, Channel length statuses
 
  Wave pattern ram:
- FF30–FF3F   | 111122222 | ---- | Wave RAM is 16 bytes long; each byte holds two                                         “samples”, each 4 bits.
+ FF30–FF3F   | 1111 2222 | ---- | Wave RAM is 16 bytes long; each byte holds two                                                                  “samples”, each 4 bits.
  */
 
 class APURegisters: MemoryMappable {

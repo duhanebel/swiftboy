@@ -28,6 +28,12 @@ final class LengthTimer: Actor {
 
 extension LengthTimer {
     convenience init(withRegister register: APURegisters.DutyAndLengthRegister) {
-        self.init(initialLength: register.lengthTimer)
+        let initialLength = register.lengthTimer > 0 ? register.lengthTimer : 63
+        self.init(initialLength: initialLength)
+    }
+    
+    convenience init(withRegister register: APURegisters.Wave) {
+        let initialLength = register.lengthLoad > 0 ? register.lengthLoad : 255
+        self.init(initialLength: initialLength)
     }
 }

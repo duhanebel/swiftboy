@@ -39,7 +39,7 @@ final class Audio: Actor {
     
     var stopwatch = Stopwatch()
 
-    init(output: Synthetizer) {
+    init(output: Synthetizer = FMSynthesizer()) {
         registers = APURegisters()
         
         self.pulseChannel1 = Pulse(with: registers.pulse1)
@@ -73,10 +73,6 @@ final class Audio: Actor {
         self.noiseChannel.lengthDidTic()
     }
     
-    convenience init() {
-        self.init(output: FMSynthesizer())
-    }
-    
     func tic() {
         guard registers.conf.powerControl.powerControl == true else { return }
         sequencer.tic()
@@ -94,7 +90,8 @@ final class Audio: Actor {
                 output.play(buffer: buff)
                 resetBuffer()
             } else {
-                buff.append(mixedSample())
+                let sample = mixedSample()
+                buff.append((sample.left + sample.right)/2)
             }
             currentTic = 0
         } else {
@@ -114,13 +111,38 @@ final class Audio: Actor {
         buff.reserveCapacity(Int(kSamplesPerBuffer))
     }
     
-    private func mixedSample() -> Float {
-        let sample = (
-                     Float(pulseChannel1.currentValue()) +
-                      Float(pulseChannel2.currentValue()) +
-                      Float(waveChannel.currentValue())
-                     // Float(noiseChannel.currentValue())
-                     ) / Float(volumeSteps)
-        return sample
+    private func mixedSample() -> (left: Float, right: Float) {
+        var activeChannels: Float = 0
+        var sampleLeft: Float = 0
+        var sampleRight: Float = 0
+        if pulseChannel1.isDACEnabled {
+            activeChannels += 1
+            let value = Float(pulseChannel1.currentValue()) / Float(volumeSteps)
+            if registers.conf.enabledChannels.isLeftCh1Enabled { sampleLeft += value }
+            if registers.conf.enabledChannels.isRightCh1Enabled { sampleRight += value }
+        }
+        
+        if pulseChannel2.isDACEnabled {
+            activeChannels += 1
+            let value = Float(pulseChannel2.currentValue()) / Float(volumeSteps)
+            if registers.conf.enabledChannels.isLeftCh2Enabled { sampleLeft += value }
+            if registers.conf.enabledChannels.isRightCh2Enabled { sampleRight += value }
+        }
+        
+        if waveChannel.isDACEnabled {
+            activeChannels += 1
+            let value = Float(waveChannel.currentValue()) / Float(volumeSteps)
+            if registers.conf.enabledChannels.isLeftCh3Enabled { sampleLeft += value }
+            if registers.conf.enabledChannels.isRightCh3Enabled { sampleRight += value }
+        }
+        
+        if noiseChannel.isDACEnabled {
+            activeChannels += 1
+            let value = Float(noiseChannel.currentValue()) / Float(volumeSteps)
+            if registers.conf.enabledChannels.isLeftCh4Enabled { sampleLeft += value }
+            if registers.conf.enabledChannels.isRightCh4Enabled { sampleRight += value }
+        }
+        
+        return (left: (sampleLeft / activeChannels), right:(sampleRight / activeChannels))
     }
 }

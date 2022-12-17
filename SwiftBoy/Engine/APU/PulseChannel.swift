@@ -51,7 +51,7 @@ final class Pulse: Actor {
         self.frequencySweep = FrequencyEnvelope(initialFrequency: register.frequency,
                                                 register: register.sweep)
         self.lengthTimer = LengthTimer(withRegister: register.dutyLength)
-        self.isEnabled = register.freqHIAndTrigger.trigger
+        self.isEnabled = register.freqHIAndTrigger.trigger && register.volumeEnvelope.isDACEnabled
         
         self.wave = WaveDuty(wave: register.dutyLength.waveDuty.waveValues,
                              frequency: frequencyToTics(register.frequency))
@@ -75,13 +75,15 @@ final class Pulse: Actor {
     }
     
     func tic() {
+        guard self.isEnabled else { return }
         wave.tic()
     }
 
     func volumeEnvelopeDidTic() {
         guard isEnabled == true else { return }
         volumeEnvelope.tic()
-        if volumeEnvelope.volume == 0 { isEnabled = false }
+        // The envelope reaching a volume of 0 does NOT turn the channel off!
+        // if volumeEnvelope.volume == 0 { isEnabled = false }
     }
     
     func sweepDidTic() {
@@ -102,8 +104,11 @@ final class Pulse: Actor {
     }
     
     func currentValue() -> Byte {
+        guard self.isEnabled else { return 0 }
         return volumeEnvelope.volume * wave.currentValue
     }
+    
+    var isDACEnabled: Bool { get { return register.volumeEnvelope.isDACEnabled } }
 }
 
 extension Pulse: MemoryObserver {
@@ -118,17 +123,24 @@ extension Pulse: MemoryObserver {
         case APURegisters.Pulse.MemoryLocationOffsets.sweep.rawValue:
             self.frequencySweep = FrequencyEnvelope(initialFrequency: register.frequency,
                                                     register: register.sweep)
+            
         case APURegisters.Pulse.MemoryLocationOffsets.dutyLength.rawValue:
             self.wave.waveTable = register.dutyLength.waveDuty.waveValues
-            
             self.lengthTimer = LengthTimer(withRegister: register.dutyLength)
-        case APURegisters.Pulse.MemoryLocationOffsets.volumeEnvelope.rawValue:
-            self.volumeEnvelope = VolumeEnvelope(withRegister: register.volumeEnvelope)
+            
+        // Writes to this register while the channel is on require retriggering it afterwards.
+        // because any time the DAC is off the channel is kept disabled (but turning the DAC
+        // back on does NOT enable the channel).
+        case APURegisters.MemoryLocations.NR42:
+            if register.volumeEnvelope.isDACEnabled == false { self.isEnabled = false }
+            
         case APURegisters.Pulse.MemoryLocationOffsets.freqLow.rawValue:
             wave.ticFrequency = frequencyToTics(register.frequency)
+            
         case APURegisters.Pulse.MemoryLocationOffsets.freqHighTrigger.rawValue:
             wave.ticFrequency = frequencyToTics(register.frequency)
             if register.freqHIAndTrigger.trigger == true { reset() }
+            
         default:
             ()
         }

@@ -87,6 +87,11 @@ extension APURegisters {
             get { data[BitLayout.sweepPace] }
             set { data[BitLayout.sweepPace] = newValue }
         }
+        
+        // Channel x’s DAC is enabled if and only if [NRx2] & $F8 != 0; 
+        var isDACEnabled: Bool {
+            get { data[BitLayout.initialEnvVolume] != 0 || data[BitLayout.envelopeDir] != 0 }
+        }
     }
     
     final class FrequencyHIAndTriggerRegister: Register {

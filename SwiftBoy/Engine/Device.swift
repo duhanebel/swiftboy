@@ -164,15 +164,17 @@ final class Device {
 
         if running {
             let nextCycleDeadline = adjustRuntimeAfter(cycles: totalCycles, since: startTime)
-                queue.asyncAfter(deadline: nextCycleDeadline,
-                                 qos: .userInteractive,
-                                 execute: { self.compute(at: nextCycleDeadline) })
+            
+            queue.asyncAfter(deadline: nextCycleDeadline,
+                                  qos: .userInteractive,
+                              execute: { self.compute(at: nextCycleDeadline) })
         }
     }
     
     private func adjustRuntimeAfter(cycles: Int, since: DispatchTime) -> DispatchTime {
 
-        let cpuExpectedRunTimeInterval = (Double(cycles) / Double(CPU.clockSpeed))
+        // TODO fix this to vsync or audio or something!
+        let cpuExpectedRunTimeInterval = (Double(cycles) / Double(CPU.clockSpeed)) - 0.000_000_66
         let expectedCPURunTime = since + cpuExpectedRunTimeInterval
 
         return expectedCPURunTime
